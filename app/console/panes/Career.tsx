@@ -67,27 +67,15 @@ export default function Career() {
         </div>
       </section>
 
-      <section className="mt-10 grid gap-px overflow-hidden rounded-sm border border-rule bg-rule sm:grid-cols-2">
-        <div className="bg-panel p-5">
-          <span className="lbl">education</span>
-          <p className="mt-2.5 text-[14px] text-ink">
-            MSc FinTech — ITBA, Buenos Aires{" "}
-            <span className="text-ink-3">(in progress)</span>
-          </p>
-          <p className="mt-1 text-[14px] text-ink-2">
-            BA — Washington &amp; Lee University, Virginia
-          </p>
-        </div>
-        <div className="bg-panel p-5">
-          <span className="lbl">working languages</span>
-          <p className="mt-2.5 text-[14px] text-ink">
-            English <span className="text-ink-3">bilingual</span> · Spanish{" "}
-            <span className="text-ink-3">native</span>
-          </p>
-          <p className="mt-1 text-[14px] text-ink-2">
-            Seven years remote with US and UK teams.
-          </p>
-        </div>
+      <section className="mt-10 overflow-hidden rounded-sm border border-rule bg-panel p-5">
+        <span className="lbl">working languages</span>
+        <p className="mt-2.5 text-[14px] text-ink">
+          English <span className="text-ink-3">bilingual</span> · Spanish{" "}
+          <span className="text-ink-3">native</span>
+        </p>
+        <p className="mt-1 text-[14px] text-ink-2">
+          Seven years remote with US and UK teams.
+        </p>
       </section>
     </div>
   );
