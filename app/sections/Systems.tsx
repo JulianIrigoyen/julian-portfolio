@@ -1,3 +1,5 @@
+import SolverWidget from "./SolverWidget";
+
 type System = {
   id: string;
   slug: string;
@@ -116,6 +118,11 @@ export default function Systems() {
         <h2 className="font-mono text-[13px] font-medium uppercase tracking-[0.18em] text-ink-3">
           Systems
         </h2>
+        <p className="mt-4 max-w-2xl text-[15px] text-ink-2">
+          Not three projects — one machine. The agent operates the
+          infrastructure, the framework ships the client work that funds the
+          lab, and the platform is the lab.
+        </p>
         <div className="mt-10 flex flex-col gap-16">
           {SYSTEMS.map((s) => (
             <article key={s.id} id={s.id} className="scroll-mt-24">
@@ -146,6 +153,7 @@ export default function Systems() {
                   </div>
                 ))}
               </div>
+              {s.id === "trading" && <SolverWidget />}
               <div className="mt-5 flex flex-wrap gap-x-5 gap-y-1.5 font-mono text-[12px] text-ink-2">
                 {s.metrics.map((m) => (
                   <span key={m}>{m}</span>

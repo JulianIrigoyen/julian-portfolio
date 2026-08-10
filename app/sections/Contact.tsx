@@ -1,45 +1,10 @@
-/* The lattice: Supersolid's namesake — a crystal that flows.
-   Ordered dot grid, one continuous line passing through it. */
-function Lattice() {
-  const dots: React.ReactElement[] = [];
-  for (let r = 0; r < 5; r++) {
-    for (let c = 0; c < 22; c++) {
-      dots.push(
-        <circle
-          key={`${r}-${c}`}
-          cx={20 + c * 26}
-          cy={16 + r * 24}
-          r={1.6}
-          fill="var(--ink-3)"
-          opacity={0.5}
-        />,
-      );
-    }
-  }
-  return (
-    <svg
-      viewBox="0 0 586 128"
-      className="pointer-events-none w-full"
-      aria-hidden
-      role="presentation"
-    >
-      {dots}
-      <path
-        d="M 0 64 C 80 64, 100 28, 170 28 S 280 100, 360 100 S 500 40, 586 40"
-        fill="none"
-        stroke="var(--accent)"
-        strokeWidth={1.5}
-        opacity={0.8}
-      />
-    </svg>
-  );
-}
+import LatticeCanvas from "./LatticeCanvas";
 
 export default function Contact() {
   return (
     <section className="border-t border-line" id="contact">
       <div className="mx-auto w-full max-w-4xl px-6 py-20">
-        <Lattice />
+        <LatticeCanvas />
         <h2 className="mt-10 font-mono text-[24px] font-semibold tracking-tight sm:text-4xl">
           Order and flow, at the same time.
         </h2>

@@ -17,6 +17,7 @@
   --accent: #3d6bff;
   --accent-soft: #3d6bff26;
   --ok: #34c77b;
+  --danger: #e5534b;
 }
 
 @theme inline {
