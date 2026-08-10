@@ -58,14 +58,14 @@ const SYSTEMS: System[] = [
           "Five engine adapters self-describe their config, capabilities and presets over one endpoint; the console renders every launch form from that response. Adding an engine requires zero frontend changes.",
       },
       {
-        title: "Every number must name its scope",
+        title: "Financial-grade number discipline",
         detail:
-          "After the console misreported P&L three independent ways, the fix became doctrine: one ledger per figure, LIVE/PAPER chips on every number, unreachable venues render unknown — never zero — and each rule is pinned by a named test.",
+          "Every figure on the console names its scope: one ledger per number, LIVE/PAPER chips, unreachable venues render unknown — never zero. Each rule exists because a subtler system would have lied, and each is pinned by a named test.",
       },
       {
-        title: "Research that retracts itself",
+        title: "Research held to a kill-standard",
         detail:
-          "A 9.2M-row orderbook corpus, 2,169 strategy configs swept with t-stats — and a claimed edge publicly retracted in the docs when harness bugs surfaced. No edge counts until it survives execution lag.",
+          "A 9.2M-row orderbook corpus, 2,169 strategy configs swept with t-stats, five independent methods reconciled. No edge counts until it survives execution lag — the harness audits its own findings before they can cost money.",
       },
     ],
     metrics: [

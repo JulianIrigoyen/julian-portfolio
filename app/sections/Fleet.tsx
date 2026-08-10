@@ -95,7 +95,7 @@ export default function Fleet() {
             </span>
           </div>
           <p className="mt-3 max-w-3xl text-[14px] leading-relaxed text-ink-2">
-            A product rebuilt four times in five weeks, each pass sharper: a
+            Four product iterations shipped in five weeks, each one sharper: a
             scraper fleet for four property portals behind rotating proxies; a
             natural-language search pipeline where a second judge LLM
             confidence-scores every extraction; a WhatsApp agent parsing
