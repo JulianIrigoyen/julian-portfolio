@@ -16,24 +16,24 @@ import {
   quantileSorted,
   FAN_QS,
   type SolverParams,
-} from "../../lib/expectancy";
+} from "../../../lib/expectancy";
 
 const SIM = { ...SIM_DEFAULTS, numTrades: 120, numPaths: 300 };
 
-type Css = { ink: string; ink2: string; ink3: string; line: string; accent: string; ok: string; danger: string; surface: string };
+type Css = { ink: string; ink2: string; ink3: string; line: string; amber: string; phosphor: string; alert: string; panel: string };
 
 function readCss(): Css {
   const s = getComputedStyle(document.documentElement);
   const v = (n: string, fb: string) => s.getPropertyValue(n).trim() || fb;
   return {
-    ink: v("--ink", "#e8eaed"),
-    ink2: v("--ink-2", "#9ba3af"),
-    ink3: v("--ink-3", "#5c6470"),
-    line: v("--line", "#262b33"),
-    accent: v("--accent", "#3d6bff"),
-    ok: v("--ok", "#34c77b"),
-    danger: v("--danger", "#e5534b"),
-    surface: v("--surface", "#171a20"),
+    ink: v("--ink", "#f2eee5"),
+    ink2: v("--ink-2", "#a19a8b"),
+    ink3: v("--ink-3", "#6d675c"),
+    line: v("--rule", "#2a2721"),
+    amber: v("--amber", "#ffb000"),
+    phosphor: v("--phosphor", "#46d67f"),
+    alert: v("--alert", "#ff5f4d"),
+    panel: v("--panel-2", "#1c1a15"),
   };
 }
 
@@ -73,6 +73,15 @@ export default function SolverWidget() {
   const kelly = useMemo(() => kellyCurve(p, 240), [p]);
   const mc = useMemo(() => monteCarloPaths(p, { ...SIM, wagerFraction: f }), [p, f]);
   const bands = useMemo(() => percentileBands(mc), [mc]);
+  const range = useMemo(() => {
+    const nqq = FAN_QS.length;
+    let lo = Infinity, hi = -Infinity;
+    for (let s = 0; s < SIM.numTrades + 1; s++) {
+      lo = Math.min(lo, bands[s * nqq]);
+      hi = Math.max(hi, bands[s * nqq + nqq - 1]);
+    }
+    return { lo, hi };
+  }, [bands]);
   const medianFinal = useMemo(() => {
     const s = Float64Array.from(mc.finals).sort();
     return quantileSorted(s, 0.5);
@@ -85,7 +94,7 @@ export default function SolverWidget() {
   /* ---- fan chart ---- */
   const fanRef = useCanvas(
     (ctx, w, h, css) => {
-      const padL = 46, padR = 40, padT = 10, padB = 20;
+      const padL = 8, padR = 40, padT = 14, padB = 20;
       const iw = w - padL - padR, ih = h - padT - padB;
       let lo = Infinity, hi = -Infinity;
       for (let s = 0; s < steps; s++) {
@@ -104,12 +113,13 @@ export default function SolverWidget() {
 
       // grid: 3 recessive y ticks
       ctx.strokeStyle = css.line; ctx.lineWidth = 1;
-      ctx.fillStyle = css.ink3; ctx.font = "10px var(--font-plex-mono), monospace";
+      ctx.fillStyle = css.ink3; ctx.font = "10px var(--font-jb), monospace";
+      // gridlines only — the scale lives in the caption above the chart, and
+      // p10/p50/p90 are direct-labelled at the right edge. No axis furniture.
       for (const t of [0, 0.5, 1]) {
         const v = useLog ? lo * Math.pow(hi / lo, t) : lo + t * (hi - lo);
         const y = Y(v);
         ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
-        ctx.fillText(fmtMoney(v), 4, y + 3);
       }
       // start-capital baseline
       ctx.setLineDash([3, 4]); ctx.strokeStyle = css.ink3;
@@ -121,24 +131,24 @@ export default function SolverWidget() {
         for (let s = 0; s < steps; s++) ctx.lineTo(X(s), Y(q(s, a)));
         for (let s = steps - 1; s >= 0; s--) ctx.lineTo(X(s), Y(q(s, b)));
         ctx.closePath();
-        ctx.globalAlpha = alpha; ctx.fillStyle = css.accent; ctx.fill(); ctx.globalAlpha = 1;
+        ctx.globalAlpha = alpha; ctx.fillStyle = css.amber; ctx.fill(); ctx.globalAlpha = 1;
       };
       band(0, 4, 0.10); // p10–p90
       band(1, 3, 0.16); // p25–p75
 
-      ctx.strokeStyle = css.accent; ctx.lineWidth = 2;
+      ctx.strokeStyle = css.amber; ctx.lineWidth = 2;
       ctx.beginPath();
       for (let s = 0; s < steps; s++) ctx.lineTo(X(s), Y(q(s, 2)));
       ctx.stroke();
 
       // right-edge direct labels
-      ctx.fillStyle = css.ink2; ctx.font = "10px var(--font-plex-mono), monospace";
+      ctx.fillStyle = css.ink2; ctx.font = "10px var(--font-jb), monospace";
       ctx.fillText("p90", w - padR + 6, Y(q(steps - 1, 4)) + 3);
       ctx.fillText("p50", w - padR + 6, Y(q(steps - 1, 2)) + 3);
       ctx.fillText("p10", w - padR + 6, Y(q(steps - 1, 0)) + 3);
       // x labels
       ctx.fillStyle = css.ink3;
-      ctx.fillText("0", padL, h - 6);
+      ctx.fillText("0", padL + 2, h - 6);
       ctx.fillText(`${SIM.numTrades} trades`, w - padR - 52, h - 6);
 
       // crosshair
@@ -146,13 +156,13 @@ export default function SolverWidget() {
         const s = hover;
         ctx.strokeStyle = css.ink3; ctx.lineWidth = 1;
         ctx.beginPath(); ctx.moveTo(X(s), padT); ctx.lineTo(X(s), padT + ih); ctx.stroke();
-        ctx.fillStyle = css.accent;
+        ctx.fillStyle = css.amber;
         ctx.beginPath(); ctx.arc(X(s), Y(q(s, 2)), 3, 0, Math.PI * 2); ctx.fill();
         const label = `t=${s}  p50 ${fmtMoney(q(s, 2))}  p10 ${fmtMoney(q(s, 0))}  p90 ${fmtMoney(q(s, 4))}`;
-        ctx.font = "11px var(--font-plex-mono), monospace";
+        ctx.font = "11px var(--font-jb), monospace";
         const tw = ctx.measureText(label).width + 12;
         const bx = Math.min(Math.max(X(s) - tw / 2, padL), w - padR - tw);
-        ctx.fillStyle = css.surface; ctx.strokeStyle = css.line;
+        ctx.fillStyle = css.panel; ctx.strokeStyle = css.line;
         ctx.beginPath(); ctx.roundRect(bx, padT + 2, tw, 20, 4); ctx.fill(); ctx.stroke();
         ctx.fillStyle = css.ink; ctx.fillText(label, bx + 6, padT + 16);
       }
@@ -173,7 +183,7 @@ export default function SolverWidget() {
       ctx.strokeStyle = css.line; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(padL, Y(0)); ctx.lineTo(w - padR, Y(0)); ctx.stroke();
 
-      ctx.strokeStyle = css.accent; ctx.lineWidth = 2;
+      ctx.strokeStyle = css.amber; ctx.lineWidth = 2;
       ctx.beginPath();
       let started = false;
       for (let i = 0; i < kelly.fs.length; i++) {
@@ -185,9 +195,9 @@ export default function SolverWidget() {
       ctx.stroke();
 
       // f* marker + label
-      ctx.fillStyle = css.accent;
+      ctx.fillStyle = css.amber;
       ctx.beginPath(); ctx.arc(X(kelly.fStar), Y(kelly.gStar), 4, 0, Math.PI * 2); ctx.fill();
-      ctx.font = "10px var(--font-plex-mono), monospace"; ctx.fillStyle = css.ink2;
+      ctx.font = "10px var(--font-jb), monospace"; ctx.fillStyle = css.ink2;
       ctx.fillText(`f* ${(kelly.fStar * 100).toFixed(1)}%`, Math.min(X(kelly.fStar) + 8, w - 70), Y(kelly.gStar) - 6);
 
       // current f — hollow ring
@@ -210,7 +220,7 @@ export default function SolverWidget() {
     set: (v: number) => void,
     fmt: (v: number) => string,
   ) => (
-    <label className="flex items-center gap-3 font-mono text-[12px] text-ink-2">
+    <label className="flex min-w-0 items-center gap-3 font-mono text-[12px] text-ink-2">
       <span className="w-24 shrink-0">{label}</span>
       <input
         type="range"
@@ -219,7 +229,7 @@ export default function SolverWidget() {
         step={step}
         value={value}
         onChange={(e) => set(Number(e.target.value))}
-        className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-line accent-[var(--accent)]"
+        className="h-1 w-full min-w-0 flex-1 cursor-pointer appearance-none rounded-full bg-rule accent-[var(--amber)]"
       />
       <span className="w-14 shrink-0 text-right tabular-nums text-ink">{fmt(value)}</span>
     </label>
@@ -228,7 +238,7 @@ export default function SolverWidget() {
   const pct = (v: number) => `${(v * 100).toFixed(0)}%`;
 
   return (
-    <div className="mt-6 rounded-lg border border-line bg-surface p-5">
+    <div className="mt-6 rounded-lg border border-rule bg-panel p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <span className="font-mono text-[12px] uppercase tracking-[0.15em] text-ink-3">
           solver · interactive
@@ -241,14 +251,14 @@ export default function SolverWidget() {
       {/* live formula — the console's signature element */}
       <p className="mt-3 overflow-x-auto whitespace-nowrap font-mono text-[12.5px] text-ink-2">
         EV = {p.winRatio.toFixed(2)}·(1−{p.sellRatio.toFixed(2)})·{p.avgWin.toFixed(2)} + {(1 - p.winRatio).toFixed(2)}·(1−{p.sellRatio.toFixed(2)})·({p.avgLoss.toFixed(0)}) + {p.sellRatio.toFixed(2)}·{p.avgSell.toFixed(2)} ={" "}
-        <span style={{ color: ev >= 0 ? "var(--ok)" : "var(--danger)" }} className="font-semibold">
+        <span style={{ color: ev >= 0 ? "var(--phosphor)" : "var(--alert)" }} className="font-semibold">
           {ev >= 0 ? "+" : ""}{ev.toFixed(4)}
         </span>{" "}
         per wager
       </p>
 
-      <div className="mt-5 grid gap-6 lg:grid-cols-[260px_1fr]">
-        <div className="flex flex-col gap-3">
+      <div className="mt-5 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,268px)_minmax(0,1fr)]">
+        <div className="flex min-w-0 flex-col gap-3">
           {slider("win ratio W", p.winRatio, 0.4, 0.95, 0.01, (v) => setP({ ...p, winRatio: v }), pct)}
           {slider("payoff P", p.avgWin, 0.02, 0.5, 0.01, (v) => setP({ ...p, avgWin: v }), (v) => v.toFixed(2))}
           {slider("sell ratio S", p.sellRatio, 0, 0.95, 0.01, (v) => setP({ ...p, sellRatio: v }), pct)}
@@ -257,19 +267,19 @@ export default function SolverWidget() {
           <div className="mt-1 flex items-center gap-3">
             <button
               onClick={() => setF(Math.max(0.01, Math.min(kelly.fStar, 0.99)))}
-              className="rounded border border-line px-2.5 py-1 font-mono text-[11.5px] text-ink-2 transition-colors hover:border-accent hover:text-ink"
+              className="rounded border border-rule px-2.5 py-1 font-mono text-[11.5px] text-ink-2 transition-colors hover:border-amber hover:text-ink"
             >
               use f*
             </button>
             <button
               onClick={() => { setP(CANVAS_DEFAULTS); setF(SIM_DEFAULTS.wagerFraction); }}
-              className="rounded border border-line px-2.5 py-1 font-mono text-[11.5px] text-ink-2 transition-colors hover:border-accent hover:text-ink"
+              className="rounded border border-rule px-2.5 py-1 font-mono text-[11.5px] text-ink-2 transition-colors hover:border-amber hover:text-ink"
             >
               reset
             </button>
             <span className="ml-auto font-mono text-[11.5px] text-ink-3">
               median final{" "}
-              <span className="text-ink" style={{ color: medianFinal >= SIM.startingCapital ? "var(--ok)" : "var(--danger)" }}>
+              <span className="text-ink" style={{ color: medianFinal >= SIM.startingCapital ? "var(--phosphor)" : "var(--alert)" }}>
                 {fmtMoney(medianFinal)}
               </span>
             </span>
@@ -281,12 +291,18 @@ export default function SolverWidget() {
         </div>
 
         <div className="flex min-w-0 flex-col gap-2">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4 font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink-3">
+            <span>equity · {SIM.numTrades} trades · ${(SIM.startingCapital / 1000).toFixed(0)}k start</span>
+            <span className="normal-case tracking-normal">
+              p10 {fmtMoney(range.lo)} — p90 {fmtMoney(range.hi)}
+            </span>
+          </div>
           <canvas
             ref={fanRef}
             className="h-52 w-full cursor-crosshair"
             onPointerMove={(e) => {
               const r = e.currentTarget.getBoundingClientRect();
-              const frac = (e.clientX - r.left - 46) / (r.width - 86);
+              const frac = (e.clientX - r.left - 8) / (r.width - 48);
               setHover(Math.round(Math.min(Math.max(frac, 0), 1) * SIM.numTrades));
             }}
             onPointerLeave={() => setHover(null)}
@@ -302,7 +318,7 @@ export default function SolverWidget() {
         </div>
       </div>
 
-      <p className="mt-4 border-t border-line pt-3 text-[11.5px] leading-relaxed text-ink-3">
+      <p className="mt-4 border-t border-rule pt-3 text-[11.5px] leading-relaxed text-ink-3">
         This is the console&apos;s actual solver module — closed-form EV, Kelly
         log-growth with ruin detection, mulberry32-seeded Monte Carlo — ported
         unmodified and verified bit-identical against the platform&apos;s test

@@ -14,7 +14,7 @@ function draw(
   w: number,
   h: number,
   t: number,
-  css: { ink3: string; accent: string },
+  css: { ink3: string; amber: string },
 ) {
   ctx.clearRect(0, 0, w, h);
   const gx = w / (COLS + 1);
@@ -35,7 +35,7 @@ function draw(
 
   // the flow — one line, zero friction
   ctx.globalAlpha = 0.85;
-  ctx.strokeStyle = css.accent;
+  ctx.strokeStyle = css.amber;
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   for (let x = 0; x <= w; x += 4) {
@@ -63,7 +63,7 @@ export default function LatticeCanvas() {
     const styles = getComputedStyle(document.documentElement);
     const css = {
       ink3: styles.getPropertyValue("--ink-3").trim() || "#5c6470",
-      accent: styles.getPropertyValue("--accent").trim() || "#3d6bff",
+      amber: styles.getPropertyValue("--amber").trim() || "#ffb000",
     };
 
     let raf = 0;

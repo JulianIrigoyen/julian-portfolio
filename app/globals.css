@@ -1,96 +1,124 @@
 @import "tailwindcss";
 
 /* ————————————————————————————————————————————————
-   graphite & porcelain — extended from the Supersolid
-   trading console design system. Cold graphite ground,
-   porcelain ink, cobalt accent. Green is reserved for
-   status dots only.
+   INSTRUMENT — the portfolio is the console.
+   Warm instrument housing, amber signal, phosphor
+   green for live state. Colour encodes state only:
+   nothing is coloured for decoration.
    ———————————————————————————————————————————————— */
 :root {
-  --bg: #101216;
-  --surface: #171a20;
-  --surface-2: #1d2129;
-  --ink: #e8eaed;
-  --ink-2: #9ba3af;
-  --ink-3: #5c6470;
-  --line: #262b33;
-  --accent: #3d6bff;
-  --accent-soft: #3d6bff26;
-  --ok: #34c77b;
-  --danger: #e5534b;
+  --housing: #0d0c0a;
+  --panel: #141310;
+  --panel-2: #1c1a15;
+  --rule: #2a2721;
+  --rule-bright: #3a362d;
+  --ink: #f2eee5;
+  --ink-2: #a19a8b;
+  --ink-3: #6d675c;
+  --amber: #ffb000;
+  --amber-dim: #ffb0001f;
+  --phosphor: #46d67f;
+  --phosphor-dim: #46d67f1f;
+  --alert: #ff5f4d;
 }
 
 @theme inline {
-  --color-bg: var(--bg);
-  --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
+  --color-housing: var(--housing);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-rule: var(--rule);
+  --color-rule-bright: var(--rule-bright);
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
   --color-ink-3: var(--ink-3);
-  --color-line: var(--line);
-  --color-accent: var(--accent);
-  --color-accent-soft: var(--accent-soft);
-  --color-ok: var(--ok);
-  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, "SF Mono", monospace;
-}
-
-html {
-  scroll-behavior: smooth;
+  --color-amber: var(--amber);
+  --color-amber-dim: var(--amber-dim);
+  --color-phosphor: var(--phosphor);
+  --color-alert: var(--alert);
+  --font-mono: var(--font-jb), ui-monospace, "SF Mono", monospace;
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
-  background: var(--bg);
+  background: var(--housing);
   color: var(--ink);
-  font-family: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   font-size: 15px;
-  line-height: 1.6;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background: var(--accent-soft);
-  color: var(--ink);
+  background: var(--amber);
+  color: var(--housing);
 }
 
-/* status dot — the only green on the page */
+/* instrument label — tiny, tracked out, the workhorse */
+.lbl {
+  font-family: var(--font-jb), monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* readout — big tabular numbers */
+.readout {
+  font-family: var(--font-jb), monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
 .dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 9999px;
-  background: var(--ok);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 18%, transparent);
+  flex-shrink: 0;
 }
-.dot--accent {
-  background: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
-}
+.dot--live { background: var(--phosphor); }
+.dot--idle { background: var(--amber); }
+.dot--off  { background: var(--ink-3); }
+
 @media (prefers-reduced-motion: no-preference) {
-  .dot--live {
-    animation: dot-breathe 3.2s ease-in-out infinite;
-  }
+  .dot--live { animation: pulse 3s ease-in-out infinite; }
 }
-@keyframes dot-breathe {
-  0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 18%, transparent); }
-  50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--ok) 8%, transparent); }
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--phosphor-dim); }
+  50%      { box-shadow: 0 0 0 4px transparent; }
 }
 
-/* process rows boot in sequence on load */
+/* pane enter */
 @media (prefers-reduced-motion: no-preference) {
-  .boot {
-    opacity: 0;
-    transform: translateY(6px);
-    animation: boot-up 0.45s cubic-bezier(0.2, 0.6, 0.2, 1) forwards;
-    animation-delay: calc(var(--boot-i, 0) * 90ms + 250ms);
+  .pane-in {
+    animation: pane-in 0.28s cubic-bezier(0.2, 0.6, 0.2, 1);
   }
 }
-@keyframes boot-up {
-  to { opacity: 1; transform: translateY(0); }
+@keyframes pane-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* tape marquee */
+@media (prefers-reduced-motion: no-preference) {
+  .marquee { animation: marquee 48s linear infinite; }
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* thin scrollbars inside the stage */
+.stage::-webkit-scrollbar { width: 10px; }
+.stage::-webkit-scrollbar-track { background: transparent; }
+.stage::-webkit-scrollbar-thumb {
+  background: var(--rule);
+  border: 3px solid var(--housing);
+  border-radius: 9999px;
 }
 
 a:focus-visible,
-button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 2px;
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
 }
