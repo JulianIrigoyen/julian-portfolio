@@ -313,19 +313,28 @@ export default function Timeline() {
               <span className="jx-lbl" data-sc-cue="0 0.74 0">
                 Backend <b>·</b> Full-stack <b>·</b> DevOps <b>·</b> Agentive AI
               </span>
-              {/* The kinetic stagger plays across the cue's ramp-in, not across
-                  the act. With rampIn at 0 the window collapses, vis snaps to 1
-                  on the first frame, and all twenty characters land together —
-                  the split runs but nothing reads as typed. A 0.40 ramp spends
-                  the first ~30% of the scrub laying the line down character by
-                  character, finishing just as the bio below starts its own cue. */}
+              {/* The line types itself in on load, not across the scroll.
+                  Driving the character stagger off the cue window (data-sc-kinetic
+                  with a ramp) meant the h1 sat at opacity 0 until the reader
+                  scrolled — so the landing screen carried no headline at all,
+                  which is the one thing the greet form has to do. The cue is back
+                  to its original window and only carries the hold, the rise and
+                  the exit; the characters arrive from CSS the moment the page
+                  paints. */}
               <h1
-                className="sc-display sc-display--xl jx-code-title"
-                data-sc-cue="0 0.74 0.40 0.15"
-                data-sc-kinetic="chars"
+                className="sc-display sc-display--xl jx-code-title jx-type"
+                data-sc-cue="0 0.74 0"
                 style={{ marginTop: "0.9rem" }}
               >
-                I love a good challenge.
+                {"I love a good challenge.".split("").map((ch, i) => (
+                  <span
+                    key={i}
+                    className="jx-type__c"
+                    style={{ "--i": i } as React.CSSProperties}
+                  >
+                    {ch === " " ? "\u00A0" : ch}
+                  </span>
+                ))}
               </h1>
 
               <div

@@ -517,3 +517,33 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
   .jx-card--lead .jx-card__name,
   .jx-card__name { font-size: 1.25rem; }
 }
+
+/* ── the greet line types itself in ───────────────────────────────────────
+   Character-by-character, on load. This deliberately does NOT hang off the
+   scroll: the engine's data-sc-kinetic staggers across a cue's ramp-in, which
+   means the element sits at opacity 0 until the reader scrolls. On the landing
+   screen that reads as a broken page — the greet form has to carry the headline
+   the moment it paints. The cue still owns the hold, the rise and the exit, so
+   the line keeps moving with the scrub behind it. */
+.jx-page .jx-type__c {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(0, 0.42em, 0);
+  animation: jx-type-in 0.44s var(--sc-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+  animation-delay: calc(var(--i) * 34ms);
+  /* descender room: the masks the engine used to add are gone with the split */
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+@keyframes jx-type-in {
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jx-page .jx-type__c {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
