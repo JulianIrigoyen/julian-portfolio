@@ -15,8 +15,35 @@ export default function Career() {
     <div className="pane-in px-5 py-10 sm:px-8">
       <span className="lbl">career</span>
       <h2 className="readout mt-4 max-w-3xl text-[24px] font-bold leading-[1.12] tracking-[-0.02em] sm:text-[34px]">
-        Seven years of distributed systems, mostly for US and UK teams
+        Eight years of distributed systems, mostly for US and UK teams
       </h2>
+
+      <div className="mt-5 grid max-w-3xl gap-3 text-[14px] leading-relaxed text-ink-2">
+        <p>
+          I&apos;m a 30-year-old engineer from Argentina. I&apos;ve spent the
+          last eight years building applications for a wide variety of
+          companies: large consulting firms, software factories, small startups
+          and well established product companies.
+        </p>
+        <p>
+          Mostly backend — Java and C# on the object-oriented side, Scala and
+          Rust on the more functional one. I&apos;ve refactored large monolithic
+          applications into microservice-oriented systems and built full-stack
+          web applications from scratch. In the same work I designed and built
+          the testing frameworks around them, covering unit, integration and
+          load tests across a myriad of cases.
+        </p>
+        <p>
+          I&apos;ve also worked professionally as a full-stack developer acting
+          as product owner: working with clients to define requirements, then
+          implementing them from design through to production. Agile, to some
+          extent, in most of what I do now.
+        </p>
+        <p>
+          I&apos;m heavily involved in the fintech space, with past and ongoing
+          projects in Web3 and blockchain — Solidity and Solana.
+        </p>
+      </div>
 
       <ol className="mt-9">
         {CAREER.map((r) => (

@@ -1,5 +1,5 @@
-import Console from "./console/Console";
+import Timeline from "./scroll/Timeline";
 
 export default function Home() {
-  return <Console />;
+  return <Timeline />;
 }

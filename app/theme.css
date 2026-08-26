@@ -1,0 +1,519 @@
+/* ————————————————————————————————————————————————
+   LEDGER — Julian Irigoyen.
+
+   Deliberately NOT the Supersolid theme. That one is dark, VHS, saturated
+   red, Anton, always-uppercase. This one inverts every one of those axes:
+   paper ground, sentence case, a neutral grotesk, hairline structure, one
+   cold accent, no texture at all.
+
+   The engine (scrollcraft.css) is never edited. This file overrides its six
+   colour roles and two families, and adds page-owned `jx-` classes.
+
+   SCOPING MATTERS. This stylesheet is imported in the shared root layout, so
+   an unscoped `:root` block leaks into /console — whose dark theme in
+   globals.css uses the same token names (--ink, --ink-2, --ink-3, --rule).
+   Unscoped, it turned the console's text near-invisible. Everything here is
+   therefore scoped to `.jx-page`, which only the scroll route carries.
+   ———————————————————————————————————————————————— */
+
+/* Font alias only, deliberately UNSCOPED: globals.css (the console's
+   stylesheet) still asks for --font-jb, and the layout exposes its mono face
+   as --font-code. Without this the console silently loses its mono readouts,
+   because the scoped block below is invisible to /console.
+   It is a pointer, not a colour, so it cannot collide. */
+:root { --font-jb: var(--font-code); }
+
+body:has(.jx-page),
+.jx-page {
+  --paper:    #f4f3f0;
+  --paper-2:  #eceae5;
+  --card:     #ffffff;
+  --ink:      #14171b;
+  --ink-2:    #565b63;
+  --ink-3:    #63686f;   /* 5.06:1 on paper — #8b9098 measured 2.89:1 and failed the harness */
+  --rule:     #dcd8d1;
+  --rule-2:   #c4bfb6;
+  --accent:   #1f4fd8;
+  --accent-2: #0a6b49;   /* 5.89:1 on paper — #0e8a5f measured 3.93:1 */
+
+  /* the engine's six roles */
+  --sc-canvas:     var(--paper);
+  --sc-surface:    var(--card);
+  --sc-ink:        var(--ink);
+  --sc-ink-soft:   var(--ink-2);
+  --sc-accent:     var(--accent);
+  --sc-accent-ink: #ffffff;
+  --sc-hairline:        var(--rule);
+  --sc-hairline-strong: var(--rule-2);
+
+  /* two families. Sentence case, not caps. */
+  --sc-font-display: var(--font-archivo), system-ui, sans-serif;
+  --sc-font-text:    var(--font-archivo), system-ui, sans-serif;
+  --sc-font-mono:    var(--font-code), ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+
+  /* keep /console alive: globals.css still asks for --font-jb */
+  --font-jb: var(--font-code);
+
+  --sc-t-2xl: clamp(1.7rem, 3.2vw, 2.6rem);
+  --sc-t-3xl: clamp(2.0rem, 4.4vw, 3.4rem);
+  --sc-t-4xl: clamp(2.2rem, 5.4vw, 4.1rem);
+}
+
+body:has(.jx-page) { background: var(--paper); color: var(--ink); }
+
+.sc-display {
+  font-family: var(--sc-font-display);
+  font-weight: 700;
+  letter-spacing: -0.032em;
+  line-height: 1.04;
+  text-transform: none;
+  text-wrap: balance;
+}
+.sc-display--xl { letter-spacing: -0.038em; line-height: 1.02; }
+
+.sc-body, .sc-lede { color: var(--ink-2); }
+
+/* ——— the signature move: the page runs its own suite ———
+   He designs testing frameworks — unit, integration, load — so the page is
+   built as one. Every section is an assertion. It sits at `· · ·` until you
+   reach it, then resolves to PASS, and the header keeps a running count of
+   how many have actually resolved. The count is real: it counts sections. */
+.jx-assert {
+  font-family: var(--sc-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--rule);
+  padding: 4px 9px;
+  background: var(--card);
+}
+.jx-assert::before {
+  content: "";
+  width: 6px; height: 6px;
+  background: var(--rule-2);
+  border-radius: 50%;
+  transition: background 420ms ease;
+}
+.jx-assert[data-state="pass"] { color: var(--accent-2); border-color: color-mix(in oklab, var(--accent-2) 34%, var(--rule)); }
+.jx-assert[data-state="pass"]::before { background: var(--accent-2); }
+
+/* ——— fixed chrome: a thin runner bar, not a nav ——— */
+.jx-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px clamp(16px, 4vw, 40px);
+  background: color-mix(in oklab, var(--paper) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--sc-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.jx-bar__name { color: var(--ink); font-weight: 500; }
+.jx-bar__count { margin-left: auto; color: var(--accent-2); font-variant-numeric: tabular-nums; }
+.jx-bar__track { position: absolute; left: 0; bottom: -1px; height: 2px; background: var(--accent); width: calc(var(--jx-p, 0) * 100%); }
+
+/* ——— labels ——— */
+.jx-lbl {
+  font-family: var(--sc-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.jx-lbl b { color: var(--accent); font-weight: 500; }
+
+.jx-rule { height: 1px; background: var(--rule); border: 0; margin: 0; }
+
+/* ——— the work rail ———
+   Centre the whole rail in its stage. Without this the cards sit at the top
+   of a 100vh pinned stage and leave a third of a screen of dead paper. */
+[data-sc-act="pan"] [data-sc-stage] { display: flex; align-items: center; }
+
+.jx-rail { display: flex; align-items: stretch; gap: clamp(16px, 2.4vw, 34px); padding-inline: clamp(16px, 4vw, 40px); }
+.jx-rail__lead { flex: none; width: clamp(17rem, 27vw, 25rem); display: flex; flex-direction: column; justify-content: center; }
+.jx-card {
+  flex: none;
+  width: clamp(19rem, 36vw, 30rem);
+  background: var(--card);
+  border: 1px solid var(--rule);
+  display: flex; flex-direction: column;
+}
+.jx-card__shot { display: block; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid var(--rule); background: var(--paper-2); }
+.jx-card__shot img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+.jx-card__body { padding: clamp(15px, 1.8vw, 24px); }
+.jx-card__name { font-size: clamp(1.15rem, 1.9vw, 1.5rem); font-weight: 700; letter-spacing: -0.02em; margin: 9px 0 0; color: var(--ink); }
+.jx-card__line { color: var(--ink-2); font-size: 0.92rem; line-height: 1.58; margin: 9px 0 0; max-width: 44ch; }
+.jx-go {
+  font-family: var(--sc-font-mono);
+  font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--accent); text-decoration: none; margin-top: 14px; display: inline-block;
+  border-bottom: 1px solid color-mix(in oklab, var(--accent) 34%, transparent);
+}
+
+/* ——— the two cards worth clicking first. A lead card is wider, carries a
+   flag above the line and closes on a filled call rather than a hairline
+   one, so the eye lands on it before it reads the rail left to right. ——— */
+.jx-card--lead {
+  width: clamp(21rem, 42vw, 35rem);
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--rule));
+  box-shadow: 0 1px 0 color-mix(in oklab, var(--accent) 16%, transparent);
+}
+.jx-card--lead .jx-card__shot { aspect-ratio: 16 / 9; }
+.jx-card--lead .jx-card__name { font-size: clamp(1.3rem, 2.2vw, 1.75rem); }
+
+.jx-flag {
+  display: inline-flex; align-items: center; gap: 0.6ch;
+  font-family: var(--sc-font-mono);
+  font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--accent); margin-top: 8px;
+}
+.jx-flag::before {
+  content: ""; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent);
+}
+
+.jx-go--lead {
+  background: var(--accent); color: var(--paper);
+  padding: 10px 15px; border-bottom: 0; margin-top: 16px;
+}
+.jx-go--lead:hover { background: color-mix(in oklab, var(--accent) 84%, var(--ink)); }
+
+/* No URL to send anyone to, so the call is stated and greyed, never a
+   dead link dressed up as a live one. */
+.jx-go--mute {
+  color: var(--ink-3); border-bottom: 1px solid var(--rule); cursor: default;
+}
+
+/* The one live-rail card with nothing to photograph: no shot, so the body
+   carries the whole card and the type has room to do the arguing. */
+.jx-card--type { width: clamp(19rem, 30vw, 26rem); }
+
+/* ——— the lab grid ——— */
+.jx-lab { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); grid-template-columns: repeat(2, minmax(0,1fr)); }
+@media (max-width: 52rem) { .jx-lab { grid-template-columns: 1fr; } }
+.jx-lab__cell { background: var(--paper); padding: clamp(18px, 2.2vw, 30px); }
+.jx-lab__name { font-size: clamp(1.1rem, 1.8vw, 1.4rem); font-weight: 700; letter-spacing: -0.02em; margin: 9px 0 0; }
+.jx-lab__line { color: var(--ink-2); font-size: 0.9rem; line-height: 1.58; margin: 9px 0 0; max-width: 46ch; }
+.jx-meta { font-family: var(--sc-font-mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); margin-top: 14px; display: block; }
+.jx-meta b { color: var(--accent); font-weight: 500; }
+
+/* ——— career: a ledger ——— */
+.jx-row { display: grid; gap: 3px; padding: 15px 0; border-top: 1px solid var(--rule); }
+.jx-row__top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
+.jx-row__yr { font-family: var(--sc-font-mono); font-size: 10.5px; letter-spacing: 0.14em; color: var(--ink-3); min-width: 8rem; }
+.jx-row__co { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.015em; color: var(--ink); }
+.jx-row__rl { font-family: var(--sc-font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.jx-row__nt { color: var(--ink-2); font-size: 0.9rem; line-height: 1.58; max-width: 74ch; }
+
+/* ——— buttons ——— */
+.jx-btn {
+  font-family: var(--sc-font-mono);
+  font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase;
+  padding: 14px 24px; text-decoration: none; display: inline-block;
+  border: 1px solid var(--rule-2); color: var(--ink);
+}
+.jx-btn--solid { background: var(--ink); color: var(--paper); border-color: var(--ink); font-weight: 500; }
+.jx-btn--solid:hover { background: var(--accent); border-color: var(--accent); }
+.jx-btn:hover { border-color: var(--accent); color: var(--accent); }
+.jx-btn--solid:hover { color: #fff; }
+
+/* square, like a ledger — scoped, or it flattens the console's rounded chrome */
+.jx-page * { border-radius: 0; }
+.jx-page .jx-assert::before { border-radius: 50%; }
+
+/* the hero copy clears the fixed runner bar */
+.sc-copy--lead { padding-top: 4.5rem; }
+@media (max-width: 860px) { .sc-copy--center { translate: 0 -50%; } }
+
+/* ——— mobile: the lab stops pinning ———
+   Stacked at 390px the 2x2 grid measures 1209px inside an 844px stage, so
+   477px of it is simply unreachable — the engine clips the stage and there is
+   no way to scroll inside it. Below 52rem the act becomes an ordinary
+   flowing section and the reveal clips are dropped, so every cell is
+   readable. Measured, not guessed. */
+@media (max-width: 52rem) {
+  .jx-lab-act { height: auto !important; }
+  .jx-lab-act [data-sc-stage] {
+    position: static;
+    height: auto;
+    overflow: visible;
+    padding-block: clamp(3rem, 9vw, 5rem);
+  }
+  .jx-lab-act .jx-lab__cell { clip-path: none !important; }
+  .jx-lab-act .sc-copy { position: static; inset: auto; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   THE OPEN — a dark, full-bleed scrub of the Supersolid reveal.
+
+   The page is paper everywhere else. This one act is near-black
+   because the render is, and the hard cut out of it into paper
+   is deliberate: taste.md documents the light/dark cut as the
+   one sanctioned escape from a single ground. It is also the
+   page's only piece of spectacle. Everything after it is quiet.
+   ════════════════════════════════════════════════════════════ */
+.jx-open { background: #0a0a0b; }
+.jx-open [data-sc-stage] { background: #0a0a0b; }
+
+/* the scrim: density under the copy corner only, never a flat wash */
+/* The reveal ends on a wide gold wordmark that passes straight under the
+   copy corner, so the first scrim measured 1.72:1 on the body. Density is
+   pointed at the copy, not spread as a flat wash, and a second tighter band
+   sits under the lower-left block where the lockup actually travels. */
+.jx-open .sc-scrim {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(to top right,
+      rgba(5,5,6,0.985) 0%,
+      rgba(5,5,6,0.94)  22%,
+      rgba(5,5,6,0.70)  42%,
+      rgba(5,5,6,0.24)  62%,
+      transparent 80%),
+    linear-gradient(to top,
+      rgba(5,5,6,0.92) 0%,
+      rgba(5,5,6,0.62) 26%,
+      rgba(5,5,6,0.18) 48%,
+      transparent 64%);
+}
+.jx-open .sc-display { color: #faf8f5; }
+.jx-open .sc-body    { color: #faf8f5; }
+.jx-open .jx-lbl     { color: rgba(250,248,245,0.82); }
+.jx-open .jx-lbl b   { color: #c9a961; }
+
+.jx-code-title {
+  max-width: min(24ch, 100%);
+  font-family: var(--sc-font-mono);
+  font-size: clamp(2.05rem, 3.9vw, 3.05rem);
+  font-weight: 700;
+  line-height: 1.13;
+  letter-spacing: -0.012em;
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-feature-settings: "calt" 1, "zero" 1;
+  text-wrap: balance;
+}
+
+.jx-code-title .sc-split {
+  padding-bottom: 0.08em;
+}
+
+/* a hairline that only exists on the dark act */
+.jx-openrule { width: 34px; height: 1px; background: #c9a961; display: block; }
+
+/* ——— editorial refinements ——— */
+
+/* an index, set like a table of contents with real leaders */
+.jx-index { display: grid; gap: 0; margin-top: 1.6rem; max-width: 34rem; }
+.jx-index__row {
+  display: flex; align-items: baseline; gap: 10px;
+  padding: 9px 0; border-top: 1px solid var(--rule);
+  font-family: var(--sc-font-mono); font-size: 10.5px;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3);
+}
+.jx-index__row:last-child { border-bottom: 1px solid var(--rule); }
+.jx-index__n { color: var(--ink-3); }
+.jx-index__t { color: var(--ink); }
+.jx-index__lead { flex: 1; border-bottom: 1px dotted var(--rule-2); translate: 0 -3px; }
+.jx-index__s { color: var(--accent); }
+
+/* section headers get consistent air and a hung label */
+.jx-head { display: grid; gap: 0.7rem; }
+.jx-head h2 { margin: 0; }
+
+/* the record ledger reads better with a hung year column at width */
+@media (min-width: 62rem) {
+  .jx-row { grid-template-columns: 9rem minmax(0, 1fr); gap: 0 2rem; }
+  .jx-row__top { grid-column: 2; }
+  .jx-row__nt { grid-column: 2; }
+  .jx-row__yr { grid-row: 1 / span 2; grid-column: 1; min-width: 0; padding-top: 0.2rem; }
+  .jx-row__top { padding-left: 0; }
+}
+
+/* ——— mobile open: a square render, and more density ———
+   The 16:9 desktop clip cover-cropped into a 390x844 portrait shows only the
+   bright centre of the frame, so the copy landed directly on the lit rosette
+   and measured 2.04:1. The mobile source is the square 1080x1080 render, and
+   the scrim carries more weight because a portrait crop leaves the copy far
+   less dark ground to sit on. */
+@media (max-width: 860px) {
+  .jx-open .sc-scrim {
+    background:
+      linear-gradient(to top,
+        rgba(4,4,5,0.975) 0%,
+        rgba(4,4,5,0.93)  30%,
+        rgba(4,4,5,0.70)  52%,
+        rgba(4,4,5,0.34)  72%,
+        rgba(4,4,5,0.12)  88%);
+  }
+}
+
+/* ——— the portrait ———
+   Hung in the same narrow left column the record ledger uses, so the page
+   has one consistent editorial grid: a meta column and a text column. Kept
+   small and square on purpose — the scrub open is the page's only spectacle,
+   and a full-bleed face would compete with it. */
+.jx-about { display: grid; gap: 1.6rem; }
+@media (min-width: 62rem) {
+  .jx-about { grid-template-columns: 14rem minmax(0, 1fr); gap: 0 3rem; align-items: start; }
+}
+.jx-portrait {
+  display: block;
+  width: clamp(7rem, 26vw, 14rem);
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 1px solid var(--rule);
+  filter: saturate(0.94) contrast(1.02);
+  background: var(--paper-2);
+}
+.jx-portrait__cap {
+  font-family: var(--sc-font-mono);
+  font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink-3); margin-top: 0.7rem; display: block;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   THE RAIL, second pass — "being built, or running, as you
+   read this."
+
+   The headline makes a claim about *now*, so the card has to
+   carry the evidence rather than the copy asserting it. Every
+   card opens with an address strip: its number, a state dot,
+   and the real address or the real reason there isn't one.
+   The dot is the only animated thing on the paper half of the
+   page, and it only pulses on the ones that are actually up.
+   ════════════════════════════════════════════════════════════ */
+
+.jx-card {
+  transition: border-color 260ms ease, box-shadow 260ms ease;
+}
+.jx-card:hover { border-color: var(--rule-2); }
+.jx-card--lead:hover { border-color: var(--accent); }
+
+/* ——— the address strip ——— */
+.jx-card__addr {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px clamp(15px, 1.8vw, 24px);
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper-2);
+  font-family: var(--sc-font-mono);
+  font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+.jx-card__n  { color: var(--ink-3); }
+.jx-card__st { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; }
+
+/* Nothing to photograph, so the frame is stated instead of borrowed. Same
+   box, same rhythm, and it says why it is empty. */
+.jx-card__shot--none {
+  display: grid; place-items: center;
+  background: var(--paper-2);
+  font-family: var(--sc-font-mono);
+  font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--ink-3);
+  text-align: center; padding: 0 1.5rem;
+}
+.jx-card__shot--none span { position: relative; display: block; padding-bottom: 14px; }
+.jx-card__shot--none span::after {
+  content: ""; position: absolute; left: 50%; bottom: 0;
+  width: 22px; height: 1px; background: var(--rule-2); translate: -50% 0;
+}
+
+.jx-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--rule-2); flex: none; display: inline-block; }
+.jx-dot--live    { background: var(--accent-2); animation: jx-pulse 2.8s cubic-bezier(.2,.7,.2,1) infinite; }
+.jx-dot--private { background: var(--accent); }
+.jx-dot--build   { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink-3); }
+
+@keyframes jx-pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent-2) 42%, transparent); }
+  62%  { box-shadow: 0 0 0 7px color-mix(in oklab, var(--accent-2) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent-2) 0%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) { .jx-dot--live { animation: none; } }
+
+/* ——— the body: name, trade, hairline, then the sentence ——— */
+.jx-card__kick {
+  display: block; margin-top: 7px;
+  font-family: var(--sc-font-mono);
+  font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+.jx-card__hr { display: block; width: 24px; height: 1px; background: var(--rule-2); margin-top: 15px; }
+.jx-card--lead .jx-card__hr { background: var(--accent); width: 30px; }
+.jx-card__name { margin-top: 0; }
+.jx-card__line { margin-top: 13px; }
+
+/* the screenshot breathes a little on hover — the only motion the card has */
+.jx-card__shot img { transition: transform 700ms cubic-bezier(.2,.7,.2,1); }
+.jx-card:hover .jx-card__shot img { transform: scale(1.03); }
+
+/* ——— the legend. Three dots and three words, so "private" and
+   "in build" are stated up front instead of discovered as a
+   disappointment two cards in. ——— */
+.jx-legend {
+  display: flex; flex-wrap: wrap; gap: 7px 18px; margin-top: 1.2rem;
+  font-family: var(--sc-font-mono);
+  font-size: 9.5px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+.jx-legend span { display: inline-flex; align-items: center; gap: 8px; }
+
+/* ——— the divider panel. A hung rule mid-rail: everything after it is
+   finished client work, and saying so keeps the six in front honest. ——— */
+.jx-rail__div {
+  flex: none;
+  width: clamp(10rem, 14vw, 13rem);
+  display: flex; flex-direction: column; justify-content: center;
+  border-left: 1px solid var(--rule-2);
+  padding-left: clamp(14px, 1.7vw, 24px);
+}
+.jx-rail__div p {
+  margin: 0.8rem 0 0;
+  color: var(--ink-3);
+  font-size: 0.82rem; line-height: 1.6;
+}
+
+/* ——— inline links in the bio ——— */
+.jx-link {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 1px;
+}
+.jx-link:hover { color: var(--accent); }
+
+
+/* The body runs as a column so the tail — tech line and call — lands on one
+   baseline across the rail. Cards stretch to a common height either way; this
+   just decides where the slack goes. */
+.jx-card__body { display: flex; flex-direction: column; align-items: flex-start; height: 100%; }
+.jx-card__foot { margin-top: auto; padding-top: 18px; }
+.jx-card__foot .jx-meta { margin-top: 0; margin-bottom: 4px; }
+.jx-card__foot .jx-go { margin-top: 10px; }
+.jx-go--mute { border-bottom: 0; }
+
+/* ——— mobile rail: one card at a time ———
+   At 390px the desktop widths put two half-cards on screen and neither one
+   reads. Below 52rem every panel becomes one card wide with a strip of the
+   next showing, so the pan still says "there is more to the right". */
+@media (max-width: 52rem) {
+  .jx-rail { gap: 14px; padding-inline: 16px; }
+  .jx-rail__lead,
+  .jx-card,
+  .jx-card--lead,
+  .jx-card--type { width: min(86vw, 23rem); }
+  .jx-rail__div { width: min(58vw, 15rem); }
+  .jx-rail__lead .sc-display { font-size: clamp(1.6rem, 8.4vw, 2.2rem); }
+  .jx-card--lead .jx-card__name,
+  .jx-card__name { font-size: 1.25rem; }
+}
