@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Julian Irigoyen — systems that stay in production",
     description:
-      "I love a good challenge. Backend, full-stack, DevOps, and agentive AI workflows out of Buenos Aires.",
+      "I love a good challenge. Backend, full-stack, DevOps, and agentic AI workflows out of Buenos Aires.",
     type: "website",
   },
 };

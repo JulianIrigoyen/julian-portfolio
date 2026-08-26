@@ -280,13 +280,19 @@ export default function Timeline() {
 
       <main>
         {/* ——— 01 · the open. scrub — the anchor device, spent on the
-              open exactly as devices.md says. The Supersolid mark draws
-              itself under the wheel, then resolves to the wordmark. ——— */}
+              open exactly as devices.md says. The mark assembles ring by
+                ring under the wheel, then the camera orbits so the lattice
+                reads as the 3D object it is. No wordmark: this is Julian's
+                page and the Supersolid lockup has no business on it.
+
+                span 7, up from 4.6 — the clip went 200 to 560 frames, and a
+                scrub maps scroll onto video time, so the old span would have
+                raced through 2.8x the footage over the same distance. ——— */}
         <section
           className="jx-act jx-open"
           data-sc-act="scrub"
-          data-sc-span="2.8"
-          data-sc-dwell="0.35"
+          data-sc-span="7"
+          data-sc-dwell="0.55"
         >
           <div data-sc-stage>
             {/* the poster holds the frame until a real video frame paints —
@@ -294,13 +300,13 @@ export default function Timeline() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="sc-stage__poster"
-              src="/reveal/supersolid-poster.jpg"
+              src="/reveal/mark-poster.jpg"
               alt=""
             />
             <video
               data-sc-scrub
-              data-sc-src="/reveal/supersolid.mp4"
-              data-sc-src-mobile="/reveal/supersolid-m.mp4"
+              data-sc-src="/reveal/mark.mp4"
+              data-sc-src-mobile="/reveal/mark-m.mp4"
               playsInline
               muted
             />
@@ -311,19 +317,22 @@ export default function Timeline() {
                   on every screen, so repeating it here said nothing twice. The
                   eyebrow now spends its line on the practice instead. */}
               <span className="jx-lbl" data-sc-cue="0 0.74 0">
-                Backend <b>·</b> Full-stack <b>·</b> DevOps <b>·</b> Agentive AI
+                Backend <b>·</b> Full-stack <b>·</b> DevOps <b>·</b> Agentic AI
               </span>
-              {/* The line types itself in on load, not across the scroll.
-                  Driving the character stagger off the cue window (data-sc-kinetic
-                  with a ramp) meant the h1 sat at opacity 0 until the reader
-                  scrolled — so the landing screen carried no headline at all,
-                  which is the one thing the greet form has to do. The cue is back
-                  to its original window and only carries the hold, the rise and
-                  the exit; the characters arrive from CSS the moment the page
-                  paints. */}
+              {/* The line writes itself in on load, not across the scroll.
+                  data-sc-kinetic staggers the characters over the cue's ramp-in,
+                  which leaves the h1 at opacity 0 until the reader scrolls — the
+                  landing screen then carries no headline, which is the one thing
+                  the greet form has to do. The characters come from CSS instead,
+                  slowly: they emerge out of blur over ~6s, so the line and the
+                  mark assembling behind it read as one arrival. The cue keeps
+                  the hold, the rise and the exit — and starts at 0 with no
+                  ramp-in for the same reason: a cue that opens at 0.04 holds the
+                  whole h1 at opacity 0 on the landing screen, characters or no
+                  characters. */}
               <h1
                 className="sc-display sc-display--xl jx-code-title jx-type"
-                data-sc-cue="0 0.74 0"
+                data-sc-cue="0 0.92 0 0.10"
                 style={{ marginTop: "0.9rem" }}
               >
                 {"I love a good challenge.".split("").map((ch, i) => (
@@ -338,7 +347,7 @@ export default function Timeline() {
               </h1>
 
               <div
-                data-sc-cue="0.30 1 0.16 0.10"
+                data-sc-cue="0.31 1 0.28 0.08"
                 style={{ marginTop: "1.6rem", maxWidth: "56ch" }}
               >
                 <span className="jx-openrule" />
@@ -355,7 +364,7 @@ export default function Timeline() {
                   engineering with Claude Code, Codex, and more. I&apos;ve
                   refactored large monolithic applications into
                   microservice-oriented systems, built full-stack web
-                  applications from scratch, and set up productive agentive
+                  applications from scratch, and set up productive agentic
                   workflows for large corporations and small businesses.
                 </p>
               </div>
@@ -388,9 +397,9 @@ export default function Timeline() {
 
               <div>
                 <div className="jx-head">
-                  <span className="jx-lbl">What follows</span>
+                  <span className="jx-lbl">Currently building</span>
                   <h2 className="sc-display sc-display--md" style={{ maxWidth: "24ch" }}>
-                    Thirteen things, eight of them one click away.
+                    Recent endeavors.
                   </h2>
                 </div>
 
@@ -422,8 +431,9 @@ export default function Timeline() {
                   I tackle problems methodically, and I make a point of relying
                   on my team to move faster. I&apos;m a big fan of failing fast,
                   of automated TDD and CI/CD pipelines, and of delivering small
-                  concrete iterations. Simple problems or complex ones —
-                  I&apos;m interested either way.
+                  concrete iterations. I&apos;m interested in simple and complex
+                  problems alike. A lot more so in the person and the idea behind
+                  each problem.
                 </p>
 
                 <div className="jx-index">

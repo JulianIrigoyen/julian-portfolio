@@ -110,17 +110,17 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
   align-items: center;
   gap: 16px;
   padding: 12px clamp(16px, 4vw, 40px);
-  background: color-mix(in oklab, var(--paper) 88%, transparent);
+  background: rgba(3, 3, 4, 0.96);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--rule);
+  border-bottom: 1px solid rgba(250, 248, 245, 0.12);
   font-family: var(--sc-font-mono);
   font-size: 10.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--ink-3);
+  color: rgba(250, 248, 245, 0.48);
 }
-.jx-bar__name { color: var(--ink); font-weight: 500; }
-.jx-bar__count { margin-left: auto; color: var(--accent-2); font-variant-numeric: tabular-nums; }
+.jx-bar__name { color: #faf8f5; font-weight: 500; }
+.jx-bar__count { margin-left: auto; color: #46d67f; font-variant-numeric: tabular-nums; }
 .jx-bar__track { position: absolute; left: 0; bottom: -1px; height: 2px; background: var(--accent); width: calc(var(--jx-p, 0) * 100%); }
 
 /* ——— labels ——— */
@@ -265,6 +265,19 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
    ════════════════════════════════════════════════════════════ */
 .jx-open { background: #0a0a0b; }
 .jx-open [data-sc-stage] { background: #0a0a0b; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .jx-open :is(.sc-stage__poster, video[data-sc-scrub]) {
+    animation: jx-open-float 9s ease-in-out infinite alternate;
+    transform-origin: 52% 48%;
+    will-change: transform, opacity;
+  }
+}
+
+@keyframes jx-open-float {
+  from { transform: scale(1.012) translate3d(-0.2%, 0.35%, 0); }
+  to   { transform: scale(1.026) translate3d(0.35%, -0.3%, 0); }
+}
 
 /* the scrim: density under the copy corner only, never a flat wash */
 /* The reveal ends on a wide gold wordmark that passes straight under the
@@ -518,26 +531,33 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
   .jx-card__name { font-size: 1.25rem; }
 }
 
-/* ── the greet line types itself in ───────────────────────────────────────
-   Character-by-character, on load. This deliberately does NOT hang off the
-   scroll: the engine's data-sc-kinetic staggers across a cue's ramp-in, which
-   means the element sits at opacity 0 until the reader scrolls. On the landing
-   screen that reads as a broken page — the greet form has to carry the headline
-   the moment it paints. The cue still owns the hold, the rise and the exit, so
-   the line keeps moving with the scrub behind it. */
+/* ── the greet line writes itself in ──────────────────────────────────────
+   Character by character, on load, and slowly on purpose. This deliberately
+   does NOT hang off the scroll: the engine's data-sc-kinetic staggers across a
+   cue's ramp-in, which means the element sits at opacity 0 until the reader
+   scrolls. On the landing screen that reads as a broken page — the greet form
+   has to carry the headline the moment it paints.
+
+   The pace belongs to the mark, not to a typewriter. Each character emerges out
+   of a 12px blur over 1.6s at a 170ms stagger, ~6.3s end to end, with about
+   nine characters in flight at once — a wave surfacing, not letters landing.
+   The cue still owns the hold, the rise and the exit, so the line keeps moving
+   with the scrub behind it. */
 .jx-page .jx-type__c {
   display: inline-block;
   opacity: 0;
-  transform: translate3d(0, 0.42em, 0);
-  animation: jx-type-in 0.44s var(--sc-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
-  animation-delay: calc(var(--i) * 34ms);
+  transform: translate3d(0, 0.28em, 0);
+  filter: blur(12px);
+  animation: jx-type-in 1.6s var(--sc-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  animation-delay: calc(800ms + var(--i) * 170ms);
   /* descender room: the masks the engine used to add are gone with the split */
   padding-bottom: 0.08em;
   margin-bottom: -0.08em;
 }
 
 @keyframes jx-type-in {
-  to { opacity: 1; transform: none; }
+  60% { opacity: 0.68; }
+  to { opacity: 1; transform: none; filter: blur(0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -545,5 +565,6 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
     animation: none;
     opacity: 1;
     transform: none;
+    filter: none;
   }
 }
