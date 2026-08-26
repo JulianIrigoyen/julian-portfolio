@@ -61,6 +61,40 @@ body:has(.jx-page),
 
 body:has(.jx-page) { background: var(--paper); color: var(--ink); }
 
+/* ——— dark mode: auto + manual toggle ———
+   Tokens flip to a dark ink-on-dark-ground palette. Accent shifts warmer
+   (blue → periwinkle, green stays readable). Everything else is the engine. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body:has(.jx-page),
+  :root:not([data-theme="light"]) .jx-page {
+    --paper:    #0e0f11;
+    --paper-2:  #16181b;
+    --card:     #131518;
+    --ink:      #eceef1;
+    --ink-2:    #a8aeb7;
+    --ink-3:    #878d96;
+    --rule:     #24272c;
+    --rule-2:   #343941;
+    --accent:   #6f97ff;
+    --accent-2: #3fbe86;
+    --sc-accent-ink: #0b0d10;
+  }
+}
+:root[data-theme="dark"] body:has(.jx-page),
+:root[data-theme="dark"] .jx-page {
+  --paper:    #0e0f11;
+  --paper-2:  #16181b;
+  --card:     #131518;
+  --ink:      #eceef1;
+  --ink-2:    #a8aeb7;
+  --ink-3:    #878d96;
+  --rule:     #24272c;
+  --rule-2:   #343941;
+  --accent:   #6f97ff;
+  --accent-2: #3fbe86;
+  --sc-accent-ink: #0b0d10;
+}
+
 .sc-display {
   font-family: var(--sc-font-display);
   font-weight: 700;
@@ -119,9 +153,29 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
   text-transform: uppercase;
   color: rgba(250, 248, 245, 0.48);
 }
-.jx-bar__name { color: #faf8f5; font-weight: 500; }
+.jx-bar__name  { color: #faf8f5; font-weight: 500; }
+.jx-bar__sep   { color: rgba(250, 248, 245, 0.28); }
 .jx-bar__count { margin-left: auto; color: #46d67f; font-variant-numeric: tabular-nums; }
 .jx-bar__track { position: absolute; left: 0; bottom: -1px; height: 2px; background: var(--accent); width: calc(var(--jx-p, 0) * 100%); }
+
+/* ——— theme toggle ——— */
+.jx-theme {
+  appearance: none;
+  background: transparent;
+  border: 1px solid rgba(250, 248, 245, 0.18);
+  color: rgba(250, 248, 245, 0.48);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 9px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.jx-theme:hover { color: #faf8f5; border-color: rgba(250, 248, 245, 0.4); }
+.jx-theme__i { background: var(--sc-accent); border-radius: 50%; flex: none; width: 6px; height: 6px; }
 
 /* ——— labels ——— */
 .jx-lbl {
