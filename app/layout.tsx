@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Analytics } from "@vercel/analytics/next";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
+import Analytics from "./analytics/Analytics";
 import { Archivo, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import "./scrollcraft.css";
@@ -36,8 +37,22 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${archivo.variable} ${mono.variable} antialiased`}
     >
+      <head>
+        {/* Applies the reader's stored choice before first paint. Without it
+            the page paints its default theme and then swaps, which reads as a
+            flash of the wrong ground on every navigation. No choice stored
+            means no attribute, which is what leaves the CSS free to follow
+            the system preference. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{var t=localStorage.getItem('jx-theme');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t}catch(e){}",
+          }}
+        />
+      </head>
       <body className="min-h-full">
         {children}
+        <VercelAnalytics />
         <Analytics />
       </body>
     </html>

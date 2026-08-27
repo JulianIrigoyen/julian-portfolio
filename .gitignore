@@ -42,3 +42,8 @@ next-env.d.ts
 
 # scrollcraft verification output
 /lab/
+!.env.example
+
+# The Nuxt side-build. A separate app with its own node_modules and
+# .output — 473MB that has no business in this repo or in a Vercel upload.
+/web/

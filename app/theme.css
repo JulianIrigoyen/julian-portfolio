@@ -61,6 +61,54 @@ body:has(.jx-page),
 
 body:has(.jx-page) { background: var(--paper); color: var(--ink); }
 
+/* ════════════════════════════════════════════════════════════
+   THE SAME LEDGER, AFTER DARK.
+
+   Only the ten colour tokens move. Every `jx-` rule below reads
+   through them, so nothing else in this file is theme-aware and
+   nothing else needs to be. `--paper` stops meaning paper and
+   starts meaning ground; the role is what the name protects.
+
+   Three states, in the order the cascade needs them:
+     1. bare       — light, defined above
+     2. system     — dark, unless the reader explicitly chose light
+     3. data-theme — the reader's own choice, wins over both
+
+   Accent and accent-2 are lifted, not reused: #1f4fd8 measures
+   2.4:1 on this ground and #0a6b49 measures 1.9:1. The values
+   below measure 6.9:1 and 8.2:1.
+   ════════════════════════════════════════════════════════════ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body:has(.jx-page),
+  :root:not([data-theme="light"]) .jx-page {
+    --paper:    #0e0f11;
+    --paper-2:  #16181b;
+    --card:     #131518;
+    --ink:      #eceef1;
+    --ink-2:    #a8aeb7;
+    --ink-3:    #878d96;   /* 5.72:1 on --paper */
+    --rule:     #24272c;
+    --rule-2:   #343941;
+    --accent:   #6f97ff;   /* 6.9:1 */
+    --accent-2: #3fbe86;   /* 8.2:1 */
+    --sc-accent-ink: #0b0d10;
+  }
+}
+:root[data-theme="dark"] body:has(.jx-page),
+:root[data-theme="dark"] .jx-page {
+  --paper:    #0e0f11;
+  --paper-2:  #16181b;
+  --card:     #131518;
+  --ink:      #eceef1;
+  --ink-2:    #a8aeb7;
+  --ink-3:    #878d96;
+  --rule:     #24272c;
+  --rule-2:   #343941;
+  --accent:   #6f97ff;
+  --accent-2: #3fbe86;
+  --sc-accent-ink: #0b0d10;
+}
+
 .sc-display {
   font-family: var(--sc-font-display);
   font-weight: 700;
@@ -110,17 +158,38 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
   align-items: center;
   gap: 16px;
   padding: 12px clamp(16px, 4vw, 40px);
-  background: rgba(3, 3, 4, 0.96);
+  background: color-mix(in oklab, var(--paper) 92%, transparent);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(250, 248, 245, 0.12);
+  border-bottom: 1px solid var(--rule);
   font-family: var(--sc-font-mono);
   font-size: 10.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(250, 248, 245, 0.48);
+  color: var(--ink-3);
 }
-.jx-bar__name { color: #faf8f5; font-weight: 500; }
-.jx-bar__count { margin-left: auto; color: #46d67f; font-variant-numeric: tabular-nums; }
+.jx-bar__name { color: var(--ink); font-weight: 500; }
+.jx-bar__sep { color: var(--rule-2); }
+.jx-bar__count { margin-left: auto; color: var(--accent-2); font-variant-numeric: tabular-nums; }
+
+/* ——— the theme switch, in the bar because that is the only
+       fixed chrome the page has ——— */
+.jx-theme {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--rule-2);
+  color: var(--ink-3);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  padding: 4px 9px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: color 200ms ease, border-color 200ms ease;
+}
+.jx-theme:hover { color: var(--ink); border-color: var(--ink-3); }
+.jx-theme__i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex: none; }
 .jx-bar__track { position: absolute; left: 0; bottom: -1px; height: 2px; background: var(--accent); width: calc(var(--jx-p, 0) * 100%); }
 
 /* ——— labels ——— */
@@ -226,7 +295,7 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
 .jx-btn--solid { background: var(--ink); color: var(--paper); border-color: var(--ink); font-weight: 500; }
 .jx-btn--solid:hover { background: var(--accent); border-color: var(--accent); }
 .jx-btn:hover { border-color: var(--accent); color: var(--accent); }
-.jx-btn--solid:hover { color: #fff; }
+.jx-btn--solid:hover { color: var(--sc-accent-ink); }
 
 /* square, like a ledger — scoped, or it flattens the console's rounded chrome */
 .jx-page * { border-radius: 0; }
@@ -375,24 +444,97 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
    has one consistent editorial grid: a meta column and a text column. Kept
    small and square on purpose — the scrub open is the page's only spectacle,
    and a full-bleed face would compete with it. */
-.jx-about { display: grid; gap: 1.6rem; }
-@media (min-width: 62rem) {
-  .jx-about { grid-template-columns: 14rem minmax(0, 1fr); gap: 0 3rem; align-items: start; }
+/* ——— the index block ———
+   Three shapes, not two. Below 46rem it stacks; between 46 and 62 the portrait
+   pairs with the title on one line; above 62 it splits into two columns.
+
+   The middle shape is the one that was missing. At ~925px the old rule was
+   still one column, so a 240px portrait sat alone with most of a screen of
+   empty paper beside it and the title started underneath. */
+.jx-about {
+  display: grid;
+  gap: 1.4rem;
+  grid-template-areas:
+    "fig"
+    "head"
+    "body";
 }
+
+@media (min-width: 46rem) {
+  .jx-about {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "fig  head"
+      "body body";
+    gap: 1.8rem 2.2rem;
+    align-items: end;
+  }
+}
+
+@media (min-width: 62rem) {
+  .jx-about {
+    grid-template-columns: minmax(15rem, 19rem) minmax(0, 1fr);
+    grid-template-areas:
+      "fig head"
+      "fig body";
+    gap: 1.6rem 3.4rem;
+    align-items: start;
+  }
+}
+
+.jx-about__fig { grid-area: fig; margin: 0; }
+.jx-about__head { grid-area: head; }
+.jx-about__body { grid-area: body; min-width: 0; }
+
+/* At width the portrait column is sticky: the photo holds the reader's eye
+   while the prose beside it scrolls, instead of leaving a tall empty gutter. */
+@media (min-width: 62rem) {
+  .jx-about__fig {
+    position: sticky;
+    top: 5.5rem;
+  }
+}
+
+/* Was 14rem — small enough that the section's only image read as a thumbnail
+   attached to the text rather than as the portrait the page is built around. */
 .jx-portrait {
   display: block;
-  width: clamp(7rem, 26vw, 14rem);
-  aspect-ratio: 1;
+  width: 100%;
+  max-width: clamp(9rem, 34vw, 19rem);
+  aspect-ratio: 4 / 5;
   object-fit: cover;
+  object-position: 50% 32%;
   border: 1px solid var(--rule);
   filter: saturate(0.94) contrast(1.02);
   background: var(--paper-2);
 }
+
+/* A quiet frame rather than a drop shadow: the page is hairlines and paper,
+   and a shadow would be the only soft edge on it. */
+.jx-portrait {
+  outline: 1px solid var(--rule);
+  outline-offset: 6px;
+}
+
 .jx-portrait__cap {
   font-family: var(--sc-font-mono);
   font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--ink-3); margin-top: 0.7rem; display: block;
+  color: var(--ink-3); margin-top: 1.1rem; display: block;
 }
+.jx-portrait__cap b { color: var(--accent); font-weight: 500; }
+
+/* The lede. Three long paragraphs and a table at one size was a wall; the
+   first paragraph now carries the weight and the rest sit under it. */
+.jx-about__lede {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(1.02rem, 1.5vw, 1.22rem);
+  line-height: 1.5;
+  max-width: 54ch;
+  text-wrap: pretty;
+}
+
+.jx-about__rule { margin-top: 1.6rem; }
 
 
 /* ════════════════════════════════════════════════════════════
@@ -531,40 +673,194 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
   .jx-card__name { font-size: 1.25rem; }
 }
 
-/* ── the greet line writes itself in ──────────────────────────────────────
-   Character by character, on load, and slowly on purpose. This deliberately
-   does NOT hang off the scroll: the engine's data-sc-kinetic staggers across a
-   cue's ramp-in, which means the element sits at opacity 0 until the reader
-   scrolls. On the landing screen that reads as a broken page — the greet form
-   has to carry the headline the moment it paints.
+/* ── the greet line assembles with the mark ──────────────────────────────
+   The line and the reveal behind it are one event: both advance off the
+   clip's own playhead, so a character resolves exactly as much as the mark
+   has. `--jx-mark` is written by MarkSync from `video.currentTime /
+   duration` rather than from raw scroll, which means the type inherits the
+   engine's smoothing for free and the two cannot drift apart.
 
-   The pace belongs to the mark, not to a typewriter. Each character emerges out
-   of a 12px blur over 1.6s at a 170ms stagger, ~6.3s end to end, with about
-   nine characters in flight at once — a wave surfacing, not letters landing.
-   The cue still owns the hold, the rise and the exit, so the line keeps moving
-   with the scrub behind it. */
+   It does NOT start from nothing. A cue-driven reveal leaves the h1 at
+   opacity 0 on the landing screen, which is the one thing the greet form has
+   to carry — so a character rests at 0.16 under 9px of blur and scroll
+   resolves it, rather than conjuring the headline out of an empty page.
+
+   The maths, unrolled: 24 characters, 7 in flight at once, fully resolved at
+   62% of the clip. (24 + 7) / 0.62 = 50, so `mark * 50` is the leading edge
+   measured in characters and each one divides its own 7-wide ramp. The
+   constant is spelled 50 rather than divided at runtime because calc() may
+   not divide by a custom property. */
 .jx-page .jx-type__c {
+  --adv: clamp(0, calc((var(--jx-mark, 0) * 50 - var(--i)) / 7), 1);
   display: inline-block;
-  opacity: 0;
-  transform: translate3d(0, 0.28em, 0);
-  filter: blur(12px);
-  animation: jx-type-in 1.6s var(--sc-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
-  animation-delay: calc(800ms + var(--i) * 170ms);
+  opacity: calc(0.16 + 0.84 * var(--adv));
+  transform: translate3d(0, calc((1 - var(--adv)) * 0.22em), 0);
+  filter: blur(calc((1 - var(--adv)) * 9px));
   /* descender room: the masks the engine used to add are gone with the split */
   padding-bottom: 0.08em;
   margin-bottom: -0.08em;
 }
 
-@keyframes jx-type-in {
-  60% { opacity: 0.68; }
-  to { opacity: 1; transform: none; filter: blur(0); }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .jx-page .jx-type__c {
-    animation: none;
+    --adv: 1;
     opacity: 1;
     transform: none;
     filter: none;
+  }
+}
+
+/* ==========================================================================
+   The bloom cut — the open act hands over to the index in a flare of light
+   --------------------------------------------------------------------------
+   BloomCut publishes `--jx-bloom` (0..1) on :root across the seam. It rises
+   through the tail of the open act's pin, peaks on the join, and falls away as
+   the index arrives. Everything below reads that one number, so the act that
+   leaves and the section that arrives can never drift apart.
+   ========================================================================== */
+
+.jx-bloom {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  /* x1.25 clamped: the light reaches full a little before the geometric peak,
+     so the join happens inside a held wash rather than at a single instant. */
+  opacity: min(1, calc(var(--jx-bloom, 0) * 1.25));
+  pointer-events: none;
+  /* Two lights, not one: a tight core that reads as a source, and a wide wash
+     that carries it to the edges of the screen. */
+  /* Three layers. The core is the source, the wash carries it outward, and the
+     flat base is what actually takes the corners — without it the peak read as
+     a haze over a still-dark room rather than the screen going to light. */
+  background:
+    radial-gradient(
+      42vmax 42vmax at 50% 46%,
+      rgba(255, 252, 244, 0.98),
+      rgba(255, 244, 214, 0.72) 34%,
+      rgba(255, 238, 198, 0.34) 56%,
+      transparent 76%
+    ),
+    radial-gradient(
+      120vmax 90vmax at 50% 50%,
+      rgba(255, 249, 232, 0.92),
+      rgba(255, 246, 224, 0.6) 62%,
+      rgba(255, 244, 218, 0.42) 100%
+    ),
+    rgba(255, 248, 230, 0.86);
+  /* The core swells slightly as it peaks, so the light reads as arriving
+     rather than as an opacity ramp on a static shape. */
+  transform: scale(calc(0.92 + var(--jx-bloom, 0) * 0.18));
+  will-change: opacity, transform;
+}
+
+/* On paper the page is already bright, so a white flare has nothing to flare
+   against. Warm it and pull it back — the cut still reads, without the screen
+   going blank.
+
+   Theme here is three-state, exactly as the palette blocks above are: an
+   explicit `data-theme`, or the system preference when the attribute is
+   absent. Keying this off `:not([data-theme="dark"])` alone would have hit a
+   system-dark reader who never touched the toggle, and dimmed the flare on the
+   one background it exists for. */
+:root[data-theme="light"] .jx-bloom {
+  opacity: min(0.86, calc(var(--jx-bloom, 0) * 1.1));
+  background:
+    radial-gradient(
+      42vmax 42vmax at 50% 46%,
+      rgba(255, 246, 222, 0.96),
+      rgba(255, 232, 186, 0.66) 34%,
+      rgba(250, 214, 150, 0.26) 58%,
+      transparent 76%
+    ),
+    radial-gradient(120vmax 90vmax at 50% 50%, rgba(255, 248, 232, 0.9), rgba(255, 245, 226, 0.55) 100%),
+    rgba(255, 250, 238, 0.9);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .jx-bloom {
+    opacity: min(0.86, calc(var(--jx-bloom, 0) * 1.1));
+    background:
+      radial-gradient(
+        42vmax 42vmax at 50% 46%,
+        rgba(255, 246, 222, 0.96),
+        rgba(255, 232, 186, 0.66) 34%,
+        rgba(250, 214, 150, 0.26) 58%,
+        transparent 76%
+      ),
+      radial-gradient(120vmax 90vmax at 50% 50%, rgba(255, 248, 232, 0.9), rgba(255, 245, 226, 0.55) 100%),
+      rgba(255, 250, 238, 0.9);
+  }
+}
+
+/* The open act blows out from the inside as the light rises: it brightens,
+   loses contrast, and lifts slightly, so it is consumed by the bloom rather
+   than hidden behind it. */
+.jx-open [data-sc-stage] {
+  filter:
+    brightness(calc(1 + var(--jx-bloom, 0) * 1.35))
+    contrast(calc(1 - var(--jx-bloom, 0) * 0.42));
+  opacity: calc(1 - var(--jx-bloom, 0) * 0.88);
+  transform: scale(calc(1 + var(--jx-bloom, 0) * 0.035));
+  transform-origin: 50% 46%;
+}
+
+/* And the index resolves out of it. The bloom is already falling by the time
+   this section owns the screen, so it reads as the light clearing to reveal
+   what was standing there.
+
+   This sits on the SECTION, not on the `.sc-wrap` inside it. That wrap carries
+   `data-sc-in`, whose reveal is `[data-sc-in].sc-in { opacity: 1 }` at (0,2,0)
+   — the same weight as a `.jx-index-act > .sc-wrap` rule, and theme.css loads
+   last, so putting the bloom there would have won the tie and shown the
+   section before its own entrance ever fired. Two systems, two elements. */
+.jx-index-act {
+  opacity: calc(1 - var(--jx-bloom, 0) * 0.92);
+  transform: translateY(calc(var(--jx-bloom, 0) * 2.2rem))
+    scale(calc(1 - var(--jx-bloom, 0) * 0.02));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jx-bloom {
+    display: none;
+  }
+
+  .jx-open [data-sc-stage],
+  .jx-index-act {
+    filter: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── mobile: a scrim that follows the copy ────────────────────────────────
+   The stage scrim is a `to top` wash — densest at the bottom of the frame.
+   On a short viewport (an in-app browser is ~640px tall, not 930) the copy
+   block sits high in that gradient, on its weakest 12–34%, and the clip's lit
+   rosette reads straight through the text. Measured at 430x640: worst-case
+   body contrast 3.02:1, under the 4.5:1 floor.
+
+   Rather than crush the whole frame — the reveal is the page's only spectacle
+   — the density is attached to the copy itself, so it travels with the text
+   and leaves the rosette legible around it. */
+@media (max-width: 860px) {
+  .jx-page .jx-open .sc-copy--lead::before {
+    content: "";
+    position: absolute;
+    /* generous bleed: the soft edge has to finish before the text starts */
+    inset: -2.5rem -1.5rem -3rem -1.5rem;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      130% 78% at 32% 46%,
+      rgba(4, 4, 5, 0.94) 0%,
+      rgba(4, 4, 5, 0.90) 42%,
+      rgba(4, 4, 5, 0.72) 68%,
+      rgba(4, 4, 5, 0.34) 86%,
+      transparent 100%);
+  }
+  /* the text has to sit above its own scrim */
+  .jx-page .jx-open .sc-copy--lead > * {
+    position: relative;
+    z-index: 1;
   }
 }

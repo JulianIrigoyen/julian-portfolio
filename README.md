@@ -14,9 +14,16 @@ npm run dev      # http://localhost:3000
 npm run build
 ```
 
-A `.vercel` link for project `julian-portfolio` appeared in the working tree on
-2026-08-26 (another session in this shared checkout). Whether anything has been
-promoted to production has not been checked from here.
+Production is live on Vercel:
+
+| domain | status |
+|---|---|
+| `https://julianmirigoyen.online` | custom apex domain, verified |
+| `https://www.julianmirigoyen.online` | custom `www` alias, verified |
+| `https://julian-portfolio-six-omega.vercel.app` | stable Vercel alias |
+
+Deployment, DNS, analytics, and verification details are documented in
+[`docs/LAUNCH-2026-08-27.md`](docs/LAUNCH-2026-08-27.md).
 
 ---
 
@@ -34,22 +41,23 @@ installed** as a plugin here; it was driven from a clone. To install it:
 ### The one rule
 
 `public/scrollcraft/scrollcraft.js` and `app/scrollcraft.css` are the engine.
-They are vendored **byte-identical to upstream and are never edited**. All
-theming lives in `app/theme.css`: the engine's six colour roles, two font
-families, and page-owned `jx-` classes. `djinn-site` vendors the same engine
-the same way.
+Treat them as vendored code, but this build carries one local compatibility
+patch: `chars` splitting groups letters inside `.sc-split-word`, and
+`app/scrollcraft.css` keeps that wrapper from breaking words mid-reveal. All
+theming still lives in `app/theme.css`: the engine's six colour roles, two font
+families, and page-owned `jx-` classes.
 
 ### Act structure
 
-Six acts, ~17.7 viewport-heights. No `data-sc-drift` anywhere — the page hard
--cuts, and `devices.md` §10 is explicit that "a cut is not an interpolation",
-so every section paints its own opaque ground.
+Six acts. No `data-sc-drift` anywhere — the page hard-cuts, and `devices.md`
+§10 is explicit that "a cut is not an interpolation", so every section paints
+its own opaque ground.
 
 | # | act | device | content |
 |---|---|---|---|
-| 1 | `scrub` span 2.8, dwell 0.35 | scrub | The Supersolid Blender reveal, full-bleed on near-black |
+| 1 | `scrub` span 7, dwell 0.55 | scrub | The mark reveal, full-bleed on near-black; headline reveals slowly as scroll begins |
 | 2 | flow | `in` + stagger | Portrait, intro, index with dotted leaders |
-| 3 | `pan` span 7.4 | pan | Nine products in two tiers, lateral — breadth reads sideways |
+| 3 | `pan` span 8.2 | pan | Ten rail cards in two tiers, lateral — breadth reads sideways |
 | 4 | `pin` span 3.2 | reveal | The lab: four pieces, typographic |
 | 5 | flow | `in` + stagger | The record — eight years, hung year column |
 | 6 | `pin` span 2 | magnet | Close |
@@ -68,22 +76,24 @@ Implementation: `app/scroll/Suite.tsx`.
 
 ### Content
 
-Thirteen pieces, in three tiers. The order in the rail is Julian's own — the
+Fourteen pieces, in three tiers. The order in the rail is Julian's own — the
 studio first, then the agent, then the thing the studio exists for.
 
 - **Currently working on (01–06)** — Supersolid, DJINN, the trading platform,
   jtreks, Keonda, Luxy. The act headline is *"Being built, or running, as you
   read this"*, so this tier is a claim about **now** and only holds work that
   is live or in active build.
-- **Also shipped (07–09)** — Speed Ibiza, Innovalport, Outflow. Finished client
-  work, behind a hairline divider panel in the same rail. The divider exists so
-  the six in front are not diluted by things that are simply done.
-- **The lab (10–13)** — Solana Sniper, IMHO, Pushy, Ascenso. Deliberately
+- **Also shipped (07–10)** — Half Production, Speed Ibiza, Innovalport,
+  Outflow. Finished client work, behind a hairline divider panel in the same
+  rail. The divider exists so the six in front are not diluted by things that
+  are simply done.
+- **The lab (11–14)** — Solana Sniper, IMHO, Pushy, Ascenso. Deliberately
   **typographic, no screenshots**: three have no public URL and `pushy.ar` is
   offline, so a gallery there would be faking it.
 
 Screenshots live in `public/work/`, captured live with `playwright-core` at
-1440x900 @2x. Every link opens the running product.
+1440x900 @2x. There are eight product screenshots. Every link opens the running
+product.
 
 The career rows come from `app/console/data.ts`, which is still the single
 source of truth for both routes.
@@ -131,11 +141,14 @@ was cut for it.
 
 | path | notes |
 |---|---|
-| `public/reveal/supersolid.mp4` | 1920x1080, 200f. The scrub clip. |
-| `public/reveal/supersolid-m.mp4` | 720x720 **square** render for portrait |
-| `public/reveal/supersolid-poster.jpg` | frame 0, holds the stage until video paints |
+| `public/reveal/mark.mp4` | Current desktop scrub clip. |
+| `public/reveal/mark-m.mp4` | Current mobile scrub clip. |
+| `public/reveal/mark-poster.jpg` | Current poster, holds the stage until video paints. |
+| `public/reveal/supersolid.mp4` | Older scrub asset, still present but not used by the current open. |
+| `public/reveal/supersolid-m.mp4` | Older mobile scrub asset, still present. |
+| `public/reveal/supersolid-poster.jpg` | Older poster, still present. |
 | `public/julian.png` | 800x800 portrait, supplied by Julian |
-| `public/work/*.png` | the seven products with a public URL |
+| `public/work/*.png` | the eight rail products with a screenshot |
 | `public/fleet/*.png` | jtreks + IMHO — **used by `/console` only** |
 
 ### Re-encoding the reveal
@@ -145,8 +158,8 @@ as a scrub clip** — the masters ship a sparse GOP (14 keyframes across 200
 frames), which plays perfectly and scrubs like mud:
 
 ```bash
-bash <skill>/scripts/encode.sh in.mp4 public/reveal/supersolid.mp4          # -g 8
-bash <skill>/scripts/encode.sh in.mp4 public/reveal/supersolid-m.mp4 mobile # -g 4
+bash <skill>/scripts/encode.sh in.mp4 public/reveal/mark.mp4          # -g 8
+bash <skill>/scripts/encode.sh in.mp4 public/reveal/mark-m.mp4 mobile # -g 4
 ```
 
 That lifts it to 25 and 50 keyframes.
@@ -235,9 +248,9 @@ a green run.** Measure `scrollWidth - innerWidth` by hand.
 And one found on 2026-08-26: **`data-sc-span` does not scale itself.** The
 engine maps the rail's whole `scrollWidth` onto whatever span the act declares,
 so adding cards at a fixed span makes the pan travel further in the same scroll
-distance — it just gets faster. The rail measures **5362px at 1440**, which is
-why the act is `span 7.4` and not the 6 it carried with four fewer cards. Remeasure
-after any card is added or removed.
+distance — it just gets faster. The rail currently uses `span 8.2` because it
+now carries ten cards plus a divider. Remeasure after any card is added or
+removed.
 
 ---
 

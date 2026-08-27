@@ -2,6 +2,8 @@
 
 import ScrollcraftMount from "./ScrollcraftMount";
 import Suite, { Assert } from "./Suite";
+import MarkSync from "./MarkSync";
+import BloomCut from "./BloomCut";
 import { CAREER } from "../console/data";
 import { CONSOLE_ENABLED } from "../console/visibility";
 
@@ -276,6 +278,8 @@ export default function Timeline() {
   return (
     <div className="jx-page">
       <ScrollcraftMount />
+      <MarkSync />
+      <BloomCut />
       <Suite />
 
       <main>
@@ -319,35 +323,20 @@ export default function Timeline() {
               <span className="jx-lbl" data-sc-cue="0 0.74 0">
                 Backend <b>·</b> Full-stack <b>·</b> DevOps <b>·</b> Agentic AI
               </span>
-              {/* The line writes itself in on load, not across the scroll.
-                  data-sc-kinetic staggers the characters over the cue's ramp-in,
-                  which leaves the h1 at opacity 0 until the reader scrolls — the
-                  landing screen then carries no headline, which is the one thing
-                  the greet form has to do. The characters come from CSS instead,
-                  slowly: they emerge out of blur over ~6s, so the line and the
-                  mark assembling behind it read as one arrival. The cue keeps
-                  the hold, the rise and the exit — and starts at 0 with no
-                  ramp-in for the same reason: a cue that opens at 0.04 holds the
-                  whole h1 at opacity 0 on the landing screen, characters or no
-                  characters. */}
+              {/* Scrollcraft staggers the characters across the cue ramp, so the
+                  line starts from zero at the top and begins writing as soon as
+                  the reader scrolls. */}
               <h1
-                className="sc-display sc-display--xl jx-code-title jx-type"
-                data-sc-cue="0 0.92 0 0.10"
+                className="sc-display sc-display--xl jx-code-title"
+                data-sc-cue="0 0.92 0.48 0.10"
+                data-sc-kinetic="chars"
                 style={{ marginTop: "0.9rem" }}
               >
-                {"I love a good challenge.".split("").map((ch, i) => (
-                  <span
-                    key={i}
-                    className="jx-type__c"
-                    style={{ "--i": i } as React.CSSProperties}
-                  >
-                    {ch === " " ? "\u00A0" : ch}
-                  </span>
-                ))}
+                I love a good challenge.
               </h1>
 
               <div
-                data-sc-cue="0.31 1 0.28 0.08"
+                data-sc-cue="0.18 1 0.26 0.08"
                 style={{ marginTop: "1.6rem", maxWidth: "56ch" }}
               >
                 <span className="jx-openrule" />
@@ -376,12 +365,16 @@ export default function Timeline() {
               dark act has somewhere to resolve to. The bio closes on the
               index, and the index hands off to the rail. ——— */}
         <section
-          className="jx-act"
+          className="jx-act jx-index-act"
           style={{ padding: "clamp(3.5rem, 8vw, 7rem) 0" }}
         >
           <div className="sc-wrap" data-sc-in data-sc-stagger="60" style={{ maxWidth: "72rem" }}>
             <div className="jx-about">
-              <figure style={{ margin: 0 }}>
+              {/* The portrait and the title are one unit. Stacked, they sit
+                  side by side so the photo never strands itself next to a wall
+                  of empty space; at width they separate into two columns and
+                  the title moves over the prose it introduces. */}
+              <figure className="jx-about__fig">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   className="jx-portrait"
@@ -391,19 +384,23 @@ export default function Timeline() {
                   height={800}
                 />
                 <figcaption className="jx-portrait__cap">
-                  Julian Irigoyen
+                  Julian Irigoyen <b>·</b> Buenos Aires
                 </figcaption>
               </figure>
 
-              <div>
+              <div className="jx-about__head">
                 <div className="jx-head">
-                  <span className="jx-lbl">Currently building</span>
-                  <h2 className="sc-display sc-display--md" style={{ maxWidth: "24ch" }}>
+                  <span className="jx-lbl">Currently working on</span>
+                  <h2 className="sc-display sc-display--md" style={{ maxWidth: "18ch" }}>
                     Recent endeavors.
                   </h2>
                 </div>
+              </div>
 
-                <p className="sc-body" style={{ marginTop: "1rem", maxWidth: "62ch" }}>
+              <div className="jx-about__body">
+                {/* A lede at display weight, so three long paragraphs and a
+                    table stop reading as one undifferentiated wall. */}
+                <p className="jx-about__lede">
                   I&apos;ve worked solo, in duos and trios, and on teams as
                   large as twenty — agile and not, at startups, consulting
                   firms and product companies. I&apos;ve also acted as product
@@ -412,7 +409,10 @@ export default function Timeline() {
                   production, with the unit, integration and load tests around
                   it.
                 </p>
-                <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
+
+                <span className="jx-openrule jx-about__rule" />
+
+                <p className="sc-body" style={{ marginTop: "1.1rem", maxWidth: "62ch" }}>
                   This year I started the founder journey with{" "}
                   <a
                     href="https://supersolid.co"

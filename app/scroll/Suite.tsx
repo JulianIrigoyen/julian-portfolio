@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+type Theme = "light" | "dark";
+
 /* ————————————————————————————————————————————————
    The signature move: the page runs its own suite.
 
@@ -18,6 +20,33 @@ import { useEffect, useState } from "react";
 export default function Suite() {
   const [passed, setPassed] = useState(0);
   const [total, setTotal] = useState(0);
+  const [theme, setTheme] = useState<Theme | null>(null);
+
+  /* Read back whatever the pre-paint script in the layout already decided,
+     so the button never disagrees with the page it sits on. Null until
+     mounted: the server cannot know the reader's system preference, and
+     rendering a guess produces a hydration mismatch. */
+  useEffect(() => {
+    const root = document.documentElement;
+    const chosen = root.dataset.theme as Theme | undefined;
+    setTheme(
+      chosen ??
+        (window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light")
+    );
+  }, []);
+
+  const flip = () => {
+    const next: Theme = theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    try {
+      localStorage.setItem("jx-theme", next);
+    } catch {
+      /* private mode: the choice lasts the session and no longer */
+    }
+    setTheme(next);
+  };
 
   useEffect(() => {
     const nodes = Array.from(
@@ -71,6 +100,17 @@ export default function Suite() {
       <span className="jx-bar__count" suppressHydrationWarning>
         {total ? `${passed}/${total} pass` : "—"}
       </span>
+      <button
+        type="button"
+        className="jx-theme"
+        onClick={flip}
+        aria-label={
+          theme === "dark" ? "Switch to light theme" : "Switch to dark theme"
+        }
+      >
+        <i className="jx-theme__i" aria-hidden />
+        {theme ?? "theme"}
+      </button>
       <i className="jx-bar__track" aria-hidden />
     </div>
   );

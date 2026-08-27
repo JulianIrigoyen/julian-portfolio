@@ -5,6 +5,58 @@ session belong in [`README.md`](README.md); this file is the log.
 
 ---
 
+## [2026-08-27] Custom domain launch and open retiming
+
+The portfolio was deployed to Vercel production and attached to Julian's DonWeb
+domain. The handoff lives in
+[`docs/LAUNCH-2026-08-27.md`](docs/LAUNCH-2026-08-27.md), including exact DNS
+records, Vercel project IDs, deployment ID, verification commands, and analytics
+notes.
+
+### Launch
+
+Vercel project: `julianirigoyens-projects/julian-portfolio`.
+
+Production aliases verified with `curl -I`:
+
+- `https://julianmirigoyen.online`
+- `https://www.julianmirigoyen.online`
+- `https://julian-portfolio-six-omega.vercel.app`
+
+DonWeb DNS stayed authoritative. The apex domain resolves to Vercel's
+`76.76.21.21`, and `www` resolves to `cname.vercel-dns-0.com`.
+
+### Analytics
+
+Installed `@vercel/analytics` and mounted
+`Analytics as VercelAnalytics` from `@vercel/analytics/next` in
+`app/layout.tsx`. The existing env-gated analytics wrapper in
+`app/analytics/Analytics.tsx` remains separate and only loads Clarity or GA4
+when its public env var is present.
+
+### Open
+
+The opening headline changed from **"Eight years, every size of company."** to
+**"I love a good challenge."** The line now uses the code face and a
+scroll-driven character reveal:
+
+- open act: `data-sc-span="7"`, `data-sc-dwell="0.55"`
+- headline cue: `data-sc-cue="0 0.92 0.48 0.10"`
+- headline kinetic: `data-sc-kinetic="chars"`
+- body cue: `data-sc-cue="0.18 1 0.26 0.08"`
+
+The nav treatment was checked in the dark open state, and the reveal media uses
+the subtle `jx-open-float` animation. `agentive` was corrected to `agentic`.
+The hand-off wording now says **"Currently working on"**.
+
+### Verified
+
+`npm run build` passed locally. A headless Chrome check against
+`http://127.0.0.1:3002` confirmed the headline is hidden at `scrollY=0`, begins
+appearing after scroll starts, the body copy follows during the same act, and
+the media animation is active. The production deployment was then inspected as
+`Ready`.
+
 ## [2026-08-26] The rail becomes a claim about now
 
 Julian asked for three things: his new bio placed in the paper section, the
