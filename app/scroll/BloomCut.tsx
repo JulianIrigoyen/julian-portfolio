@@ -25,10 +25,24 @@ import { useEffect } from "react";
    away. RISE is how much of the pin's tail the bloom takes to reach full, FALL
    is how far past the join it takes to clear. Both are fractions of a viewport,
    so the effect covers the same distance on a laptop and on a phone.
+
+   The same geometry answers a second question: is the act spent? A pinned act
+   does not disappear at the join — it unsticks and slides away, so for one more
+   viewport-height of scroll a strip of the mark sits above the index, which is
+   the reader watching the open leave rather than the index arrive. Past the
+   join the act has said everything it has to say, so `--jx-gone` takes it out
+   and the band it leaves behind becomes page ground. GONE is short because the
+   bloom is at full strength across it and nothing can be seen changing; it is
+   a ramp rather than a step only for reduced motion, where there is no bloom
+   to hide under.
    ———————————————————————————————————————————————— */
 
-const RISE = 0.62;
+/* Lowered from 0.62 so the light starts later: the mark now holds its arrival
+   — centred, upright, still turning — for about a fifth of a viewport longer
+   before the bloom begins to take it. */
+const RISE = 0.42;
 const FALL = 0.8;
+const GONE = 0.2;
 
 /* Smoothstep. A linear ramp reads as a light switch; the ease is what makes it
    a bloom. */
@@ -43,20 +57,20 @@ export default function BloomCut() {
 
     /* Reduced motion keeps the cut, drops the flash: the sections still hand
        over, they just do it without a full-screen light. */
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      root.style.setProperty("--jx-bloom", "0");
-      return;
-    }
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     let raf = 0;
     let last = -1;
+    let lastGone = -1;
 
     const frame = () => {
       const vh = window.innerHeight;
       const d = act.getBoundingClientRect().bottom - vh;
 
       let b: number;
-      if (d > RISE * vh) {
+      if (reduce) {
+        b = 0; // the cut still happens, it just happens without a light
+      } else if (d > RISE * vh) {
         b = 0; // still inside the act proper
       } else if (d > 0) {
         b = ease(1 - d / (RISE * vh)); // the tail of the pin: light coming up
@@ -66,9 +80,22 @@ export default function BloomCut() {
         b = 0; // the index owns the screen
       }
 
+      let g: number;
+      if (d > 0) {
+        g = 0; // the act still owns the screen
+      } else if (d > -GONE * vh) {
+        g = ease(-d / (GONE * vh)); // handing over
+      } else {
+        g = 1; // spent
+      }
+
       if (b !== last) {
         last = b;
         root.style.setProperty("--jx-bloom", b.toFixed(4));
+      }
+      if (g !== lastGone) {
+        lastGone = g;
+        root.style.setProperty("--jx-gone", g.toFixed(4));
       }
       raf = requestAnimationFrame(frame);
     };
@@ -77,6 +104,7 @@ export default function BloomCut() {
     return () => {
       cancelAnimationFrame(raf);
       root.style.removeProperty("--jx-bloom");
+      root.style.removeProperty("--jx-gone");
     };
   }, []);
 

@@ -19,14 +19,14 @@ const archivo = Archivo({
 });
 
 export const metadata: Metadata = {
-  title: "Julian Irigoyen — systems that stay in production",
+  title: "Julian Irigoyen — I love a good challenge",
   description:
-    "A 30-year-old engineer from Argentina. Backend, full-stack, DevOps, and AI engineering work for large corporations, small businesses, startups, and product companies.",
+    "A 31-year-old engineer from Argentina. Backend, full-stack, DevOps, and AI engineering work for large corporations, small businesses, startups, and product companies.",
   authors: [{ name: "Julian Irigoyen", url: "https://github.com/JulianIrigoyen" }],
   openGraph: {
-    title: "Julian Irigoyen — systems that stay in production",
+    title: "Julian Irigoyen — I love a good challenge",
     description:
-      "I love a good challenge. Backend, full-stack, DevOps, and agentic AI workflows out of Buenos Aires.",
+      "I love a good challenge. Backend, full-stack, DevOps, and agentic AI workflows around the world.",
     type: "website",
   },
 };

@@ -1,9 +1,16 @@
 "use client";
 
+import Image from "next/image";
 import ScrollcraftMount from "./ScrollcraftMount";
 import Suite, { Assert } from "./Suite";
 import MarkSync from "./MarkSync";
 import BloomCut from "./BloomCut";
+import MailButton, { ADDRESS } from "./MailButton";
+import dynamic from "next/dynamic";
+
+/* ssr:false — createStage reads window and a WebGL context on construction.
+   Lazy so three.js lands in its own chunk instead of the entry bundle. */
+const Stage = dynamic(() => import("./Stage"), { ssr: false });
 import { CAREER } from "../console/data";
 import { CONSOLE_ENABLED } from "../console/visibility";
 
@@ -41,7 +48,7 @@ const NOW: Card[] = [
     status: "live · supersolid.co",
     flag: "Where the rest of this comes from",
     cta: "Meet the studio",
-    line: "The studio I started this year with Dmitry Sabanin, my former boss and mentor, and Emiliano Migliorata, my best friend. We build our own products, and we cofound with other founders on theirs. Almost everything below was built inside it.",
+    line: "The studio I started this year with Dmitry Sabanin, my former boss and mentor, and Emiliano Migliorata, my best friend. We build our own products, and we cofound with other founders on theirs.",
   },
   {
     n: "02",
@@ -50,23 +57,25 @@ const NOW: Card[] = [
     href: "https://djinn-site-teal.vercel.app",
     kicker: "autonomous agent",
     state: "live",
-    status: "live · unattended since june",
+    status: "live · unattended and continuously developed",
     flag: "What I would show you first",
     cta: "Go see what it runs",
-    line: "An AI agent that has run unattended on a cloud VM since June, reachable through Slack and trusted with real infrastructure: watchdogs, nightly digests, incident detection, and a knowledge store it maintains itself.",
+    line: "An agent that has been running on a cloud VM since June, reachable through Slack (and more channels), trusted with real infrastructure: feature development and reviews, watchdogs, nightly digests, incident detection, and a knowledge store it maintains itself.",
   },
   {
     n: "03",
-    name: "The trading platform",
-    slug: null,
-    href: null,
-    kicker: "fintech · quant",
-    state: "private",
-    status: "private · in production",
-    meta: "Rust · React · live orderbooks · <b>in production</b>",
-    noShot: "No public surface yet",
-    noUrl: "Landing page next",
-    line: "What Supersolid is actually for. A Rust engine runs strategies against live books, a console watches every lane as it happens, and an expectancy solver prices the edge before any capital moves. It runs on our own money, which is the only test that counts. It has no landing page yet — that is the next thing I build.",
+    name: "Poor Hedge Fund",
+    slug: "poorhedgefund",
+    href: "https://poorhedgefund.com",
+    kicker: "systematic · self-funded",
+    /* The fund has a front door now, so the dot says live and means it. The
+       engine behind it stays private, which the meta line carries — the state
+       is a claim about the URL, not about the platform. */
+    state: "live",
+    status: "live · poorhedgefund.com",
+    cta: "Read the thesis",
+    meta: "Rust · React · live orderbooks · <b>engine private</b>",
+    line: "A hedge fund, minus the funds. A Rust engine runs systematic strategies against live orderbooks — our own capital, our own risk, across instruments, markets and venues. Records and small positions, nobody else\u2019s. That is the poor part.",
   },
   {
     n: "04",
@@ -77,20 +86,20 @@ const NOW: Card[] = [
     state: "live",
     status: "live · jtreks.co",
     cta: "Walk the 3D maps",
-    line: "Trekking guides where every claim is traced back to a government portal, a park authority or a peer-reviewed paper — 32 ranges, 243 articles, 3,403 sources. The 3D route maps are drawn from the same satellite elevation data as the Lanín climb below.",
+    line: "Trekking guides where every claim is traced back to a government portal, a park authority or a peer-reviewed paper — 32 ranges, 243 articles, 3,403 sources. 3D route maps drawn from the real satellite elevation data.",
   },
   {
     n: "05",
     name: "Keonda",
     slug: null,
-    href: null,
+    href: "https://apps.apple.com/us/app/keonda/id6785094649",
     kicker: "social marketplace",
-    state: "build",
-    status: "testflight · ios",
-    meta: "Expo · React Native · Fastify · Postgres · <b>in build</b>",
-    noShot: "iOS · TestFlight build",
-    noUrl: "iOS build, not public yet",
-    line: "A social marketplace for the water: a live chart of boats, chat between guests, captains and providers, and a marketplace underneath it. Built API-first — every feature is a tested HTTP contract before a single pixel ships. On TestFlight since June.",
+    state: "live",
+    status: "live · app store",
+    cta: "Get it on iOS",
+    meta: "Expo · React Native · Fastify · Postgres · <b>in production</b>",
+    noShot: "iOS · on the App Store",
+    line: "A social marketplace for the sea: a live chart of boats, chat between guests, captains and providers, and a marketplace underneath it. Live in the App Store.",
   },
   {
     n: "06",
@@ -101,7 +110,7 @@ const NOW: Card[] = [
     state: "live",
     status: "live · ibizaluxy.online",
     cta: "Plan a trip",
-    line: "A concierge for Ibiza. A WhatsApp agent takes a request in plain language — a table, a boat, a villa — and turns it into something bookable, with checkout attached.",
+    line: "A concierge for Ibiza. A WhatsApp agent takes a request in plain language — a table, a boat, a villa — and turns it into something bookable, with checkout attached. Complementary to Keonda. Webapp live.",
   },
 ];
 
@@ -118,7 +127,7 @@ const ALSO: Card[] = [
     state: "live",
     status: "live · half-productions.vercel.app",
     cta: "Open the site",
-    line: "A multilingual event-production site for an Argentina-to-Ibiza crew, with the public brand, Dharma, Boiler Food, crew pages, print-ready QR assets, and an internal booking desk that turns Ibiza calendars, artist fees and warm-path relationships into a shortlist for monthly guest slots.",
+    line: "Landing page for event-production site for an Argentina-to-Ibiza crew, with the public brand, Dharma, Boiler Cook, crew pages, print-ready QR assets, and an internal booking desk that turns Ibiza calendars, artist fees and warm-path relationships into a shortlist for monthly guest slots.",
   },
   {
     n: "08",
@@ -128,7 +137,7 @@ const ALSO: Card[] = [
     kicker: "operations software",
     state: "live",
     status: "live · in daily use",
-    line: "The software a beverage distributor actually runs on: route planning, customer records, order intake, collections, stock and Spanish invoicing. A field app for a phone in a van, an admin desk for the office.",
+    line: "CRM built for a rising logistics and beverage distribution firm in Ibiza: route planning, customer records, order intake, collections, stock and invoicing. A field app for a phone in a van, an admin desk for the office.",
   },
   {
     n: "09",
@@ -161,7 +170,7 @@ const LAB = [
     href: null,
     meta: "Rust · Diesel · Raydium logs · <b>research</b>",
     at: null,
-    line: "A Rust service that subscribes to Raydium logs, filters initialize2 events, pulls the mint out of the transaction and fetches its metadata before the token is listed anywhere useful. It also profiles holder distribution, which is the cheapest way to tell a launch from a rug.",
+    line: "A Rust service that subscribes to Raydium logs, filters initialize2 events, pulls the mint out of the transaction and fetches its metadata before the token is listed anywhere useful. It also profiles holder distribution, which is the cheapest way to tell a launch from a rug. Features several integrations with data providers for deeper analysis. Open sourced.",
   },
   {
     n: "12",
@@ -169,7 +178,7 @@ const LAB = [
     href: "https://imho-real-estate.vercel.app",
     meta: "Next.js · Supabase · scraper fleet · <b>live</b>",
     at: null,
-    line: "AI real-estate search for Argentina. Scrapers behind rotating proxies feed a natural-language pipeline where a second judge model scores every extraction before it is allowed to count. A WhatsApp agent turns free-form Spanish into structured queries. The Python backend was rewritten in TypeScript at a quarter of the size, and that cut is the part I would defend.",
+    line: "AI real-estate search for Argentina. Scrapers behind rotating proxies feed a natural-language pipeline where a second judge model scores every extraction before it is allowed to count. Ongoing partnerships with real estate agencies in Mar del Plata, Argentina.",
   },
   {
     n: "13",
@@ -177,7 +186,7 @@ const LAB = [
     href: null,
     meta: "Rust · Axum · Postgres · Redis · SQS · <b>offline</b>",
     at: "0.10 0.44",
-    line: "A notification system built for crypto exchanges. Rust and Axum at the front, a background worker behind it, Postgres and Redis underneath, SQS for the queue and Contentful for the templates, so marketing ships copy without waiting on a deploy.",
+    line: "An observability and notification platform built originally for crypto exchanges. Rust and Axum at the front, a background worker behind it, Postgres and Redis underneath, SQS for the queue and Contentful for the templates, so marketing ships copy without waiting on a deploy. Highly composable and scalable in design.",
   },
   {
     n: "14",
@@ -185,7 +194,7 @@ const LAB = [
     href: null,
     meta: "Unreal Engine 5 · C++ · SRTM elevation · <b>in build</b>",
     at: "0.24 0.58",
-    line: "A playable climb of Volcán Lanín, 3,776m, in Unreal Engine 5. Real terrain from satellite elevation data, the real Tromen route from OpenStreetMap, and hazards taken from having actually summited it. The same elevation file feeds three things: this game, the map on jtreks.co, and a 3D-printed keyring.",
+    line: "A playable climb of Volcán Lanín, 3,776m, in Unreal Engine 5. Real terrain from satellite elevation data, the real Tromen route from OpenStreetMap, and hazards taken from having actually summited it. The same elevation file feeds three things: this game, the map on jtreks.co, and a 3D-printed keyring. Complementary to jtreks, more mountains being designed now.",
   },
 ];
 
@@ -234,8 +243,17 @@ function WorkCard({ w }: { w: Card }) {
           target="_blank"
           rel="noopener noreferrer"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`/work/${w.slug}.png`} alt={`${w.name} — live site`} />
+          {/* The originals are 2880x1800 PNGs and this slot is ~335px wide on
+              a phone. Served raw that is 15MB of screenshots for a viewport
+              that can use about 400KB of them. `fill` + `sizes` lets Next
+              serve an AVIF cut to the slot; the CSS below still does the
+              cover crop. */}
+          <Image
+            src={`/work/${w.slug}.png`}
+            alt={`${w.name} — live site`}
+            fill
+            sizes="(max-width: 52rem) 86vw, (max-width: 90rem) 36vw, 30rem"
+          />
         </a>
       ) : (
         <div className="jx-card__shot jx-card__shot--none">
@@ -277,6 +295,7 @@ function WorkCard({ w }: { w: Card }) {
 export default function Timeline() {
   return (
     <div className="jx-page">
+      <Stage />
       <ScrollcraftMount />
       <MarkSync />
       <BloomCut />
@@ -295,7 +314,7 @@ export default function Timeline() {
         <section
           className="jx-act jx-open"
           data-sc-act="scrub"
-          data-sc-span="7"
+          data-sc-span="10.75"
           data-sc-dwell="0.55"
         >
           <div data-sc-stage>
@@ -341,7 +360,7 @@ export default function Timeline() {
               >
                 <span className="jx-openrule" />
                 <p className="sc-body" style={{ marginTop: "1.1rem" }}>
-                  I&apos;m a 30-year-old engineer from Argentina. I&apos;ve spent
+                  I&apos;m a 31-year-old engineer from Argentina. I&apos;ve spent
                   the last eight years building applications for a wide variety
                   of companies: large consulting firms, software factories,
                   small startups and well established product companies.
@@ -375,13 +394,13 @@ export default function Timeline() {
                   of empty space; at width they separate into two columns and
                   the title moves over the prose it introduces. */}
               <figure className="jx-about__fig">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   className="jx-portrait"
                   src="/julian.png"
                   alt="Julian Irigoyen"
                   width={800}
                   height={800}
+                  sizes="(max-width: 52rem) 40vw, 18rem"
                 />
                 <figcaption className="jx-portrait__cap">
                   Julian Irigoyen <b>·</b> Buenos Aires
@@ -390,30 +409,18 @@ export default function Timeline() {
 
               <div className="jx-about__head">
                 <div className="jx-head">
-                  <span className="jx-lbl">Currently working on</span>
+                  <span className="jx-lbl">2026 has been wild</span>
                   <h2 className="sc-display sc-display--md" style={{ maxWidth: "18ch" }}>
-                    Recent endeavors.
+                    What is Juli up to
                   </h2>
                 </div>
               </div>
 
               <div className="jx-about__body">
-                {/* A lede at display weight, so three long paragraphs and a
-                    table stop reading as one undifferentiated wall. */}
-                <p className="jx-about__lede">
-                  I&apos;ve worked solo, in duos and trios, and on teams as
-                  large as twenty — agile and not, at startups, consulting
-                  firms and product companies. I&apos;ve also acted as product
-                  owner on my own builds: sitting with the client to work out
-                  what the thing has to do, then taking it from design to
-                  production, with the unit, integration and load tests around
-                  it.
-                </p>
-
                 <span className="jx-openrule jx-about__rule" />
 
                 <p className="sc-body" style={{ marginTop: "1.1rem", maxWidth: "62ch" }}>
-                  This year I started the founder journey with{" "}
+                  After an amazing, 2 year long experience working at TrueML, I started the founder journey with{" "}
                   <a
                     href="https://supersolid.co"
                     target="_blank"
@@ -424,24 +431,38 @@ export default function Timeline() {
                   </a>
                   , together with my former boss and mentor Dmitry Sabanin and
                   my best friend Emiliano Migliorata. We&apos;re building in
-                  fintech and quant trading, and we work with other founders as
+                  fintech and quantitative trading, and we work with other founders as
                   a cofounding team on their ideas.
                 </p>
                 <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
                   I tackle problems methodically, and I make a point of relying
-                  on my team to move faster. I&apos;m a big fan of failing fast,
-                  of automated TDD and CI/CD pipelines, and of delivering small
+                  on my team to move forward efficiently and effectively. I&apos;m a big fan of failing fast,
+                  through automated TDD and CI/CD pipelines, and of delivering small
                   concrete iterations. I&apos;m interested in simple and complex
                   problems alike. A lot more so in the person and the idea behind
                   each problem.
                 </p>
 
+                <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }} >
+                  The world has changed. The complexity in engineering has shifted
+                  and what actually makes a difference now are the{" "}
+                  <strong>people</strong> behind ideas and business processes.
+                  By this, productivity has become a direct result of the quality and speed of communication,
+                  of broad understanding, meaningful experience and a refined taste of those involved in building
+                  any given system.
+                </p>
+                <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
+                  In this context, my goal as an engineer is to bridge the gap between the idea and its implementation
+                  as swiftly, elegantly and robustly as possible, to bring amazing products and services,
+                  and thus the future, to life.
+                </p>
+
                 <div className="jx-index">
                   {[
-                    ["01—06", "Currently working on", "live · in build"],
+                    ["01—06", "Now", "live · in build"],
                     ["07—10", "Also shipped", "client work"],
                     ["11—14", "The lab", "fintech · web3"],
-                    ["—", "The record", "eight years"],
+                    ["—", "My path", "eight years"],
                   ].map(([n, t, st]) => (
                     <div className="jx-index__row" key={t}>
                       <span className="jx-index__n">{n}</span>
@@ -470,14 +491,13 @@ export default function Timeline() {
             <div className="jx-rail" data-sc-pan="0.05">
               <div className="jx-rail__lead">
                 <span className="jx-lbl">
-                  Currently working on <b>·</b> 01—06
+                  Now <b>·</b> 01—06
                 </span>
                 <h2 className="sc-display sc-display--md" style={{ marginTop: "0.8rem" }}>
-                  Being built, or running, as you read this.
+                  Being built or running as you read this.
                 </h2>
                 <p className="sc-body" style={{ marginTop: "0.9rem", fontSize: "0.94rem" }}>
-                  Every link opens the running product, not a case study about
-                  it. Two have no public URL yet, and say so.
+                  Check any link to find out more!
                 </p>
 
                 <div className="jx-legend">
@@ -506,8 +526,7 @@ export default function Timeline() {
                   Also shipped <b>·</b> 07—10
                 </span>
                 <p>
-                  Client work. Finished, handed over, and still running without
-                  me.
+                  Client work. Finished, handed over, up and running.
                 </p>
               </div>
 
@@ -528,7 +547,7 @@ export default function Timeline() {
                   The lab <b>·</b> 11—14
                 </span>
                 <h2 className="sc-display sc-display--md" style={{ marginTop: "0.7rem" }}>
-                  Fintech, Web3, and things I wanted to find out.
+                  The more you f around... the more you find out.
                 </h2>
               </div>
 
@@ -577,9 +596,9 @@ export default function Timeline() {
             data-sc-stagger="50"
             style={{ maxWidth: "72rem" }}
           >
-            <span className="jx-lbl">The record</span>
+            <span className="jx-lbl">The path that brought me here</span>
             <h2 className="sc-display sc-display--md" style={{ marginTop: "0.7rem" }}>
-              Consulting firms, software factories, startups, product companies.
+              Consulting firms, software factories, startups, product companies from Argentina, US and Europe.
             </h2>
             <div style={{ marginTop: "2rem" }}>
               {CAREER.map((c) => (
@@ -611,9 +630,9 @@ export default function Timeline() {
                 className="sc-body"
                 style={{ marginTop: "1rem", marginInline: "auto", maxWidth: "48ch" }}
               >
-                Backend, platform, or an agent that has to hold on its own.
-                I&apos;m in Buenos Aires and I&apos;ve worked remote with US and
-                UK teams for most of eight years.
+                Backend, platform, or an agent that has to hold down the fort.
+                I&apos;m in Buenos Aires and I&apos;ve worked remotely with US and
+                European teams for most of eight years.
               </p>
 
               <div
@@ -625,14 +644,7 @@ export default function Timeline() {
                   marginTop: "2rem",
                 }}
               >
-                <a
-                  className="jx-btn jx-btn--solid"
-                  href="mailto:martinirigoyenj17@gmail.com"
-                  data-sc-magnet="0.28"
-                  data-sc-rise="0"
-                >
-                  Start a conversation →
-                </a>
+                <MailButton />
                 <a
                   className="jx-btn"
                   href="https://github.com/JulianIrigoyen"
@@ -655,12 +667,17 @@ export default function Timeline() {
                 <Assert name="close" />
               </div>
 
+              {/* The address in plain sight. The button above is the fast path;
+                  this is the one that cannot fail. */}
               <p className="jx-lbl" style={{ marginTop: "1.6rem" }}>
-                Buenos Aires · Remote US / EU ·{" "}
-{CONSOLE_ENABLED && (
+                <a href={`mailto:${ADDRESS}`} style={{ color: "var(--accent)" }}>
+                  {ADDRESS}
+                </a>{" "}
+                · Buenos Aires · Remote US / EU ·{" "}
+                {CONSOLE_ENABLED && (
                   <a href="/console" style={{ color: "var(--accent)" }}>
-                  Console
-                </a>
+                    Console
+                  </a>
                 )}
               </p>
             </div>

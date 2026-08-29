@@ -23,6 +23,7 @@
    It is a pointer, not a colour, so it cannot collide. */
 :root { --font-jb: var(--font-code); }
 
+html:has(.jx-page),
 body:has(.jx-page),
 .jx-page {
   --paper:    #f4f3f0;
@@ -79,6 +80,7 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
    below measure 6.9:1 and 8.2:1.
    ════════════════════════════════════════════════════════════ */
 @media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):has(.jx-page),
   :root:not([data-theme="light"]) body:has(.jx-page),
   :root:not([data-theme="light"]) .jx-page {
     --paper:    #0e0f11;
@@ -94,6 +96,7 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
     --sc-accent-ink: #0b0d10;
   }
 }
+:root[data-theme="dark"]:has(.jx-page),
 :root[data-theme="dark"] body:has(.jx-page),
 :root[data-theme="dark"] .jx-page {
   --paper:    #0e0f11;
@@ -209,7 +212,14 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
    of a 100vh pinned stage and leave a third of a screen of dead paper. */
 [data-sc-act="pan"] [data-sc-stage] { display: flex; align-items: center; }
 
-.jx-rail { display: flex; align-items: stretch; gap: clamp(16px, 2.4vw, 34px); padding-inline: clamp(16px, 4vw, 40px); }
+/* Tops aligned, bottoms ragged. Stretch plus a foot on `margin-top: auto` put
+   every call on one baseline, which is the right instinct and the wrong result:
+   measured on the real rail, every card came out 700px tall with 113–196px of
+   nothing between its sentence and its call. Ten cards of that is what a rail of
+   half-empty boxes looks like. Aligning the tops keeps the address strips on one
+   line across the whole pan — the ledger reading the baseline was protecting —
+   and lets each card end where it actually ends. */
+.jx-rail { display: flex; align-items: flex-start; gap: clamp(16px, 2.4vw, 34px); padding-inline: clamp(16px, 4vw, 40px); }
 .jx-rail__lead { flex: none; width: clamp(17rem, 27vw, 25rem); display: flex; flex-direction: column; justify-content: center; }
 .jx-card {
   flex: none;
@@ -218,7 +228,7 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
   border: 1px solid var(--rule);
   display: flex; flex-direction: column;
 }
-.jx-card__shot { display: block; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid var(--rule); background: var(--paper-2); }
+.jx-card__shot { display: block; position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid var(--rule); background: var(--paper-2); }
 .jx-card__shot img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
 .jx-card__body { padding: clamp(15px, 1.8vw, 24px); }
 .jx-card__name { font-size: clamp(1.15rem, 1.9vw, 1.5rem); font-weight: 700; letter-spacing: -0.02em; margin: 9px 0 0; color: var(--ink); }
@@ -297,6 +307,17 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
 .jx-btn:hover { border-color: var(--accent); color: var(--accent); }
 .jx-btn--solid:hover { color: var(--sc-accent-ink); }
 
+/* The clipboard confirmation. It sits in the button row, so it is sized like a
+   button and not like a toast — nothing slides in from a corner, the row just
+   gains a word and loses it again. */
+.jx-copied {
+  font-family: var(--sc-font-mono);
+  font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase;
+  padding: 14px 18px; display: inline-block;
+  border: 1px solid color-mix(in oklab, var(--accent-2) 40%, transparent);
+  color: var(--accent-2);
+}
+
 /* square, like a ledger — scoped, or it flattens the console's rounded chrome */
 .jx-page * { border-radius: 0; }
 .jx-page .jx-assert::before { border-radius: 50%; }
@@ -373,10 +394,16 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
 .jx-open .jx-lbl     { color: rgba(250,248,245,0.82); }
 .jx-open .jx-lbl b   { color: #c9a961; }
 
+/* 24ch is the headline, exactly: "I love a good challenge." is 24 monospaced
+   characters, so the measure and the string are the same thing and the line
+   either fits or it does not. The copy column is now capped against the mark
+   (see below), and inside that column 3.9vw broke the line in two at 1200 and
+   at 1400. 3.55vw is the largest step that holds one line from 880 up, and the
+   floor comes down with it because the floor is what binds at 861. */
 .jx-code-title {
   max-width: min(24ch, 100%);
   font-family: var(--sc-font-mono);
-  font-size: clamp(2.05rem, 3.9vw, 3.05rem);
+  font-size: clamp(1.85rem, 3.55vw, 3.05rem);
   font-weight: 700;
   line-height: 1.13;
   letter-spacing: -0.012em;
@@ -419,6 +446,116 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
   .jx-row__nt { grid-column: 2; }
   .jx-row__yr { grid-row: 1 / span 2; grid-column: 1; min-width: 0; padding-top: 0.2rem; }
   .jx-row__top { padding-left: 0; }
+}
+
+/* ——— the mark takes the right of the frame, the copy the left ———
+   The clip is a centred object in a 16:9 room, and `object-fit: cover` scales
+   it by whichever axis is short. On a 16:9 window that is harmless. On a
+   1064x760 window it scales the render 27% and drops the mark straight under
+   the headline: "I love a good challenge." crossing four lit spikes, measured
+   on the real page, not guessed.
+
+   So above the phone breakpoint the media is placed rather than cropped. Its
+   box is sized from the frame's short axis, and its centre is parked at 78% of
+   the width, which puts the mark in the right half at every aspect ratio the
+   act can be asked to hold.
+
+   The box no longer covers the stage, and the clip's room is what would show
+   at its edges — a back wall and a floor, two hard rules across the frame. So
+   the room goes: a vignette centred on the mark holds it out to 0.36 of the
+   box height (the mark measures 0.335 across all 560 frames) and is gone by
+   0.48. The lines are inside the frame rather than at its border, so only a
+   vignette reaches them; an edge fade left both standing. */
+@media (min-width: 861px) {
+  /* The mark arrives.
+
+     `--jx-mark` is the clip's own playhead, written by MarkSync — the same
+     number the type is already reading, so nothing here can drift away from
+     what the video is showing.
+
+     `--jx-drift` is the tail of it, remapped to 0..1 across the last 38%. For
+     the first two thirds the mark is a companion sitting in the copy's margin;
+     across the last third it walks to centre, stands up out of its tilt, and
+     becomes the subject the bloom then takes. One ramp drives all three, so
+     they cannot come apart.
+
+     Under reduced motion MarkSync pins `--jx-mark` to 1, which lands every one
+     of these at its resting value: centred, upright, unrotated. The end state
+     is the still frame, which is what a static poster should have been anyway. */
+  /* Declared on the act, not on the media, because the copy has to read the
+     same number: the mark cannot walk to centre unless the copy walks off it. */
+  .jx-page .jx-open {
+    --jx-drift: clamp(0, calc((var(--jx-mark, 0) - 0.62) / 0.38), 1);
+  }
+
+  /* The copy hands the frame over. Measured at 1440x810: at the end of the
+     ramp the centred mark spans 32–68% of the frame and the headline runs
+     straight through it, which is the same collision the placement above
+     exists to prevent — the drift just re-created it from the other side. So
+     the copy recedes on the same clock. By then it has had four and a half
+     screens of scroll; the last beat belongs to the mark alone, and the bloom
+     takes it from there.
+
+     This sits on the container. Its three children are `[data-sc-cue]` and the
+     engine writes their opacity inline, which no stylesheet rule can override
+     — the parent's opacity multiplies with theirs instead of fighting them. */
+  .jx-page .jx-open .sc-copy--lead {
+    opacity: calc(1 - var(--jx-drift, 0) * 0.94);
+    translate: calc(var(--jx-drift, 0) * -2rem) 0;
+  }
+
+  /* The wash exists to give the copy a ground. When the copy goes it has
+     nothing left to protect, and left up it would dim the mark's whole left
+     side the moment the mark arrived in the middle of it. */
+  .jx-page .jx-open .sc-scrim {
+    opacity: calc(1 - var(--jx-drift, 0));
+  }
+
+  .jx-page .jx-open [data-sc-stage] :is(video[data-sc-scrub], .sc-stage__poster) {
+    --jx-mark-w: min(92%, 172svh);
+    inset: auto;
+    top: 50%;
+    left: calc(78% - var(--jx-drift) * 28% - var(--jx-mark-w) / 2);
+    width: var(--jx-mark-w);
+    height: auto;
+    translate: 0 -50%;
+    /* 39 circles orbited around one centre, so a slow turn reads as the
+       pattern breathing rather than an object spinning. 18deg is the ceiling —
+       past about 30 the moire starts to strobe against the scanline pitch. */
+    rotate: calc(var(--jx-mark, 0) * 18deg);
+    /* The tilt is what makes it an object rather than a texture. It stands up
+       as it centres, so the two beats resolve on the same frame. */
+    transform: perspective(1600px) rotateX(calc((1 - var(--jx-drift)) * 7deg));
+    transform-origin: 50% 50%;
+    /* The vignette that used to sit here masked the clip's back wall and
+       floor. The 2026-08-29 render deletes both at source, so the mask now
+       only crops the glyphs — it is gone. */
+  }
+
+  /* The copy stops where the mark starts. 46rem is the measure this column
+     wants; 54vw is the wall it is not allowed to cross, and on a narrower
+     window the wall is what binds. 880x760 is the tightest frame this has to
+     hold — the copy ends at 510 and the first spike is at 528 — because the
+     mark is sized from the frame's width and the copy is not. */
+  .jx-page .jx-open .sc-copy--lead { max-width: min(46rem, 54vw); }
+
+  /* With the mark out of the copy's half, the corner scrim has nothing left to
+     fix and only dimmed the mark's left side. One wash across the copy column
+     replaces it: opaque where the media's left edge lands, gone before the
+     first spike. */
+  .jx-open .sc-scrim {
+    background:
+      linear-gradient(to right,
+        rgba(5, 5, 6, 0.97) 0%,
+        rgba(5, 5, 6, 0.94) 26%,
+        rgba(5, 5, 6, 0.58) 42%,
+        rgba(5, 5, 6, 0.20) 53%,
+        transparent 64%),
+      linear-gradient(to top,
+        rgba(5, 5, 6, 0.62) 0%,
+        rgba(5, 5, 6, 0.24) 26%,
+        transparent 46%);
+  }
 }
 
 /* ——— mobile open: a square render, and more density ———
@@ -652,7 +789,7 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
    baseline across the rail. Cards stretch to a common height either way; this
    just decides where the slack goes. */
 .jx-card__body { display: flex; flex-direction: column; align-items: flex-start; height: 100%; }
-.jx-card__foot { margin-top: auto; padding-top: 18px; }
+.jx-card__foot { margin-top: 0; padding-top: 20px; }
 .jx-card__foot .jx-meta { margin-top: 0; margin-bottom: 4px; }
 .jx-card__foot .jx-go { margin-top: 10px; }
 .jx-go--mute { border-bottom: 0; }
@@ -799,9 +936,22 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
   filter:
     brightness(calc(1 + var(--jx-bloom, 0) * 1.35))
     contrast(calc(1 - var(--jx-bloom, 0) * 0.42));
-  opacity: calc(1 - var(--jx-bloom, 0) * 0.88);
+  /* Two clocks, one on each side of the join. The bloom blows the act out from
+     the inside on the way in; `--jx-gone` keeps it out on the way past, so the
+     stage does not fade back up as the light falls and ride the last viewport
+     of the pin away as a strip of mark above the index. */
+  opacity: calc((1 - var(--jx-bloom, 0) * 0.88) * (1 - var(--jx-gone, 0)));
   transform: scale(calc(1 + var(--jx-bloom, 0) * 0.035));
   transform-origin: 50% 46%;
+}
+
+/* And the act's own ground goes with it. The stage is what carries the mark,
+   but the section behind it is near-black, and on paper a black band under the
+   index reads as the open act still being there. It resolves to the page
+   ground instead, so what is left of the act after the cut is not a band at
+   all. */
+.jx-open {
+  background: color-mix(in oklab, var(--paper) calc(var(--jx-gone, 0) * 100%), #0a0a0b);
 }
 
 /* And the index resolves out of it. The bloom is already falling by the time
@@ -824,7 +974,14 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
     display: none;
   }
 
-  .jx-open [data-sc-stage],
+  /* No bloom under reduced motion, so the hand-over is the whole effect: the
+     act still goes, it just goes without a light over it. */
+  .jx-open [data-sc-stage] {
+    filter: none;
+    opacity: calc(1 - var(--jx-gone, 0));
+    transform: none;
+  }
+
   .jx-index-act {
     filter: none;
     opacity: 1;
@@ -863,4 +1020,159 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
     position: relative;
     z-index: 1;
   }
+}
+
+/* ════════════════════════════════════════════════════════════
+   THE STAGE
+
+   A fixed WebGL field behind the whole page. `body` is the only thing that
+   paints a ground under it, and a fixed element at z-index 0 sits above the
+   body background, so the canvas is visible without touching the body rule.
+
+   The acts are the problem worth naming. This page paints an opaque ground per
+   section on purpose — a cut is not an interpolation — and an opaque ground
+   buries the field completely. So the grounds keep their colour and lose a
+   little alpha: enough for the contours to read as grain under the paper,
+   not enough to move the measured contrast. `--ink-3` on paper was measured at
+   5.06:1 and has to stay there.
+   ════════════════════════════════════════════════════════════ */
+.jx-stage {
+  position: fixed;
+  inset: 0;
+  width: 100%;   /* not optional: a canvas with no CSS size renders at 300x150 */
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Everything the reader touches sits above it. */
+.jx-page > main,
+.jx-page .jx-bar,
+.jx-page .jx-bloom {
+  position: relative;
+  z-index: 1;
+}
+
+/* The open is dark and the field is built for dark, so this is where it earns
+   its bundle. 0.82 lets the contours through the ground without the copy
+   losing its wall. */
+.jx-open,
+.jx-open [data-sc-stage] {
+  background-color: rgba(10, 10, 11, 0.82);
+}
+
+/* Paper acts: a whisper. Any lower and the body text starts swimming. */
+.jx-page .jx-act:not(.jx-open) {
+  background-color: color-mix(in srgb, var(--paper) 96%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No canvas is created at all under reduced motion, so the grounds go back
+     to being fully opaque rather than letting the body colour through. */
+  .jx-stage { display: none; }
+  .jx-open,
+  .jx-open [data-sc-stage] { background-color: #0a0a0b; }
+  .jx-page .jx-act:not(.jx-open) { background-color: var(--paper); }
+}
+
+/* No WebGL context: the grounds go opaque again, same as reduced motion. */
+:root.jx-no-stage .jx-open,
+:root.jx-no-stage .jx-open [data-sc-stage] { background-color: #0a0a0b; }
+:root.jx-no-stage .jx-page .jx-act:not(.jx-open) { background-color: var(--paper); }
+
+/* ════════════════════════════════════════════════════════════
+   THE OPEN IS NOT THEMED
+
+   Everything else on this page follows the reader's choice. The open act does
+   not, and cannot: it is a dark room with a lit object in it, and the clip is
+   graded for that room. Letting the ground through at 0.82 so the field could
+   read behind it worked in dark, where the body is #0e0f11 and the difference
+   is invisible. In light the body is #f4f3f0, so 18% of white came through and
+   the hero lifted to a washed grey — a different hero depending on a switch
+   that has nothing to do with it.
+
+   So the act is opaque in both themes. It costs the field its 18% here, which
+   is the smaller loss: the act already has a lit 3D mark and nothing behind it
+   was legible anyway.
+
+   The `--jx-gone` mix stays. That is the cut handing the band over to page
+   ground after the bloom, and it has to keep following the theme — the band
+   belongs to the index by then, not to the open.
+   ════════════════════════════════════════════════════════════ */
+.jx-page .jx-open {
+  background-color: color-mix(in oklab, var(--paper) calc(var(--jx-gone, 0) * 100%), #0a0a0b);
+}
+.jx-page .jx-open [data-sc-stage] { background-color: #0a0a0b; }
+
+/* ——— focus, and the selection ———
+   globals.css is the console's stylesheet and it is loaded unscoped, so its
+   `button:focus-visible { outline: 2px solid var(--amber) }` was landing on
+   this page too: a 2px gold slab around the theme switch, offset 2px, in a bar
+   built out of hairlines. It outranked scrollcraft's own ring on specificity,
+   so nothing here ever chose it.
+
+   The ring stays — taking it away breaks keyboard use for the sake of one
+   screenshot — but it is a hairline in the page's own accent now, and on the
+   open act it borrows the mark's gold, because a cold blue on near-black is
+   the one place the accent does not belong. */
+.jx-page :is(a, button, input, [tabindex]):focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 3px;
+}
+.jx-page .jx-open :is(a, button):focus-visible { outline-color: #c9a961; }
+
+/* Selection was a solid block of --accent with inverted ink: a saturated blue
+   rectangle stamped over the copy. A wash tints the line instead of replacing
+   it, so the words keep their own colour and the highlight reads as a
+   highlight. Gold on the open, for the same reason the focus ring is. */
+.jx-page ::selection {
+  background: color-mix(in oklab, var(--accent) 26%, transparent);
+  color: var(--ink);
+}
+.jx-page .jx-open ::selection {
+  background: rgba(201, 169, 97, 0.32);
+  color: #faf8f5;
+}
+
+/* ════════════════════════════════════════════════════════════
+   THE CHROME BELONGS TO WHAT IS UNDER IT
+
+   Making the open act theme-proof fixed the act and left the two pieces of
+   browser furniture sitting on top of it still following the switch: in light
+   the runner bar goes near-white across the top of a black hero, and the
+   scrollbar track goes white down its right edge. A light band and a white
+   strip framing the one act that is supposed to be a dark room. That is the
+   border.
+
+   Both now read `--jx-gone`, which BloomCut already publishes and which is
+   exactly this clock: 0 for the whole open act, 1 once the cut has handed the
+   page over. So the bar is dark while it sits on the open and paper once it
+   sits on paper, and the scrollbar goes with it. In dark theme the mix runs
+   from #0a0a0b to #0e0f11 and nothing visibly moves, which is correct — there
+   was never a problem there.
+   ════════════════════════════════════════════════════════════ */
+.jx-page .jx-bar {
+  /* One ramp, four roles. Written as locals so the switch and the count below
+     read the same ground the bar does and cannot fall out of step with it. */
+  --bar-ground: color-mix(in oklab, var(--paper) calc(var(--jx-gone, 0) * 100%), #0a0a0b);
+  --bar-ink:    color-mix(in oklab, var(--ink) calc(var(--jx-gone, 0) * 100%), #faf8f5);
+  --bar-soft:   color-mix(in oklab, var(--ink-3) calc(var(--jx-gone, 0) * 100%), rgba(250, 248, 245, 0.66));
+  --bar-rule:   color-mix(in oklab, var(--rule) calc(var(--jx-gone, 0) * 100%), rgba(250, 248, 245, 0.16));
+
+  background: color-mix(in oklab, var(--bar-ground) 92%, transparent);
+  border-bottom-color: var(--bar-rule);
+  color: var(--bar-soft);
+}
+.jx-page .jx-bar__name { color: var(--bar-ink); }
+.jx-page .jx-bar__sep  { color: var(--bar-rule); }
+.jx-page .jx-theme     { color: var(--bar-soft); border-color: var(--bar-rule); }
+.jx-page .jx-theme:hover { color: var(--bar-ink); border-color: var(--bar-soft); }
+
+/* The scrollbar is the other half of the frame. `scrollbar-color` is the only
+   handle on it that is not a -webkit- pseudo-element, and it takes the same
+   two colours the bar is already mixing. */
+html:has(.jx-page) {
+  scrollbar-color:
+    color-mix(in oklab, var(--rule-2) calc(var(--jx-gone, 0) * 100%), #2e2e31)
+    color-mix(in oklab, var(--paper) calc(var(--jx-gone, 0) * 100%), #0a0a0b);
 }
