@@ -13,12 +13,12 @@ ROLES = [
        loc="Buenos Aires · Remote",
        bul=["Cofounded with Dmitry Sabanin and Emiliano Migliorata. Own products in fintech and quantitative trading; cofounding engineering for other founders.",
             "A Rust engine running strategies against live order books, on our own capital.",
-            "An autonomous agent on a cloud VM since June 2026 — reachable through Slack, supervised by pm2, trusted with real infrastructure: watchdogs, nightly digests, incident detection.",
-            "Evidence-based trekking platform: 32 ranges, 243 articles, 3,403 cited sources."]),
+            "DJINN, an open-source agentic workflow platform — running unattended on a cloud VM since June 2026, reachable through Slack, supervised by pm2 and trusted with real infrastructure: watchdogs, nightly digests, incident detection and a knowledge store it maintains itself."]),
 
   dict(co="TrueML", role="Senior Software Engineer II", when="Mar 2025 — Aug 2026",
-       loc="United States · Remote", note="Promoted from Senior Software Engineer.",
-       bul=["Designed and shipped the authorization platform on AWS Cognito — adopted by the legacy estate and built into new applications and services across the company.",
+       loc="United States · Remote", note="Agentic workflows team · promoted from Senior Software Engineer.",
+       bul=["On the agentic workflows team throughout — automating collections workflows end to end.",
+            "Designed and shipped the authorization platform on AWS Cognito — adopted by the legacy estate and built into new applications and services across the company.",
             "Led the workflow engine migration from Camunda to Netflix Conductor, <b>saving $200k</b>.",
             "Built the bankruptcy monitoring system for collections compliance. The failure mode there was regulatory exposure, not cost.",
             "Designed the collector shim bridging the legacy estate to One True Platform, the next-generation system.",
@@ -26,7 +26,7 @@ ROLES = [
             "Platform engineering across Java, TypeScript, Scala and Go; CI/CD on Kubernetes, Helm and ArgoCD."]),
 
   dict(co="TrueML", role="Senior Software Engineer", when="Mar 2024 — Mar 2025",
-       loc="United States · Remote",
+       loc="United States · Remote", note="Agentic workflows team.",
        bul=["Platform and infrastructure work across the estate, leading to promotion to Senior II."]),
 
   dict(co="Expero", role="Backend Developer — Rust & .NET", when="Aug 2021 — Jan 2024",
@@ -56,7 +56,7 @@ ROLES = [
 
   dict(co="Globant", role="Java Developer", when="Feb 2019 — Sep 2019", loc="Buenos Aires",
        bul=["Disney account: microservice development in Java 8, Spring, Spring Boot and Spring Integration, on MariaDB and DynamoDB.",
-            "Certified WorkFusion Automation Engineer Specialist; robotic process automation and web automation with Selenium."]),
+            "Robotic process automation and web automation with Selenium."]),
 ]
 
 jobs = "".join(f"""<article class="job">
@@ -69,11 +69,16 @@ jobs = "".join(f"""<article class="job">
 
 skills = "".join(f"<div class='skill'><h4>{E(s.get('name',''))}</h4><p>{E(', '.join(s.get('keywords',[])))}</p></div>"
                  for s in src.get("skills", []))
-edu = "".join(f"<article class='job'><div class='when'>{E(e.get('startDate','')[:4])} — {E((e.get('endDate') or '')[:4] or 'now')}</div>"
-              f"<div class='what'><h3>{E(e.get('institution',''))}</h3>"
-              f"<p class='loc'>{E(e.get('studyType',''))} {E(e.get('area',''))}</p></div></article>"
-              for e in src.get("education", []))
-certs = "".join(f"<li>{E(c.get('name',''))} — {E(c.get('issuer',''))}</li>" for c in src.get("certificates", []))
+EDU = [
+  dict(when="2013 — 2017", school="Washington &amp; Lee University",
+       what="Bachelor of Arts, Geology &amp; Business — Lexington, VA, United States"),
+  dict(when="— 2013", school="Trinity College",
+       what="International Baccalaureate Diploma — Buenos Aires"),
+]
+edu = "".join(f"<article class='job'><div class='when'>{e['when']}</div>"
+              f"<div class='what'><h3>{e['school']}</h3>"
+              f"<p class='loc'>{e['what']}</p></div></article>" for e in EDU)
+certs = ""  # the only entry was the WorkFusion cert, which Julian asked to drop
 langs = ", ".join(f"{E(l.get('language',''))} ({E(l.get('fluency',''))})" for l in src.get("languages", []))
 
 doc = f"""<!doctype html><meta charset="utf-8"><title>Julian Irigoyen — CV</title>
