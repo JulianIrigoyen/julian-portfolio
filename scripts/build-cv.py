@@ -141,6 +141,9 @@ body{{margin:0;font-family:var(--sans);color:var(--ink);font-size:9.3pt;line-hei
 .job .v::before{{content:"";position:absolute;left:-2.5px;top:5.5px;
                  width:4px;height:4px;background:var(--accent)}}
 .kv .v{{padding-bottom:8.5px}}
+/* The summary is the one block that should not run edge to edge. */
+.profile .v{{padding-top:13px;padding-bottom:22px;padding-right:38px}}
+.profile .k{{padding-top:13px}}
 
 h1{{font-size:23pt;margin:0;letter-spacing:-.025em;font-weight:700;line-height:1}}
 .title{{color:var(--ink-2);font-size:10.2pt;margin:6px 0 0;font-weight:400;letter-spacing:-.004em}}
@@ -148,7 +151,7 @@ h1{{font-size:23pt;margin:0;letter-spacing:-.025em;font-weight:700;line-height:1
           font-family:var(--mono);font-size:7.1pt;letter-spacing:.01em;color:var(--ink-3)}}
 .contact li{{white-space:nowrap}}
 .contact .sep{{color:#c2bdb5}}
-.bar{{height:2.5px;background:var(--ink);margin:11px 0 0}}
+.bar{{height:2.5px;background:var(--ink);margin:13px 0 0}}
 
 h3{{font-size:10pt;margin:0;font-weight:600;letter-spacing:-.008em}}
 .role{{font-weight:400;color:var(--ink-2);letter-spacing:0}}
@@ -175,7 +178,7 @@ b{{font-weight:600;color:var(--ink)}}
   <ul class="contact">{contact}</ul>
   <div class="bar"></div>
 </header>
-{row("Profile", E(SUMMARY), "kv")}
+{row("Profile", E(SUMMARY), "kv profile")}
 {head("Experience")}{jobs}
 {head("Skills")}{skills}
 {head("Education")}{edu}
