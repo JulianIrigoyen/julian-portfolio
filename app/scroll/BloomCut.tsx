@@ -40,7 +40,11 @@ import { useEffect } from "react";
 /* Lowered from 0.62 so the light starts later: the mark now holds its arrival
    — centred, upright, still turning — for about a fifth of a viewport longer
    before the bloom begins to take it. */
-const RISE = 0.42;
+/* Raised from 0.42. `d` counts down to the join, and the bloom stays at zero
+   while d > RISE * viewport — so a LARGER value starts the light further out,
+   i.e. sooner. At 0.42 it fired so late the clip had already resolved and the
+   reader saw the end state sit there before anything happened. */
+const RISE = 0.92;
 const FALL = 0.8;
 const GONE = 0.2;
 

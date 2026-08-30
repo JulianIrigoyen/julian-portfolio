@@ -1176,3 +1176,51 @@ html:has(.jx-page) {
     color-mix(in oklab, var(--rule-2) calc(var(--jx-gone, 0) * 100%), #2e2e31)
     color-mix(in oklab, var(--paper) calc(var(--jx-gone, 0) * 100%), #0a0a0b);
 }
+
+/* ════════════════════════════════════════════════════════════
+   THE TYPED LEAD
+
+   The hero body is set in the same mono face as the headline so the whole
+   lead reads as one terminal buffer. Mono is wider than Archivo at the same
+   size, so two things have to move with it or the column gets unreadable:
+   the size comes down and the measure comes in. 56ch of JetBrains Mono is
+   about 20% wider than 56ch of Archivo — left alone it would have run past
+   the mark.
+   ════════════════════════════════════════════════════════════ */
+.jx-typed {
+  font-family: var(--sc-font-mono);
+  font-size: clamp(0.80rem, 0.62rem + 0.42vw, 0.95rem);
+  line-height: 1.72;          /* mono needs more leading than a humanist sans */
+  letter-spacing: -0.005em;
+  max-width: 52ch;
+  color: var(--ink-2);
+}
+
+/* Scrollcraft wraps each character in .sc-split for the `chars` device. Give
+   them a shared baseline so a half-revealed line does not jitter. */
+.jx-typed .sc-split {
+  will-change: opacity;
+}
+
+/* The caret. It sits after the final character and blinks on its own clock —
+   deliberately not tied to the scroll, so the page looks alive even when the
+   reader has stopped moving. 1.06s is roughly a real terminal's rate. */
+.jx-caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.05em;
+  margin-left: 0.12em;
+  vertical-align: -0.18em;
+  background: var(--accent-warm, #c9a961);
+  animation: jx-caret-blink 1.06s steps(1, end) infinite;
+}
+
+@keyframes jx-caret-blink {
+  0%, 50%   { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* A blinking block is the exact thing this media query exists for. */
+  .jx-caret { animation: none; opacity: 1; }
+}

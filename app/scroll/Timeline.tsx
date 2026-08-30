@@ -354,18 +354,33 @@ export default function Timeline() {
                 I love a good challenge.
               </h1>
 
-              <div
-                data-sc-cue="0.18 1 0.26 0.08"
-                style={{ marginTop: "1.6rem", maxWidth: "56ch" }}
-              >
+              {/* The body types itself out. Same mono face as the headline, so
+                  the whole lead reads as one terminal buffer being written
+                  rather than a heading in code and prose underneath it.
+
+                  The two paragraphs carry separate cue ramps that overlap
+                  slightly, so the second starts before the first has finished
+                  — a continuous stream, not two blocks taking turns. The
+                  caret sits after the last character and blinks on its own. */}
+              <div style={{ marginTop: "1.6rem" }}>
                 <span className="jx-openrule" />
-                <p className="sc-body" style={{ marginTop: "1.1rem" }}>
+                <p
+                  className="sc-body jx-typed"
+                  data-sc-cue="0.18 0.72 0.26 0.05"
+                  data-sc-kinetic="chars"
+                  style={{ marginTop: "1.1rem" }}
+                >
                   I&apos;m a 31-year-old engineer from Argentina. I&apos;ve spent
                   the last eight years building applications for a wide variety
                   of companies: large consulting firms, software factories,
                   small startups and well established product companies.
                 </p>
-                <p className="sc-body" style={{ marginTop: "0.9rem" }}>
+                <p
+                  className="sc-body jx-typed"
+                  data-sc-cue="0.60 1 0.26 0.05"
+                  data-sc-kinetic="chars"
+                  style={{ marginTop: "0.9rem" }}
+                >
                   From backend — Java and C# on the object-oriented side,
                   Scala and Rust on the more functional one — to full stack
                   (vanilla, React, Vue), DevOps with AWS/GCP/K8s, and AI
@@ -374,6 +389,7 @@ export default function Timeline() {
                   microservice-oriented systems, built full-stack web
                   applications from scratch, and set up productive agentic
                   workflows for large corporations and small businesses.
+                  <span className="jx-caret" aria-hidden="true" />
                 </p>
               </div>
             </div>
@@ -409,9 +425,9 @@ export default function Timeline() {
 
               <div className="jx-about__head">
                 <div className="jx-head">
-                  <span className="jx-lbl">2026 has been wild</span>
-                  <h2 className="sc-display sc-display--md" style={{ maxWidth: "18ch" }}>
-                    What is Juli up to
+                  <span className="jx-lbl">2026</span>
+                  <h2 className="sc-display sc-display--md" style={{ maxWidth: "16ch" }}>
+                    What I&apos;m building
                   </h2>
                 </div>
               </div>
@@ -419,8 +435,18 @@ export default function Timeline() {
               <div className="jx-about__body">
                 <span className="jx-openrule jx-about__rule" />
 
+                {/* The conviction leads. It is the most distinctive thing here
+                    and it was buried third of four, written abstractly. At
+                    display weight it also breaks four identical grey blocks
+                    into something with a shape. */}
+                <p className="jx-about__lede">
+                  The hard part of engineering moved. It is not the code any
+                  more — it is the people behind the idea, and how fast and
+                  clearly they can think together.
+                </p>
+
                 <p className="sc-body" style={{ marginTop: "1.1rem", maxWidth: "62ch" }}>
-                  After an amazing, 2 year long experience working at TrueML, I started the founder journey with{" "}
+                  I left TrueML after two years and started{" "}
                   <a
                     href="https://supersolid.co"
                     target="_blank"
@@ -428,33 +454,17 @@ export default function Timeline() {
                     className="jx-link"
                   >
                     Supersolid
-                  </a>
-                  , together with my former boss and mentor Dmitry Sabanin and
-                  my best friend Emiliano Migliorata. We&apos;re building in
-                  fintech and quantitative trading, and we work with other founders as
-                  a cofounding team on their ideas.
-                </p>
-                <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
-                  I tackle problems methodically, and I make a point of relying
-                  on my team to move forward efficiently and effectively. I&apos;m a big fan of failing fast,
-                  through automated TDD and CI/CD pipelines, and of delivering small
-                  concrete iterations. I&apos;m interested in simple and complex
-                  problems alike. A lot more so in the person and the idea behind
-                  each problem.
+                  </a>{" "}
+                  with Dmitry Sabanin — my former boss and mentor — and
+                  Emiliano Migliorata, my best friend. We build our own products
+                  in fintech and quantitative trading, and we cofound with other
+                  founders on theirs.
                 </p>
 
-                <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }} >
-                  The world has changed. The complexity in engineering has shifted
-                  and what actually makes a difference now are the{" "}
-                  <strong>people</strong> behind ideas and business processes.
-                  By this, productivity has become a direct result of the quality and speed of communication,
-                  of broad understanding, meaningful experience and a refined taste of those involved in building
-                  any given system.
-                </p>
                 <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
-                  In this context, my goal as an engineer is to bridge the gap between the idea and its implementation
-                  as swiftly, elegantly and robustly as possible, to bring amazing products and services,
-                  and thus the future, to life.
+                  My job is to close the gap between an idea and the thing
+                  running in production — quickly, and well enough that it stays
+                  there. Everything below this line is running right now.
                 </p>
 
                 <div className="jx-index">
