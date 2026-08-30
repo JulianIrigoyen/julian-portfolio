@@ -5,6 +5,7 @@ import ScrollcraftMount from "./ScrollcraftMount";
 import Suite, { Assert } from "./Suite";
 import MarkSync from "./MarkSync";
 import BloomCut from "./BloomCut";
+import RailDepth from "./RailDepth";
 import MailButton, { ADDRESS } from "./MailButton";
 import dynamic from "next/dynamic";
 
@@ -296,6 +297,7 @@ export default function Timeline() {
   return (
     <div className="jx-page">
       <Stage />
+      <RailDepth />
       <ScrollcraftMount />
       <MarkSync />
       <BloomCut />
@@ -367,7 +369,7 @@ export default function Timeline() {
                 <p
                   className="sc-body jx-typed"
                   data-sc-cue="0.18 0.72 0.26 0.05"
-                  data-sc-kinetic="chars"
+                  data-sc-kinetic="type"
                   style={{ marginTop: "1.1rem" }}
                 >
                   I&apos;m a 31-year-old engineer from Argentina. I&apos;ve spent
@@ -378,7 +380,7 @@ export default function Timeline() {
                 <p
                   className="sc-body jx-typed"
                   data-sc-cue="0.60 1 0.26 0.05"
-                  data-sc-kinetic="chars"
+                  data-sc-kinetic="type"
                   style={{ marginTop: "0.9rem" }}
                 >
                   From backend — Java and C# on the object-oriented side,

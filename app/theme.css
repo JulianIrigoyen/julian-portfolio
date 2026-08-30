@@ -940,7 +940,11 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
      the inside on the way in; `--jx-gone` keeps it out on the way past, so the
      stage does not fade back up as the light falls and ride the last viewport
      of the pin away as a strip of mark above the index. */
-  opacity: calc((1 - var(--jx-bloom, 0) * 0.88) * (1 - var(--jx-gone, 0)));
+  /* Fully consumed at peak, not 12% left over. The brief is that the open act
+     vanishes into the light and the index is what is standing there when it
+     clears — a residual ghost of the mark under a full-strength flash is the
+     one thing that gives the cut away. */
+  opacity: calc((1 - var(--jx-bloom, 0)) * (1 - var(--jx-gone, 0)));
   transform: scale(calc(1 + var(--jx-bloom, 0) * 0.035));
   transform-origin: 50% 46%;
 }
@@ -1045,10 +1049,17 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
   pointer-events: none;
 }
 
-/* Everything the reader touches sits above it. */
+/* Everything the reader touches sits above it.
+
+   NOT `.jx-bloom`. The bloom is the full-screen flash at the cut, and it is
+   `position: fixed; z-index: 60` by design — it has to cover the viewport and
+   sit over the act it is blowing out. Listing it here beat its own rule on
+   specificity (`.jx-page .jx-bloom` is 0,2,0 against 0,1,0) and 190 lines of
+   later cascade, which pinned it to `relative` and collapsed it to a
+   zero-height block in normal flow. The flash was still being computed every
+   frame; it just had nowhere to paint. */
 .jx-page > main,
-.jx-page .jx-bar,
-.jx-page .jx-bloom {
+.jx-page .jx-bar {
   position: relative;
   z-index: 1;
 }
@@ -1223,4 +1234,51 @@ html:has(.jx-page) {
 @media (prefers-reduced-motion: reduce) {
   /* A blinking block is the exact thing this media query exists for. */
   .jx-caret { animation: none; opacity: 1; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   RAIL DEPTH
+
+   RailDepth writes a matrix3d per card every frame. Three things have to be
+   true in CSS for that to look right and stay cheap.
+   ════════════════════════════════════════════════════════════ */
+
+/* 1. The transform needs an origin at the card's own top-left, because
+      rect-to-quad solves in the element's own coordinate space. The browser
+      default (50% 50%) would offset every card by half its size. */
+.jx-rail .jx-card {
+  transform-origin: 0 0;   /* rect-to-quad solves in the element's own space */
+  will-change: transform;
+  backface-visibility: hidden;
+  position: relative;      /* the dim overlay below is absolute to this */
+}
+
+/* 2. --dim is written on pointermove. It has a default so a card is never
+      unstyled before the pointer has ever moved. */
+.jx-rail .jx-card {
+  --dim: 0;
+}
+.jx-rail .jx-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--paper);
+  opacity: var(--dim);
+  transition: opacity 220ms ease-out;
+}
+
+/* 3. Overscan on the shot, so the parallax translate never reveals an edge.
+      The transform itself is written by the script. */
+.jx-rail .jx-card__shot img {
+  transform: scale(1.06);
+  will-change: transform;
+}
+
+/* The whole thing is pointer-driven, so it has nothing to say on touch —
+   and a warp that never updates is worse than none. */
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .jx-rail .jx-card { transform: none !important; will-change: auto; }
+  .jx-rail .jx-card::after { opacity: 0; }
+  .jx-rail .jx-card__shot img { transform: none; }
 }
