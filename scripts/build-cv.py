@@ -13,7 +13,7 @@ ROLES = [
        loc="Buenos Aires · Remote",
        bul=["Cofounded with Dmitry Sabanin and Emiliano Migliorata. Own products in fintech and quantitative trading; cofounding engineering for other founders.",
             "A Rust engine running strategies against live order books, on our own capital.",
-            "DJINN, an open-source agentic workflow platform — running unattended on a cloud VM since June 2026, reachable through Slack, supervised by pm2 and trusted with real infrastructure: watchdogs, nightly digests, incident detection and a knowledge store it maintains itself."]),
+            "DJINN, an open-source agentic workflow platform — in continuous development since January 2026 and running unattended on a cloud VM since June, reachable through Slack, supervised by pm2 and trusted with real infrastructure: watchdogs, nightly digests, incident detection and a knowledge store it maintains itself."]),
 
   dict(co="TrueML", role="Senior Software Engineer II", when="Mar 2025 — Aug 2026",
        loc="United States · Remote", note="Agentic workflows team · promoted from Senior Software Engineer.",

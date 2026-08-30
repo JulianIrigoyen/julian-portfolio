@@ -47,7 +47,7 @@ export const SYSTEMS = {
     title: "Autonomous operations agent",
     state: "live" as const,
     thesis:
-      "An AI agent that has run unattended on a cloud VM since June 2026 — reachable through Slack, supervised by pm2, responsible for real infrastructure. It watches a trading server, files nightly digests, detects incidents, and maintains its own knowledge store.",
+      "An open-source agentic workflow platform, in continuous development since January 2026 and running unattended on a cloud VM since June — reachable through Slack, supervised by pm2, responsible for real infrastructure. It watches a trading server, files nightly digests, detects incidents, and maintains its own knowledge store.",
     readouts: [
       { k: "uptime", v: "live", note: "unattended" },
       { k: "ops scripts", v: "~50", note: "each runnable dry" },
@@ -211,6 +211,7 @@ export const WORKS: {
       "An AI agent that has run unattended on a cloud VM since 28 June 2026, reachable through Slack and supervised by pm2. Around fifty purpose-built ops scripts — health doctors for remote hosts, P&L analysts, PR watchers, incident detection, nightly digests — each runnable dry, each reporting to Slack. It keeps a markdown brain of 90+ interlinked notes: it recalls from it, writes to it, lints it, and runs a nightly pass proposing links it thinks are missing. Watchdogs turn recurring failures into tracked repair work on GitHub, and per-repo deploy keys scope exactly what it is allowed to touch.",
     stack: ["Node.js", "Claude Agent SDK", "pm2", "Slack", "Supabase", "cron", "DigitalOcean"],
     facts: [
+      { k: "in development since", v: "jan 2026" },
       { k: "unattended since", v: "28 jun 2026" },
       { k: "ops scripts", v: "~50" },
       { k: "brain notes", v: "90+" },

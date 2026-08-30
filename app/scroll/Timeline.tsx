@@ -61,7 +61,7 @@ const NOW: Card[] = [
     status: "live · unattended and continuously developed",
     flag: "What I would show you first",
     cta: "Go see what it runs",
-    line: "An agent that has been running on a cloud VM since June, reachable through Slack (and more channels), trusted with real infrastructure: feature development and reviews, watchdogs, nightly digests, incident detection, and a knowledge store it maintains itself.",
+    line: "An open-source agentic workflow platform. In continuous development since January 2026 and running unattended on a cloud VM since June, reachable through Slack (and more channels), trusted with real infrastructure: feature development and reviews, watchdogs, nightly digests, incident detection, and a knowledge store it maintains itself.",
   },
   {
     n: "03",
@@ -344,16 +344,33 @@ export default function Timeline() {
               <span className="jx-lbl" data-sc-cue="0 0.74 0">
                 Backend <b>·</b> Full-stack <b>·</b> DevOps <b>·</b> Agentic AI
               </span>
-              {/* Scrollcraft staggers the characters across the cue ramp, so the
-                  line starts from zero at the top and begins writing as soon as
-                  the reader scrolls. */}
+              {/* The line types itself in ON LOAD, not across the scroll.
+              
+                  `data-sc-kinetic` staggers characters across a cue's ramp-in,
+                  so with a cue starting at 0 the h1 sat at opacity 0 until the
+                  reader scrolled — the landing screen carried no headline at
+                  all, which is the one thing a greet form has to do. This was
+                  fixed once in 1bbeb9a and reverted by 83862ea, which put the
+                  kinetic back and left the CSS below addressing a class that no
+                  longer existed.
+              
+                  So the characters come from CSS the moment the page paints,
+                  and the cue keeps only the hold, the rise and the exit — the
+                  line still moves and fades with the scrub behind it. */}
               <h1
-                className="sc-display sc-display--xl jx-code-title"
-                data-sc-cue="0 0.92 0.48 0.10"
-                data-sc-kinetic="chars"
+                className="sc-display sc-display--xl jx-code-title jx-type"
+                data-sc-cue="0 0.74 0"
                 style={{ marginTop: "0.9rem" }}
               >
-                I love a good challenge.
+                {"I love a good challenge.".split("").map((ch, i) => (
+                  <span
+                    key={i}
+                    className="jx-type__c"
+                    style={{ "--i": i } as React.CSSProperties}
+                  >
+                    {ch === " " ? "\u00A0" : ch}
+                  </span>
+                ))}
               </h1>
 
               {/* The body types itself out. Same mono face as the headline, so
@@ -368,7 +385,7 @@ export default function Timeline() {
                 <span className="jx-openrule" />
                 <p
                   className="sc-body jx-typed"
-                  data-sc-cue="0.18 0.72 0.26 0.05"
+                  data-sc-cue="0.12 0.52 1 0.04"
                   data-sc-kinetic="type"
                   style={{ marginTop: "1.1rem" }}
                 >
@@ -379,7 +396,7 @@ export default function Timeline() {
                 </p>
                 <p
                   className="sc-body jx-typed"
-                  data-sc-cue="0.60 1 0.26 0.05"
+                  data-sc-cue="0.48 0.90 1 0.04"
                   data-sc-kinetic="type"
                   style={{ marginTop: "0.9rem" }}
                 >
@@ -437,18 +454,23 @@ export default function Timeline() {
               <div className="jx-about__body">
                 <span className="jx-openrule jx-about__rule" />
 
-                {/* The conviction leads. It is the most distinctive thing here
-                    and it was buried third of four, written abstractly. At
-                    display weight it also breaks four identical grey blocks
-                    into something with a shape. */}
+                {/* Julian's own words, restored from 83862ea^. The commit that
+                    replaced them was called "a shorter bio" and it did shorten
+                    them — into someone else's register. "an amazing, 2 year
+                    long experience" became "after two years", "the founder
+                    journey" went, and the whole paragraph on how he actually
+                    works was cut. The conviction still leads at display weight,
+                    because that placement was a good call; the sentences under
+                    it are his again, punctuation and all. Do not smooth these. */}
                 <p className="jx-about__lede">
-                  The hard part of engineering moved. It is not the code any
-                  more — it is the people behind the idea, and how fast and
-                  clearly they can think together.
+                  The world has changed. The complexity in engineering has
+                  shifted, and what actually makes a difference now are the{" "}
+                  <strong>people</strong> behind ideas and business processes.
                 </p>
 
                 <p className="sc-body" style={{ marginTop: "1.1rem", maxWidth: "62ch" }}>
-                  I left TrueML after two years and started{" "}
+                  After an amazing, 2 year long experience working at TrueML, I
+                  started the founder journey with{" "}
                   <a
                     href="https://supersolid.co"
                     target="_blank"
@@ -456,17 +478,27 @@ export default function Timeline() {
                     className="jx-link"
                   >
                     Supersolid
-                  </a>{" "}
-                  with Dmitry Sabanin — my former boss and mentor — and
-                  Emiliano Migliorata, my best friend. We build our own products
-                  in fintech and quantitative trading, and we cofound with other
-                  founders on theirs.
+                  </a>
+                  , together with my former boss and mentor Dmitry Sabanin and
+                  my best friend Emiliano Migliorata. We&apos;re building in
+                  fintech and quantitative trading, and we work with other
+                  founders as a cofounding team on their ideas.
                 </p>
 
                 <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
-                  My job is to close the gap between an idea and the thing
-                  running in production — quickly, and well enough that it stays
-                  there. Everything below this line is running right now.
+                  I tackle problems methodically, and I make a point of relying
+                  on my team to move forward efficiently and effectively. I&apos;m
+                  a big fan of failing fast, through automated TDD and CI/CD
+                  pipelines, and of delivering small concrete iterations. I&apos;m
+                  interested in simple and complex problems alike. A lot more so
+                  in the person and the idea behind each problem.
+                </p>
+
+                <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
+                  My goal as an engineer is to bridge the gap between the idea
+                  and its implementation as swiftly, elegantly and robustly as
+                  possible, to bring amazing products and services, and thus the
+                  future, to life.
                 </p>
 
                 <div className="jx-index">
