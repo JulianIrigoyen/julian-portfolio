@@ -314,7 +314,7 @@ export default function Timeline() {
         <section
           className="jx-act jx-open"
           data-sc-act="scrub"
-          data-sc-span="10.75"
+          data-sc-span="10.72"
           data-sc-dwell="0.55"
         >
           <div data-sc-stage>
