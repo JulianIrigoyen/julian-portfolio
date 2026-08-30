@@ -127,7 +127,7 @@ const ALSO: Card[] = [
     state: "live",
     status: "live · half-productions.vercel.app",
     cta: "Open the site",
-    line: "Landing page for event-production site for an Argentina-to-Ibiza crew, with the public brand, Dharma, Boiler Cook, crew pages, print-ready QR assets, and an internal booking desk that turns Ibiza calendars, artist fees and warm-path relationships into a shortlist for monthly guest slots.",
+    line: "A multilingual event-production site for an Argentina-to-Ibiza crew, with the public brand, Dharma, Boiler Cook, crew pages, print-ready QR assets, and an internal booking desk that turns Ibiza calendars, artist fees and warm-path relationships into a shortlist for monthly guest slots.",
   },
   {
     n: "08",
