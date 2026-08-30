@@ -62,6 +62,23 @@ body:has(.jx-page),
 
 body:has(.jx-page) { background: var(--paper); color: var(--ink); }
 
+html:has(.jx-page),
+body:has(.jx-page) {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.jx-page {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: clip;
+}
+
+.jx-page [data-sc-act="pan"] {
+  overflow-x: clip;
+}
+
 /* ════════════════════════════════════════════════════════════
    THE SAME LEDGER, AFTER DARK.
 
@@ -827,23 +844,37 @@ body:has(.jx-page) { background: var(--paper); color: var(--ink); }
    measured in characters and each one divides its own 7-wide ramp. The
    constant is spelled 50 rather than divided at runtime because calc() may
    not divide by a custom property. */
+/* ── the greet line types itself in ───────────────────────────────────────
+   Character by character, on load, and deliberately NOT off the scroll.
+   
+   This drove off `--jx-mark` (the clip's playhead) for a while, which reads
+   well once the reader is moving but is 0 at rest — so the landing screen
+   held the headline at 16% opacity, a ghost of the most important line on the
+   page. A visitor who never scrolls never sees it.
+   
+   34ms apart and 440ms each puts the whole line down in about 1.2s, which is
+   under the time it takes to read it. The cue still owns the hold, the rise
+   and the exit, so the line keeps moving with the scrub behind it. */
 .jx-page .jx-type__c {
-  --adv: clamp(0, calc((var(--jx-mark, 0) * 50 - var(--i)) / 7), 1);
   display: inline-block;
-  opacity: calc(0.16 + 0.84 * var(--adv));
-  transform: translate3d(0, calc((1 - var(--adv)) * 0.22em), 0);
-  filter: blur(calc((1 - var(--adv)) * 9px));
+  opacity: 0;
+  transform: translate3d(0, 0.42em, 0);
+  animation: jx-type-in 0.44s var(--sc-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+  animation-delay: calc(var(--i) * 34ms);
   /* descender room: the masks the engine used to add are gone with the split */
   padding-bottom: 0.08em;
   margin-bottom: -0.08em;
 }
 
+@keyframes jx-type-in {
+  to { opacity: 1; transform: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .jx-page .jx-type__c {
-    --adv: 1;
+    animation: none;
     opacity: 1;
     transform: none;
-    filter: none;
   }
 }
 
@@ -1281,4 +1312,134 @@ html:has(.jx-page) {
   .jx-rail .jx-card { transform: none !important; will-change: auto; }
   .jx-rail .jx-card::after { opacity: 0; }
   .jx-rail .jx-card__shot img { transform: none; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   THE BAR'S RIGHT SIDE
+
+   The bar is the only fixed chrome on the page, so everything added to it has
+   to stay quieter than the open. The whole cluster runs in the bar's own ink
+   at rest; colour is reserved for hover, and there is exactly one filled
+   element — the CV, because that is the one thing the page is asking for.
+   ════════════════════════════════════════════════════════════ */
+
+.jx-bar__right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.jx-bar__rule {
+  width: 1px;
+  height: 15px;
+  background: var(--rule-2);
+  flex: none;
+}
+
+/* ——— project marks ——— */
+.jx-marks { display: flex; align-items: center; gap: 10px; }
+
+.jx-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  text-decoration: none;
+  color: var(--ink-3);
+  transition: color 220ms ease;
+}
+
+/* The mark is a MASK, not an image. Each of these three logos ships in its own
+   palette; masking them lets all three sit in one ink at rest, so the row reads
+   as a set instead of a sticker sheet — and the brand colour then means
+   something when it arrives on hover. */
+.jx-mark__i {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  background: currentColor;
+  -webkit-mask-image: var(--src);
+          mask-image: var(--src);
+  -webkit-mask-size: contain;
+          mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+          mask-position: center;
+  transition: transform 260ms cubic-bezier(.2,.8,.2,1);
+}
+
+/* The label is laid out at zero width and grows on hover, so the bar's spacing
+   never jumps as the pointer crosses it — the row width only changes for the
+   one mark being hovered. */
+.jx-mark__label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-3px);
+  transition: max-width 300ms cubic-bezier(.2,.8,.2,1),
+              opacity 200ms ease, transform 300ms cubic-bezier(.2,.8,.2,1),
+              margin-left 300ms cubic-bezier(.2,.8,.2,1);
+}
+
+.jx-mark:hover { color: var(--tint); }
+.jx-mark:hover .jx-mark__i { transform: scale(1.12); }
+.jx-mark:hover .jx-mark__label {
+  max-width: 12rem;
+  opacity: 1;
+  transform: none;
+  margin-left: 7px;
+}
+.jx-mark:focus-visible { outline: 1px solid var(--tint); outline-offset: 3px; }
+
+/* ——— socials ——— */
+.jx-social { display: flex; align-items: center; gap: 11px; }
+
+.jx-soc {
+  color: var(--ink-3);
+  display: inline-flex;
+  transition: color 200ms ease, transform 220ms cubic-bezier(.2,.8,.2,1);
+}
+.jx-soc svg { width: 15px; height: 15px; display: block; }
+.jx-soc:hover { color: var(--ink); transform: translateY(-1.5px); }
+.jx-soc:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
+
+/* ——— the CV ——— */
+.jx-cv {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px;
+  background: var(--ink);
+  color: var(--paper);
+  text-decoration: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  white-space: nowrap;
+  transition: background 200ms ease, transform 220ms cubic-bezier(.2,.8,.2,1);
+}
+.jx-cv svg { width: 13px; height: 13px; flex: none; }
+.jx-cv:hover { background: var(--accent); transform: translateY(-1px); }
+.jx-cv:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
+
+/* The count keeps its place after the cluster; it is the page's signature and
+   must not be pushed off by the links. */
+.jx-bar__count { margin-left: 0 !important; }
+
+/* Narrow: the labels and the CV wording go first, the marks stay. A phone still
+   gets every link, just without the words. */
+@media (max-width: 60rem) {
+  .jx-bar__right { gap: 10px; }
+  .jx-cv span { display: none; }
+}
+@media (max-width: 46rem) {
+  .jx-bar__rule { display: none; }
+  .jx-cv { padding: 5px 8px; }
+  .jx-social { gap: 9px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jx-mark__i, .jx-mark__label, .jx-soc, .jx-cv { transition: none; }
 }

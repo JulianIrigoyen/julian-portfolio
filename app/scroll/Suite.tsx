@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import BarLinks from "./BarLinks";
 
 type Theme = "light" | "dark";
 
@@ -97,6 +98,7 @@ export default function Suite() {
         ·
       </span>
       <span>Buenos Aires</span>
+      <BarLinks />
       <span className="jx-bar__count" suppressHydrationWarning>
         {total ? `${passed}/${total} pass` : "—"}
       </span>

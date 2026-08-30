@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="184 48 144 144">
+  <!-- jtreks favicon — the eye from the full mark, alone and square.
+
+       Why not the whole mark: the peak/j/eye lockup is portrait 4:5 with a
+       17-unit carved stroke and a snow cap. Rendered into a square tab slot it
+       reads at 180 px and turns to an unreadable smear at 16. The eye is the
+       one element that survives, and it is the distinctive half.
+
+       Why not the animated /brand/jtreks.svg: it was the declared favicon and
+       it carries `wink 8s infinite` and `breath 5s infinite`, so every Chrome
+       and Firefox tab animated forever. Nothing here animates.
+
+       Geometry copied verbatim from brand/jtreks.svg so the two cannot drift;
+       stroke widened 10 -> 12 because this is viewed at a fraction of the size.
+       No filter: the glow blur costs a real fraction of a 32 px icon and
+       renders inconsistently across favicon rasterisers. -->
+  <path fill="#221208" stroke="#e87b35" stroke-width="12" stroke-linejoin="round"
+    d="M 201 120 C 224 71, 288 71, 311 120 C 288 169, 224 169, 201 120 Z"/>
+  <circle cx="256" cy="120" r="26" fill="#c96a2a"/>
+  <circle cx="256" cy="120" r="13" fill="#0c0c0e"/>
+  <circle cx="263" cy="111" r="4.5" fill="#ededef"/>
+</svg>
