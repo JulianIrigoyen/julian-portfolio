@@ -66,17 +66,19 @@ html:has(.jx-page),
 body:has(.jx-page) {
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .jx-page {
   width: 100%;
-  max-width: 100vw;
-  overflow-x: clip;
+  max-width: 100%;
 }
 
-.jx-page [data-sc-act="pan"] {
-  overflow-x: clip;
+@supports not (overflow: clip) {
+  html:has(.jx-page),
+  body:has(.jx-page) {
+    overflow-x: hidden;
+  }
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -382,8 +384,8 @@ body:has(.jx-page) {
 }
 
 @keyframes jx-open-float {
-  from { transform: scale(1.012) translate3d(-0.2%, 0.35%, 0); }
-  to   { transform: scale(1.026) translate3d(0.35%, -0.3%, 0); }
+  from { transform: scale(1.006); }
+  to   { transform: scale(1.018); }
 }
 
 /* the scrim: density under the copy corner only, never a flat wash */
@@ -452,6 +454,25 @@ body:has(.jx-page) {
 .jx-index__lead { flex: 1; border-bottom: 1px dotted var(--rule-2); translate: 0 -3px; }
 .jx-index__s { color: var(--accent); }
 
+.jx-index-sync .jx-index__row {
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  transition: opacity 520ms var(--sc-ease-out), transform 520ms var(--sc-ease-out);
+}
+
+.jx-index-sync .jx-index__row--shown {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jx-index-sync .jx-index__row {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* section headers get consistent air and a hung label */
 .jx-head { display: grid; gap: 0.7rem; }
 .jx-head h2 { margin: 0; }
@@ -465,17 +486,16 @@ body:has(.jx-page) {
   .jx-row__top { padding-left: 0; }
 }
 
-/* ——— the mark takes the right of the frame, the copy the left ———
+/* ——— the mark starts alone, then hands space to the copy ———
    The clip is a centred object in a 16:9 room, and `object-fit: cover` scales
    it by whichever axis is short. On a 16:9 window that is harmless. On a
    1064x760 window it scales the render 27% and drops the mark straight under
    the headline: "I love a good challenge." crossing four lit spikes, measured
    on the real page, not guessed.
 
-   So above the phone breakpoint the media is placed rather than cropped. Its
-   box is sized from the frame's short axis, and its centre is parked at 78% of
-   the width, which puts the mark in the right half at every aspect ratio the
-   act can be asked to hold.
+   So above the phone breakpoint the media is placed rather than cropped. It
+   starts at the absolute centre with no copy around it, then moves into the
+   right half as the reader starts scrolling and the copy begins to type.
 
    The box no longer covers the stage, and the clip's room is what would show
    at its edges — a back wall and a floor, two hard rules across the frame. So
@@ -484,65 +504,48 @@ body:has(.jx-page) {
    0.48. The lines are inside the frame rather than at its border, so only a
    vignette reaches them; an edge fade left both standing. */
 @media (min-width: 861px) {
-  /* The mark arrives.
+  /* The mark clears the copy column.
 
-     `--jx-mark` is the clip's own playhead, written by MarkSync — the same
-     number the type is already reading, so nothing here can drift away from
-     what the video is showing.
+     `--jx-open-p` is the section's scroll progress; the clip can now pause on
+     the completed heart and then resume through the tail effect, so layout
+     timing cannot depend on raw video time.
 
-     `--jx-drift` is the tail of it, remapped to 0..1 across the last 38%. For
-     the first two thirds the mark is a companion sitting in the copy's margin;
-     across the last third it walks to centre, stands up out of its tilt, and
-     becomes the subject the bloom then takes. One ramp drives all three, so
-     they cannot come apart.
+     `--jx-sun-shift` is the opening move: 0 at first paint, 1 once the sun has
+     travelled right far enough for text to have a clean column. `--jx-copy-in`
+     waits behind that move, so the first screen is only the centred sun.
 
-     Under reduced motion MarkSync pins `--jx-mark` to 1, which lands every one
-     of these at its resting value: centred, upright, unrotated. The end state
-     is the still frame, which is what a static poster should have been anyway. */
-  /* Declared on the act, not on the media, because the copy has to read the
-     same number: the mark cannot walk to centre unless the copy walks off it. */
+     Under reduced motion MarkSync pins `--jx-mark` to 1, which lands the
+     composition in its readable state: copy visible, mark parked right. */
   .jx-page .jx-open {
-    --jx-drift: clamp(0, calc((var(--jx-mark, 0) - 0.62) / 0.38), 1);
+    --jx-sun-shift: clamp(0, calc((var(--jx-open-p, 0) - 0.02) / 0.20), 1);
+    --jx-copy-in: clamp(0, calc((var(--jx-open-p, 0) - 0.10) / 0.14), 1);
   }
 
-  /* The copy hands the frame over. Measured at 1440x810: at the end of the
-     ramp the centred mark spans 32–68% of the frame and the headline runs
-     straight through it, which is the same collision the placement above
-     exists to prevent — the drift just re-created it from the other side. So
-     the copy recedes on the same clock. By then it has had four and a half
-     screens of scroll; the last beat belongs to the mark alone, and the bloom
-     takes it from there.
-
-     This sits on the container. Its three children are `[data-sc-cue]` and the
+  /* This sits on the container. Its three children are `[data-sc-cue]` and the
      engine writes their opacity inline, which no stylesheet rule can override
      — the parent's opacity multiplies with theirs instead of fighting them. */
   .jx-page .jx-open .sc-copy--lead {
-    opacity: calc(1 - var(--jx-drift, 0) * 0.94);
-    translate: calc(var(--jx-drift, 0) * -2rem) 0;
+    opacity: var(--jx-copy-in);
+    translate: calc((1 - var(--jx-copy-in, 0)) * -0.8rem) 0;
   }
 
-  /* The wash exists to give the copy a ground. When the copy goes it has
-     nothing left to protect, and left up it would dim the mark's whole left
-     side the moment the mark arrived in the middle of it. */
   .jx-page .jx-open .sc-scrim {
-    opacity: calc(1 - var(--jx-drift, 0));
+    opacity: var(--jx-copy-in);
   }
 
   .jx-page .jx-open [data-sc-stage] :is(video[data-sc-scrub], .sc-stage__poster) {
     --jx-mark-w: min(92%, 172svh);
     inset: auto;
     top: 50%;
-    left: calc(78% - var(--jx-drift) * 28% - var(--jx-mark-w) / 2);
+    left: calc(50% + var(--jx-sun-shift, 0) * 28% - var(--jx-mark-w) / 2);
     width: var(--jx-mark-w);
     height: auto;
     translate: 0 -50%;
     /* 39 circles orbited around one centre, so a slow turn reads as the
-       pattern breathing rather than an object spinning. 18deg is the ceiling —
+       pattern breathing rather than an object spinning. 18deg is the ceiling;
        past about 30 the moire starts to strobe against the scanline pitch. */
     rotate: calc(var(--jx-mark, 0) * 18deg);
-    /* The tilt is what makes it an object rather than a texture. It stands up
-       as it centres, so the two beats resolve on the same frame. */
-    transform: perspective(1600px) rotateX(calc((1 - var(--jx-drift)) * 7deg));
+    transform: perspective(1600px) rotateX(calc(var(--jx-sun-shift, 0) * 7deg));
     transform-origin: 50% 50%;
     /* The vignette that used to sit here masked the clip's back wall and
        floor. The 2026-08-29 render deletes both at source, so the mask now
@@ -827,55 +830,17 @@ body:has(.jx-page) {
   .jx-card__name { font-size: 1.25rem; }
 }
 
-/* ── the greet line assembles with the mark ──────────────────────────────
-   The line and the reveal behind it are one event: both advance off the
-   clip's own playhead, so a character resolves exactly as much as the mark
-   has. `--jx-mark` is written by MarkSync from `video.currentTime /
-   duration` rather than from raw scroll, which means the type inherits the
-   engine's smoothing for free and the two cannot drift apart.
-
-   It does NOT start from nothing. A cue-driven reveal leaves the h1 at
-   opacity 0 on the landing screen, which is the one thing the greet form has
-   to carry — so a character rests at 0.16 under 9px of blur and scroll
-   resolves it, rather than conjuring the headline out of an empty page.
-
-   The maths, unrolled: 24 characters, 7 in flight at once, fully resolved at
-   62% of the clip. (24 + 7) / 0.62 = 50, so `mark * 50` is the leading edge
-   measured in characters and each one divides its own 7-wide ramp. The
-   constant is spelled 50 rather than divided at runtime because calc() may
-   not divide by a custom property. */
-/* ── the greet line types itself in ───────────────────────────────────────
-   Character by character, on load, and deliberately NOT off the scroll.
-   
-   This drove off `--jx-mark` (the clip's playhead) for a while, which reads
-   well once the reader is moving but is 0 at rest — so the landing screen
-   held the headline at 16% opacity, a ghost of the most important line on the
-   page. A visitor who never scrolls never sees it.
-   
-   34ms apart and 440ms each puts the whole line down in about 1.2s, which is
-   under the time it takes to read it. The cue still owns the hold, the rise
-   and the exit, so the line keeps moving with the scrub behind it. */
-.jx-page .jx-type__c {
+/* The headline uses scrollcraft's type kinetic path now, so the sun owns the
+   first screen alone and the line enters only after the clip has begun. These
+   rules only keep split glyphs from clipping their descenders. */
+.jx-page .jx-type .sc-split {
   display: inline-block;
-  opacity: 0;
-  transform: translate3d(0, 0.42em, 0);
-  animation: jx-type-in 0.44s var(--sc-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
-  animation-delay: calc(var(--i) * 34ms);
-  /* descender room: the masks the engine used to add are gone with the split */
   padding-bottom: 0.08em;
   margin-bottom: -0.08em;
 }
 
-@keyframes jx-type-in {
-  to { opacity: 1; transform: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .jx-page .jx-type__c {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
+.jx-page .jx-type .sc-split__i {
+  display: inline-block;
 }
 
 /* ==========================================================================
@@ -960,9 +925,10 @@ body:has(.jx-page) {
   }
 }
 
-/* The open act blows out from the inside as the light rises: it brightens,
-   loses contrast, and lifts slightly, so it is consumed by the bloom rather
-   than hidden behind it. */
+/* The open act blows out from the inside as the light rises: it brightens and
+   loses contrast, so it is consumed by the bloom rather than hidden behind it.
+   Do not scale the sticky stage here; transformed bounds create horizontal
+   overflow exactly when the lattice re-enters on reverse scroll. */
 .jx-open [data-sc-stage] {
   filter:
     brightness(calc(1 + var(--jx-bloom, 0) * 1.35))
@@ -976,8 +942,6 @@ body:has(.jx-page) {
      clears — a residual ghost of the mark under a full-strength flash is the
      one thing that gives the cut away. */
   opacity: calc((1 - var(--jx-bloom, 0)) * (1 - var(--jx-gone, 0)));
-  transform: scale(calc(1 + var(--jx-bloom, 0) * 0.035));
-  transform-origin: 50% 46%;
 }
 
 /* And the act's own ground goes with it. The stage is what carries the mark,
@@ -1035,6 +999,19 @@ body:has(.jx-page) {
    — the density is attached to the copy itself, so it travels with the text
    and leaves the rosette legible around it. */
 @media (max-width: 860px) {
+  .jx-page .jx-open {
+    --jx-mobile-copy: clamp(0, calc((var(--jx-open-p, 0) - 0.82) / 0.10), 1);
+  }
+
+  .jx-page .jx-open .sc-copy--lead {
+    opacity: var(--jx-mobile-copy);
+    pointer-events: none;
+  }
+
+  .jx-page .jx-open .sc-scrim {
+    opacity: calc(0.16 + var(--jx-mobile-copy) * 0.84);
+  }
+
   .jx-page .jx-open .sc-copy--lead::before {
     content: "";
     position: absolute;
@@ -1049,6 +1026,7 @@ body:has(.jx-page) {
       rgba(4, 4, 5, 0.72) 68%,
       rgba(4, 4, 5, 0.34) 86%,
       transparent 100%);
+    opacity: var(--jx-mobile-copy);
   }
   /* the text has to sit above its own scrim */
   .jx-page .jx-open .sc-copy--lead > * {
@@ -1435,7 +1413,25 @@ html:has(.jx-page) {
   .jx-cv span { display: none; }
 }
 @media (max-width: 46rem) {
+  .jx-bar {
+    gap: 10px;
+    padding-inline: 12px;
+  }
+  .jx-bar__sep,
+  .jx-bar > span:not(.jx-bar__name):not(.jx-bar__count) {
+    display: none;
+  }
   .jx-bar__rule { display: none; }
+  .jx-theme {
+    gap: 0;
+    padding: 6px;
+    font-size: 0;
+    line-height: 1;
+  }
+  .jx-theme__i {
+    width: 7px;
+    height: 7px;
+  }
   .jx-cv { padding: 5px 8px; }
   .jx-social { gap: 9px; }
 }
@@ -1443,3 +1439,37 @@ html:has(.jx-page) {
 @media (prefers-reduced-motion: reduce) {
   .jx-mark__i, .jx-mark__label, .jx-soc, .jx-cv { transition: none; }
 }
+
+
+/* ════════════════════════════════════════════════════════════
+   Fixation reading — the about copy
+
+   The eye lands on a word, takes the first few characters and infers the
+   rest. Anchoring that opening fragment gives it a fixed target and lets the
+   tail recede, which is what turns four paragraphs of prose into something
+   the reader can skim without deciding to.
+
+   Weight does the anchoring and colour does the receding. Weight alone reads
+   as bold text everywhere; colour alone is too quiet at body size. Together
+   they make a rhythm rather than emphasis, which matters — this section
+   already has its emphasis, and it is the word "people".
+
+   Archivo carries 400–900, so 600 is a real cut and not a synthesised one.
+   To dial the whole thing back, drop `.jx-bi` to `font-weight: 500`; to turn
+   it off, remove the two properties and the markup stops mattering.
+   ════════════════════════════════════════════════════════════ */
+.jx-bi { font-weight: 600; color: var(--ink); }
+
+/* .sc-body is already soft, so it needs nothing. The lede is full ink, and
+   without stepping its tails back the anchors have no ground to sit against. */
+.jx-about__lede.jx-bionic { color: var(--ink-2); }
+/* The anchors are already ink at 600, so "people" needs 700 to stay the one
+   emphasised word in the section rather than blending into the rhythm. */
+.jx-about__lede.jx-bionic strong { color: var(--ink); font-weight: 700; }
+
+/* Links, emphasis and the index triggers keep their own colour. Inside them
+   the anchor contributes weight only — otherwise the underlined Supersolid
+   link would lose half of itself to the body ink. */
+.jx-bionic a .jx-bi,
+.jx-bionic strong .jx-bi,
+.jx-bionic [data-jx-index-trigger] .jx-bi { color: inherit; }

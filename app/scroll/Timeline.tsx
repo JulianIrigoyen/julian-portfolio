@@ -9,6 +9,7 @@ import RailDepth from "./RailDepth";
 import IndexMentionSync from "./IndexMentionSync";
 import MailButton, { ADDRESS } from "./MailButton";
 import dynamic from "next/dynamic";
+import Bionic from "./Bionic";
 
 /* ssr:false — createStage reads window and a WebGL context on construction.
    Lazy so three.js lands in its own chunk instead of the entry bundle. */
@@ -319,11 +320,11 @@ export default function Timeline() {
           className="jx-act jx-open"
           data-sc-act="scrub"
           data-sc-span="12.2"
-          data-sc-span-mobile="20"
+          data-sc-span-mobile="32"
           data-sc-dwell="0.55"
           data-sc-clip-map="travel"
           data-sc-clip-hold-at="0.70"
-          data-sc-clip-hold-for="0.24"
+          data-sc-clip-hold-for="0.20"
         >
           <div data-sc-stage>
             {/* the poster holds the frame until a real video frame paints —
@@ -450,13 +451,16 @@ export default function Timeline() {
                     works was cut. The conviction still leads at display weight,
                     because that placement was a good call; the sentences under
                     it are his again, punctuation and all. Do not smooth these. */}
-                <p className="jx-about__lede">
+                <p className="jx-about__lede jx-bionic">
+                  <Bionic>
                   The world has changed. The complexity in engineering has
                   shifted, and what actually makes a difference now are the{" "}
                   <strong>people</strong> behind ideas and business processes.
+                  </Bionic>
                 </p>
 
-                <p className="sc-body" style={{ marginTop: "1.1rem", maxWidth: "62ch" }}>
+                <p className="sc-body jx-bionic" style={{ marginTop: "1.1rem", maxWidth: "62ch" }}>
+                  <Bionic>
                   After an amazing, 2 year long experience working at TrueML, I
                   started the founder journey with{" "}
                   <a
@@ -471,18 +475,22 @@ export default function Timeline() {
                   my best friend Emiliano Migliorata. We&apos;re building in
                   fintech and quantitative trading, and we work with other
                   founders as a cofounding team on their ideas.
+                  </Bionic>
                 </p>
 
-                <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
+                <p className="sc-body jx-bionic" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
+                  <Bionic>
                   I tackle problems methodically, and I make a point of relying
                   on my team to move forward efficiently and effectively. I&apos;m
                   a big fan of failing fast, through automated TDD and CI/CD
                   pipelines, and of delivering small concrete iterations. I&apos;m
                   interested in simple and complex problems alike. A lot more so
                   in the person and the idea behind each problem.
+                  </Bionic>
                 </p>
 
-                <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
+                <p className="sc-body jx-bionic" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
+                  <Bionic>
                   My goal as an engineer is to bridge the gap between the idea
                   and its implementation as swiftly, elegantly and robustly as
                   possible, to bring amazing products and services, and thus the
@@ -491,6 +499,7 @@ export default function Timeline() {
                   <span data-jx-index-trigger="shipped">the client work already shipped</span>,{" "}
                   <span data-jx-index-trigger="lab">the lab pieces</span>, and{" "}
                   <span data-jx-index-trigger="path">the eight-year path behind it</span>.
+                  </Bionic>
                 </p>
 
                 <div className="jx-index">
