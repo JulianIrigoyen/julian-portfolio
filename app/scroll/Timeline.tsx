@@ -6,6 +6,7 @@ import Suite, { Assert } from "./Suite";
 import MarkSync from "./MarkSync";
 import BloomCut from "./BloomCut";
 import RailDepth from "./RailDepth";
+import IndexMentionSync from "./IndexMentionSync";
 import MailButton, { ADDRESS } from "./MailButton";
 import dynamic from "next/dynamic";
 
@@ -301,6 +302,7 @@ export default function Timeline() {
       <ScrollcraftMount />
       <MarkSync />
       <BloomCut />
+      <IndexMentionSync />
       <Suite />
 
       <main>
@@ -316,8 +318,12 @@ export default function Timeline() {
         <section
           className="jx-act jx-open"
           data-sc-act="scrub"
-          data-sc-span="10.72"
+          data-sc-span="12.2"
+          data-sc-span-mobile="20"
           data-sc-dwell="0.55"
+          data-sc-clip-map="travel"
+          data-sc-clip-hold-at="0.70"
+          data-sc-clip-hold-for="0.24"
         >
           <div data-sc-stage>
             {/* the poster holds the frame until a real video frame paints —
@@ -332,6 +338,7 @@ export default function Timeline() {
               data-sc-scrub
               data-sc-src="/reveal/mark.mp4"
               data-sc-src-mobile="/reveal/mark-m.mp4"
+              data-sc-lerp="0.36"
               playsInline
               muted
             />
@@ -344,33 +351,16 @@ export default function Timeline() {
               <span className="jx-lbl" data-sc-cue="0 0.74 0">
                 Backend <b>·</b> Full-stack <b>·</b> DevOps <b>·</b> Agentic AI
               </span>
-              {/* The line types itself in ON LOAD, not across the scroll.
-              
-                  `data-sc-kinetic` staggers characters across a cue's ramp-in,
-                  so with a cue starting at 0 the h1 sat at opacity 0 until the
-                  reader scrolled — the landing screen carried no headline at
-                  all, which is the one thing a greet form has to do. This was
-                  fixed once in 1bbeb9a and reverted by 83862ea, which put the
-                  kinetic back and left the CSS below addressing a class that no
-                  longer existed.
-              
-                  So the characters come from CSS the moment the page paints,
-                  and the cue keeps only the hold, the rise and the exit — the
-                  line still moves and fades with the scrub behind it. */}
+              {/* The first frame belongs to the mark alone. The headline enters
+                  only once the reader starts the scrub, then finishes before
+                  the bloom is allowed to fire. */}
               <h1
                 className="sc-display sc-display--xl jx-code-title jx-type"
-                data-sc-cue="0 0.74 0"
+                data-sc-cue="0.12 0.96 0.32 0"
+                data-sc-kinetic="type"
                 style={{ marginTop: "0.9rem" }}
               >
-                {"I love a good challenge.".split("").map((ch, i) => (
-                  <span
-                    key={i}
-                    className="jx-type__c"
-                    style={{ "--i": i } as React.CSSProperties}
-                  >
-                    {ch === " " ? "\u00A0" : ch}
-                  </span>
-                ))}
+                I love a good challenge.
               </h1>
 
               {/* The body types itself out. Same mono face as the headline, so
@@ -385,7 +375,7 @@ export default function Timeline() {
                 <span className="jx-openrule" />
                 <p
                   className="sc-body jx-typed"
-                  data-sc-cue="0.12 0.52 1 0.04"
+                  data-sc-cue="0.28 0.90 0.58 0"
                   data-sc-kinetic="type"
                   style={{ marginTop: "1.1rem" }}
                 >
@@ -396,7 +386,7 @@ export default function Timeline() {
                 </p>
                 <p
                   className="sc-body jx-typed"
-                  data-sc-cue="0.48 0.90 1 0.04"
+                  data-sc-cue="0.48 0.96 0.70 0"
                   data-sc-kinetic="type"
                   style={{ marginTop: "0.9rem" }}
                 >
@@ -444,10 +434,8 @@ export default function Timeline() {
 
               <div className="jx-about__head">
                 <div className="jx-head">
-                  <span className="jx-lbl">2026</span>
-                  <h2 className="sc-display sc-display--md" style={{ maxWidth: "16ch" }}>
-                    What I&apos;m building
-                  </h2>
+                  <span className="jx-lbl">About</span>
+                  <h2 className="sc-display sc-display--md">Hi</h2>
                 </div>
               </div>
 
@@ -498,17 +486,21 @@ export default function Timeline() {
                   My goal as an engineer is to bridge the gap between the idea
                   and its implementation as swiftly, elegantly and robustly as
                   possible, to bring amazing products and services, and thus the
-                  future, to life.
+                  future, to life. That is why this page moves through{" "}
+                  <span data-jx-index-trigger="now">what I&apos;m building now</span>,{" "}
+                  <span data-jx-index-trigger="shipped">the client work already shipped</span>,{" "}
+                  <span data-jx-index-trigger="lab">the lab pieces</span>, and{" "}
+                  <span data-jx-index-trigger="path">the eight-year path behind it</span>.
                 </p>
 
                 <div className="jx-index">
                   {[
-                    ["01—06", "Now", "live · in build"],
-                    ["07—10", "Also shipped", "client work"],
-                    ["11—14", "The lab", "fintech · web3"],
-                    ["—", "My path", "eight years"],
-                  ].map(([n, t, st]) => (
-                    <div className="jx-index__row" key={t}>
+                    { key: "now", n: "01—06", t: "Now", st: "live · in build" },
+                    { key: "shipped", n: "07—10", t: "Also shipped", st: "client work" },
+                    { key: "lab", n: "11—14", t: "The lab", st: "fintech · web3" },
+                    { key: "path", n: "—", t: "My path", st: "eight years" },
+                  ].map(({ key, n, t, st }) => (
+                    <div className="jx-index__row" data-jx-index-row={key} key={key}>
                       <span className="jx-index__n">{n}</span>
                       <span className="jx-index__t">{t}</span>
                       <span className="jx-index__lead" aria-hidden />
