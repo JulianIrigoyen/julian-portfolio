@@ -28,9 +28,18 @@
                    on the two slides and the settle lands inside the pin where
                    the copy is. data-sc-runout is accepted and ignored; it named
                    the old opt-in for the exit half of this.
+     data-sc-clip-end="0.86" maps an act clip's final frame to an earlier act
+                   progress, leaving authored scroll distance for a hold before
+                   a later cue, cut or transition. Values clamp to 0.1..1.
+     data-sc-clip-to="0.70" maps the clip's final authored scroll position to
+                   an earlier point in the media, then holds there. Useful when
+                   a source file contains teardown frames after the visual beat.
+     data-sc-clip-hold-at="0.70" data-sc-clip-hold-for="0.24" pauses on a
+                   source-frame fraction, then resumes toward data-sc-clip-to.
      data-sc-span  viewport-heights of scroll this act owns. Pinned devices only
                    (scrub/pin/pan). Default 1.5. The engine sets the outer
                    height and sticks the first .sc-stage / [data-sc-stage] child.
+     data-sc-span-mobile overrides data-sc-span on touch/small screens.
 
      Every act exposes a normalized progress p (0..1):
        pinned  p = (y - top) / (height - vh)
@@ -210,7 +219,7 @@
     var text = el.textContent;
     var units = [];
 
-    if (mode === 'chars') {
+    if (mode === 'chars' || mode === 'type') {
       el.textContent = '';
       text.split(/(\s+)/).forEach(function (token) {
         if (/^\s+$/.test(token)) { el.appendChild(document.createTextNode(token)); return; }
@@ -304,10 +313,19 @@
     var drifts = [];
     var playheads = [];
     var scrollEls = [];
-    var vh = innerHeight, vw = innerWidth;
+    var vh = innerHeight, vw = document.documentElement.clientWidth || innerWidth;
     var y = 0, needsLayout = true;
     var progressBar = root.querySelector('[data-sc-progress]');
     var docEl = document.documentElement;
+    var destroyed = false;
+    var cleanups = [];
+    var tickRaf = 0;
+    var pointerRaf = 0;
+
+    function on(target, type, handler, opts) {
+      target.addEventListener(type, handler, opts);
+      cleanups.push(function () { target.removeEventListener(type, handler); });
+    }
 
     // One rate for the page, overridable per clip. Read from the mount root, the
     // document element, or the option bag, in that order.
@@ -340,8 +358,13 @@
         device: device,
         pinned: pinned,
         span: parseFloat(el.getAttribute('data-sc-span')) || (pinned ? 1.5 : 0),
+        spanMobile: parseFloat(el.getAttribute('data-sc-span-mobile')),
         dwell: parseFloat(el.getAttribute('data-sc-dwell')) || 0,
         clipTravel: pinned && el.getAttribute('data-sc-clip-map') === 'travel',
+        clipEnd: clamp(parseFloat(el.getAttribute('data-sc-clip-end')) || 1, 0.1, 1),
+        clipTo: clamp(parseFloat(el.getAttribute('data-sc-clip-to')) || 1, 0.01, 1),
+        clipHoldAt: clamp(parseFloat(el.getAttribute('data-sc-clip-hold-at')) || 0, 0, 0.99),
+        clipHoldFor: clamp(parseFloat(el.getAttribute('data-sc-clip-hold-for')) || 0, 0, 0.9),
         p: 0, raw: 0, top: 0, height: 0, live: false,
         cues: [], parallax: [], reveals: [], counts: [],
         video: null, seq: null, rail: null
@@ -526,9 +549,11 @@
 
     // ---- layout -----------------------------------------------------------
     function layout() {
-      vh = innerHeight; vw = innerWidth;
+      if (destroyed) return;
+      vh = innerHeight; vw = docEl.clientWidth || innerWidth;
       acts.forEach(function (a) {
-        if (a.pinned) a.el.style.height = (a.span * 100) + 'vh';
+        var span = isMobile() && !isNaN(a.spanMobile) ? a.spanMobile : a.span;
+        if (a.pinned) a.el.style.height = (span * 100) + 'vh';
       });
       // The spacer is the whole document flow of a worldflight. Its height is
       // the sum of the leg weights plus one viewport: without that extra screen
@@ -599,57 +624,63 @@
     function loadClip(V) {
       // Under reduced motion the clip is never fetched. The poster holds the
       // frame and the copy still cues, so the page reads without the decode.
-      if (reduce || !V || V.loading) return;
+      if (reduce || !V || V.loading || V.ready) return;
       var src = V.el.getAttribute('data-sc-src') ||
                 (isMobile() && V.el.getAttribute('data-sc-src-mobile')) ||
                 V.el.currentSrc || V.el.src;
       if (isMobile() && V.el.getAttribute('data-sc-src-mobile')) src = V.el.getAttribute('data-sc-src-mobile');
       if (!src) return;
       V.loading = true;
+
+      var attachSource = function (resolvedSrc) {
+        // Listeners and preload BEFORE src. Assigning src starts the load, so
+        // attaching afterwards and then calling load() restarts it and aborts
+        // the first request (visible as ERR_ABORTED on the blob URL).
+        V.el.addEventListener('error', function () { V.loading = false; }, { once: true });
+        V.el.addEventListener('loadedmetadata', function () {
+          V.loading = false;
+          V.ready = true;
+          // Force one seek even when the target is already 0. The reveal is
+          // gated on a 'seeked' event, and the raf loop only seeks when the
+          // time actually needs to change, so a clip sitting at the very top
+          // of its act would never seek, never fire 'seeked', and never
+          // replace its poster until the reader scrolled it off zero.
+          try { V.el.currentTime = Math.max(V.target * (V.el.duration || 1), 0.001); } catch (e) {}
+          read();
+          // Prime the decoder the moment the clip can be primed, without
+          // waiting for a gesture. A muted inline play() is allowed with no
+          // user activation on every platform except a restricted one (Low
+          // Power Mode, data saver), and there the rejection is harmless: the
+          // gesture listeners below retry on the next real touch.
+          primeClip(V);
+        });
+        // Reveal only once a real frame has painted. iOS keeps a seeked-but-
+        // never-played muted video blank, so hiding the poster on metadata
+        // alone flashes an empty stage.
+        var reveal = function () {
+          if (V.painted) return;
+          V.painted = true;
+          V.host.classList.add('sc-has-clip');
+          V.el.classList.add('sc-has-clip');
+        };
+        V.el.addEventListener('seeked', reveal, { once: true });
+        // Never let visibility depend only on an event that may not arrive.
+        // On iOS a clip that has not been played can accept a seek and never
+        // fire 'seeked', which leaves the element at opacity 0 for the life of
+        // the page: the poster stays up, the act looks frozen, and every later
+        // act is fine because by then the reader has touched the screen and
+        // the decoder is live. Reveal on a timer as well. A stage that is
+        // briefly blank is a smaller fault than one that never shows its clip.
+        setTimeout(reveal, 2500);
+        V.el.preload = 'auto';
+        V.el.muted = true;            // as a property, not only an attribute
+        V.el.playsInline = true;
+        V.el.src = resolvedSrc;
+        try { V.el.load(); } catch (e) {}
+      };
+
       fetch(src).then(function (r) { if (!r.ok) throw new Error(r.status); return r.blob(); })
-        .then(function (blob) {
-          // Listeners and preload BEFORE src. Assigning src starts the load, so
-          // attaching afterwards and then calling load() restarts it and aborts
-          // the first request (visible as ERR_ABORTED on the blob URL).
-          V.el.addEventListener('loadedmetadata', function () {
-            V.ready = true;
-            // Force one seek even when the target is already 0. The reveal is
-            // gated on a 'seeked' event, and the raf loop only seeks when the
-            // time actually needs to change, so a clip sitting at the very top
-            // of its act would never seek, never fire 'seeked', and never
-            // replace its poster until the reader scrolled it off zero.
-            try { V.el.currentTime = Math.max(V.target * (V.el.duration || 1), 0.001); } catch (e) {}
-            read();
-            // Prime the decoder the moment the clip can be primed, without
-            // waiting for a gesture. A muted inline play() is allowed with no
-            // user activation on every platform except a restricted one (Low
-            // Power Mode, data saver), and there the rejection is harmless: the
-            // gesture listeners below retry on the next real touch.
-            primeClip(V);
-          });
-          // Reveal only once a real frame has painted. iOS keeps a seeked-but-
-          // never-played muted video blank, so hiding the poster on metadata
-          // alone flashes an empty stage.
-          var reveal = function () {
-            if (V.painted) return;
-            V.painted = true;
-            V.host.classList.add('sc-has-clip');
-            V.el.classList.add('sc-has-clip');
-          };
-          V.el.addEventListener('seeked', reveal, { once: true });
-          // Never let visibility depend only on an event that may not arrive.
-          // On iOS a clip that has not been played can accept a seek and never
-          // fire 'seeked', which leaves the element at opacity 0 for the life of
-          // the page: the poster stays up, the act looks frozen, and every later
-          // act is fine because by then the reader has touched the screen and
-          // the decoder is live. Reveal on a timer as well. A stage that is
-          // briefly blank is a smaller fault than one that never shows its clip.
-          setTimeout(reveal, 2500);
-          V.el.preload = 'auto';
-          V.el.muted = true;            // as a property, not only an attribute
-          V.el.playsInline = true;
-          V.el.src = URL.createObjectURL(blob);
-        })
+        .then(function (blob) { attachSource(URL.createObjectURL(blob)); })
         .catch(function () { V.loading = false; });
     }
 
@@ -789,6 +820,7 @@
 
     // ---- per-frame scroll read -------------------------------------------
     function read() {
+      if (destroyed) return;
       y = scrollY || pageYOffset;
       var driftA = null, driftB = null, driftT = 0;
       var maxY = Math.max((document.documentElement.scrollHeight || 0) - vh, 1);
@@ -836,14 +868,37 @@
           if (a.seq) loadSeq(a);
         }
         if (a.live && a.seq) drawSeq(a);
-        if (a.video) { a.video.live = a.live; if (a.video.ready) a.video.target = a.vp; }
+        if (a.video) {
+          var clipP = a.clipEnd < 1 ? clamp01(a.vp / a.clipEnd) : a.vp;
+          var videoTarget = clipP * a.clipTo;
+          if (a.clipHoldFor > 0 && a.clipHoldAt > 0 && a.clipHoldAt < a.clipTo) {
+            var holdAt = a.clipHoldAt;
+            var holdEnd = clamp(a.clipHoldAt + a.clipHoldFor, a.clipHoldAt, 0.995);
+            if (clipP <= holdAt) {
+              videoTarget = clipP;
+            } else if (clipP <= holdEnd) {
+              videoTarget = holdAt;
+            } else {
+              videoTarget = holdAt + ((clipP - holdEnd) / Math.max(1 - holdEnd, 0.001)) * (a.clipTo - holdAt);
+            }
+          }
+          a.video.live = a.live;
+          if (a.video.ready) a.video.target = videoTarget;
+        }
 
         // horizontal rail
         if (a.rail) {
-          var over = a.rail.scrollWidth - vw;
+          /* Use layout width, not scrollWidth. Card depth transforms expand
+             scrollable overflow late in the pan, and reading that every frame
+             makes the rail chase a moving target and overshoot left. */
+          var railWidth = a.rail.offsetWidth || a.rail.scrollWidth;
+          var over = railWidth - vw;
           if (over > 0) {
             var extra = over * (a.railExtra || 0);
-            a.rail.style.transform = 'translate3d(' + (-(over + extra) * a.p).toFixed(2) + 'px,0,0)';
+            var travel = clamp((over + extra) * a.p, 0, over);
+            a.rail.style.transform = 'translate3d(' + (-travel).toFixed(2) + 'px,0,0)';
+          } else {
+            a.rail.style.transform = 'translate3d(0,0,0)';
           }
         }
 
@@ -886,16 +941,49 @@
           if (q.kinetic) {
             if (!q.units) q.units = splitText(q.el, q.kinetic);
             var n = q.units.length;
-            // Stagger across the reveal window. 0.62 spread leaves the tail of
-            // the window for the last unit to finish, so the line lands together
-            // rather than trickling.
-            for (var u = 0; u < n; u++) {
-              var uStart = (u / Math.max(n, 1)) * 0.62;
-              var uv = clamp01((vis - uStart) / (1 - 0.62 + 0.001));
-              uv = smooth(uv);
-              q.units[u].style.opacity = uv.toFixed(3);
-              q.units[u].style.transform = reduce ? 'none'
-                : 'translate3d(0,' + ((1 - uv) * 100).toFixed(2) + '%,0)';
+            if (q.kinetic === 'type') {
+              /* A typewriter, not a reveal.
+
+                 `chars` staggers each unit's START across 0.62 of the window
+                 but gives every unit the SAME 0.381-wide fade. That reads as
+                 kinetic on a 23-character headline, where consecutive starts
+                 are 0.027 apart. On a 300-character paragraph they sit 0.002
+                 apart against that same 0.381 ramp, so all 300 characters fade
+                 in together and the line simply appears.
+
+                 Typing needs the opposite ratio: starts spread across almost
+                 the whole window, and a ramp short enough that a character is
+                 on or off rather than dissolving. No translate either — a
+                 typed character does not slide into place. */
+              /* Linear, not `vis`. `vis` is smoothstepped for reveals, so a
+                 typewriter driven by it starts slow, sprints through the
+                 middle and crawls to the end. A person types at one speed. */
+              var twin = Math.max(q.to - q.from, 0.001);
+              var tEnd = q.from + twin * q.rIn;
+              var lin = clamp01((a.p - q.from) / Math.max(tEnd - q.from, 0.001));
+
+              var spread = 0.94;
+              var ramp = 0.006;
+              for (var ty = 0; ty < n; ty++) {
+                var tStart = (ty / Math.max(n, 1)) * spread;
+                var tv = clamp01((lin - tStart) / ramp);
+                q.units[ty].style.opacity = tv.toFixed(3);
+                q.units[ty].style.transform = 'none';
+              }
+              /* How far through the string the write head is, for the caret. */
+              q.el.style.setProperty('--sc-type', clamp01(lin / spread).toFixed(4));
+            } else {
+              // Stagger across the reveal window. 0.62 spread leaves the tail of
+              // the window for the last unit to finish, so the line lands together
+              // rather than trickling.
+              for (var u = 0; u < n; u++) {
+                var uStart = (u / Math.max(n, 1)) * 0.62;
+                var uv = clamp01((vis - uStart) / (1 - 0.62 + 0.001));
+                uv = smooth(uv);
+                q.units[u].style.opacity = uv.toFixed(3);
+                q.units[u].style.transform = reduce ? 'none'
+                  : 'translate3d(0,' + ((1 - uv) * 100).toFixed(2) + '%,0)';
+              }
             }
             q.el.style.opacity = '1';
           } else {
@@ -965,6 +1053,7 @@
     // the decoder, while read() must stay cheap enough to run on every scroll
     // event. The lerp here is also what turns a jittery wheel into a glide.
     function tick() {
+      if (destroyed) return;
       // Deadband. A phone decoder cannot service a seek every frame, so asking
       // for one costs more than it shows; 20ms of clip is under a frame of
       // footage anyway.
@@ -994,7 +1083,7 @@
         var t = clamp(V.cur, 0, 0.999) * dur;
         if (Math.abs(V.el.currentTime - t) > eps) { try { V.el.currentTime = t; } catch (e) {} }
       }
-      requestAnimationFrame(tick);
+      tickRaf = requestAnimationFrame(tick);
     }
 
     // iOS will not paint a muted video that has never been handed a user
@@ -1058,11 +1147,11 @@
     // triggering events includes touchend but NOT touchstart. A restricted
     // device (Low Power Mode) that rejects the touchstart prime for lacking
     // activation gets a second, valid chance the moment the finger lifts.
-    addEventListener('touchstart', prime, { passive: true });
-    addEventListener('touchend', prime, { passive: true });
-    addEventListener('pointerdown', prime, { passive: true });
-    addEventListener('click', prime, { passive: true });
-    addEventListener('scroll', prime, { passive: true });
+    on(window, 'touchstart', prime, { passive: true });
+    on(window, 'touchend', prime, { passive: true });
+    on(window, 'pointerdown', prime, { passive: true });
+    on(window, 'click', prime, { passive: true });
+    on(window, 'scroll', prime, { passive: true });
 
     // ---- pointer devices --------------------------------------------------
     var tilts = [], magnets = [], spots = [];
@@ -1079,7 +1168,8 @@
       });
       if (!tilts.length && !magnets.length && !spots.length) return;
 
-      addEventListener('pointermove', function (e) {
+      var onPointerMove = function (e) {
+        if (destroyed) return;
         if (e.pointerType !== 'mouse') return;
         for (var i = 0; i < tilts.length; i++) {
           var T = tilts[i], r = T.el.getBoundingClientRect();
@@ -1103,9 +1193,11 @@
           spots[s].style.setProperty('--sc-mx', clamp01((e.clientX - sr.left) / sr.width).toFixed(3));
           spots[s].style.setProperty('--sc-my', clamp01((e.clientY - sr.top) / sr.height).toFixed(3));
         }
-      }, { passive: true });
+      };
+      on(window, 'pointermove', onPointerMove, { passive: true });
 
       (function pointerTick() {
+        if (destroyed) return;
         // Interpolate toward the target rather than tracking the pointer
         // directly. Direct tracking reads as artificial because it carries no
         // momentum; the lerp gives it weight.
@@ -1121,15 +1213,17 @@
           M.x += (M.tx - M.x) * 0.12; M.y += (M.ty - M.y) * 0.12;
           M.el.style.transform = 'translate3d(' + M.x.toFixed(2) + 'px,' + M.y.toFixed(2) + 'px,0)';
         }
-        requestAnimationFrame(pointerTick);
+        pointerRaf = requestAnimationFrame(pointerTick);
       })();
     }
 
     // ---- wiring -----------------------------------------------------------
     var ticking = false;
-    addEventListener('scroll', function () {
+    var onScroll = function () {
+      if (destroyed) return;
       if (!ticking) { ticking = true; requestAnimationFrame(function () { read(); ticking = false; }); }
-    }, { passive: true });
+    };
+    on(window, 'scroll', onScroll, { passive: true });
 
     // Keyboard focus on a pinned or panning act. The browser's own
     // scroll-into-view parks the focused element barely on screen, which is
@@ -1139,7 +1233,8 @@
     // definition. behavior:'instant' on purpose: scrollcraft.css sets
     // scroll-behavior:smooth, so the default animates the jump and focus sits
     // off screen for the whole of a multi-screen glide.
-    addEventListener('focusin', function (e) {
+    var onFocusIn = function (e) {
+      if (destroyed) return;
       var el = e.target;
       if (!el || !el.closest) return;
       var act = el.closest('[data-sc-act]');
@@ -1148,16 +1243,19 @@
       if (!cue) return;
       if (parseFloat(getComputedStyle(cue).opacity || '1') > 0.85) return;
       el.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
-    });
+    };
+    on(window, 'focusin', onFocusIn);
 
     var lastW = innerWidth;
-    addEventListener('resize', function () {
+    var onResize = function () {
+      if (destroyed) return;
       // Ignore URL-bar-only height changes on phones. Relaying out on those
       // makes the page jump under the reader's thumb for no reason.
       if (innerWidth === lastW && isMobile()) { vh = innerHeight; return; }
       lastW = innerWidth;
       layout();
-    }, { passive: true });
+    };
+    on(window, 'resize', onResize, { passive: true });
 
     if (document.fonts && document.fonts.ready) {
       // Line splitting measures line boxes, so it has to wait for the real face.
@@ -1169,10 +1267,27 @@
 
     layout();
     initPointer();
-    requestAnimationFrame(tick);
+    tickRaf = requestAnimationFrame(tick);
     document.documentElement.classList.add('sc-ready');
 
-    var api = { layout: layout, read: read, acts: acts, worlds: worlds, clips: playheads, lerp: LERP };
+    function destroy() {
+      if (destroyed) return;
+      destroyed = true;
+      for (var i = 0; i < cleanups.length; i++) cleanups[i]();
+      cleanups = [];
+      if (io) io.disconnect();
+      cancelAnimationFrame(tickRaf);
+      cancelAnimationFrame(pointerRaf);
+      acts.forEach(function (a) {
+        if (a.rail) a.rail.style.transform = '';
+      });
+      var list = global.ScrollCraft.instances;
+      var ix = list.indexOf(api);
+      if (ix >= 0) list.splice(ix, 1);
+      if (!list.length) document.documentElement.classList.remove('sc-ready');
+    }
+
+    var api = { root: root, layout: layout, read: read, destroy: destroy, acts: acts, worlds: worlds, clips: playheads, lerp: LERP };
     global.ScrollCraft.instances.push(api);
     return api;
   }

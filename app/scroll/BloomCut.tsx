@@ -37,16 +37,15 @@ import { useEffect } from "react";
    to hide under.
    ———————————————————————————————————————————————— */
 
-/* Lowered from 0.62 so the light starts later: the mark now holds its arrival
-   — centred, upright, still turning — for about a fifth of a viewport longer
-   before the bloom begins to take it. */
-/* Raised from 0.42. `d` counts down to the join, and the bloom stays at zero
-   while d > RISE * viewport — so a LARGER value starts the light further out,
-   i.e. sooner. At 0.42 it fired so late the clip had already resolved and the
-   reader saw the end state sit there before anything happened. */
-const RISE = 0.92;
+/* Short and late: the open clip now pauses on the completed heart, resumes
+   through its tail effect, and the copy finishes typing before the flash. */
+const RISE = 0.32;
 const FALL = 0.8;
 const GONE = 0.2;
+
+/* MEASURED: the clip timing is authored on the open act. The bloom still keys
+   off geometry here, which keeps the flash continuous through forward and
+   reverse scroll instead of coupling it to async video seek events. */
 
 /* Smoothstep. A linear ramp reads as a light switch; the ease is what makes it
    a bloom. */

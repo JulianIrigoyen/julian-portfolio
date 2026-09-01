@@ -115,15 +115,29 @@ export default function RailDepth() {
         const el = cards[i];
         const r = el.getBoundingClientRect();
 
-        /* Cull. A card off screen gets one parking write, then nothing —
-           the rail is long and most of it is never in view. */
-        if (r.right < -200 || r.left > vw + 200 || r.bottom < -200 || r.top > vh + 200) {
-          if (el.dataset.parked !== "1") {
-            el.style.transform = "";
-            if (shots[i]) shots[i]!.style.transform = "";
-            el.style.removeProperty("--dim");
-            el.dataset.parked = "1";
-          }
+        /* Cull, with hysteresis, and without resetting the warp.
+        
+           Two bugs lived here, and they fed each other.
+        
+           `r` is measured on the ALREADY-WARPED element. Clearing the
+           transform on park moved the card's own rectangle — the pincushion
+           alone displaces a card near the edge by tens of pixels — so a card
+           sitting on the boundary parked, snapped back inside the threshold,
+           unparked, warped back out, and parked again. Once per frame. That is
+           the flicker: the cull decision was reading a rectangle the cull
+           decision had just changed.
+        
+           So parking now means STOP WRITING, not reset. The last transform
+           stays where it is, off screen where nobody can see it, and the
+           rectangle stops moving underneath the test. The two thresholds then
+           make it monotonic: a card must travel 200px further out to park than
+           it needs to come back in, which is wider than any displacement the
+           warp can produce (BOW at the edge plus BULGE is under ~70px). */
+        const PARK_OUT = 420;
+        const PARK_IN = 220;
+        const margin = el.dataset.parked === "1" ? PARK_IN : PARK_OUT;
+        if (r.right < -margin || r.left > vw + margin || r.bottom < -margin || r.top > vh + margin) {
+          el.dataset.parked = "1";
           continue;
         }
         el.dataset.parked = "0";

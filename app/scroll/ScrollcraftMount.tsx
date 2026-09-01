@@ -5,13 +5,19 @@ import { useEffect } from "react";
 declare global {
   interface Window {
     ScrollCraft?: {
-      mount: (root: Document | Element, opts?: Record<string, unknown>) => void;
-      instances?: { layout?: () => void; read?: () => void }[];
+      mount: (root: Document | Element, opts?: Record<string, unknown>) => ScrollCraftInstance | void;
+      instances?: ScrollCraftInstance[];
     };
     __jiScrollCraftPromise?: Promise<unknown>;
-    __jiScrollCraftMounted?: boolean;
   }
 }
+
+type ScrollCraftInstance = {
+  acts?: { el?: Element }[];
+  layout?: () => void;
+  read?: () => void;
+  destroy?: () => void;
+};
 
 function loadRuntime(): Promise<unknown> {
   if (window.ScrollCraft?.mount) return Promise.resolve();
@@ -39,6 +45,15 @@ function loadRuntime(): Promise<unknown> {
 export default function ScrollcraftMount() {
   useEffect(() => {
     let cancelled = false;
+    let instance: ScrollCraftInstance | undefined;
+
+    const ownsCurrentDom = (candidate: ScrollCraftInstance) =>
+      candidate.acts?.some((act) => act.el && document.contains(act.el)) ?? false;
+
+    const refresh = () => {
+      instance?.layout?.();
+      instance?.read?.();
+    };
 
     (async () => {
       try {
@@ -49,20 +64,30 @@ export default function ScrollcraftMount() {
       }
       if (cancelled || !window.ScrollCraft?.mount) return;
 
-      if (window.__jiScrollCraftMounted && window.ScrollCraft.instances?.length) {
-        window.ScrollCraft.instances.forEach((i) => {
-          i.layout?.();
-          i.read?.();
-        });
-        return;
+      const instances = window.ScrollCraft.instances ?? [];
+      instance = instances.find(ownsCurrentDom);
+
+      if (instance) {
+        refresh();
+      } else {
+        instances
+          .filter((candidate) => !ownsCurrentDom(candidate))
+          .forEach((candidate) => candidate.destroy?.());
+        instance = window.ScrollCraft.mount(document, { lerp: 0.22 }) ?? undefined;
       }
 
-      window.__jiScrollCraftMounted = true;
-      window.ScrollCraft.mount(document, { lerp: 0.22 });
+      window.addEventListener("pageshow", refresh, { passive: true });
+      document.addEventListener("visibilitychange", refresh, { passive: true });
     })();
 
     return () => {
       cancelled = true;
+      window.removeEventListener("pageshow", refresh);
+      document.removeEventListener("visibilitychange", refresh);
+      if (instance?.destroy) {
+        instance.destroy();
+        return;
+      }
     };
   }, []);
 
