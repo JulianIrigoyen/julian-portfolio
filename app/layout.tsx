@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import Analytics from "./analytics/Analytics";
 import { Archivo, JetBrains_Mono } from "next/font/google";
@@ -29,6 +29,11 @@ export const metadata: Metadata = {
       "I love a good challenge. Backend, full-stack, DevOps, and agentic AI workflows around the world.",
     type: "website",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

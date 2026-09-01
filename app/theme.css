@@ -1009,7 +1009,7 @@ body:has(.jx-page) {
   }
 
   .jx-page .jx-open .sc-scrim {
-    opacity: calc(0.16 + var(--jx-mobile-copy) * 0.84);
+    opacity: calc(0.12 + var(--jx-mobile-copy) * 0.58);
   }
 
   .jx-page .jx-open .sc-copy--lead::before {
@@ -1021,12 +1021,12 @@ body:has(.jx-page) {
     pointer-events: none;
     background: radial-gradient(
       130% 78% at 32% 46%,
-      rgba(4, 4, 5, 0.94) 0%,
-      rgba(4, 4, 5, 0.90) 42%,
-      rgba(4, 4, 5, 0.72) 68%,
-      rgba(4, 4, 5, 0.34) 86%,
+      rgba(4, 4, 5, 0.88) 0%,
+      rgba(4, 4, 5, 0.82) 42%,
+      rgba(4, 4, 5, 0.60) 68%,
+      rgba(4, 4, 5, 0.28) 86%,
       transparent 100%);
-    opacity: var(--jx-mobile-copy);
+    opacity: calc(var(--jx-mobile-copy) * 0.94);
   }
   /* the text has to sit above its own scrim */
   .jx-page .jx-open .sc-copy--lead > * {
