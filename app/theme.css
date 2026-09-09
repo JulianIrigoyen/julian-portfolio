@@ -72,6 +72,11 @@ body:has(.jx-page) {
 .jx-page {
   width: 100%;
   max-width: 100%;
+
+  /* The bar is fixed, so every pinned stage owes it this much room at the top.
+     Declared once here and re-declared with the narrow bar below; nothing
+     should hard-code 52. */
+  --jx-bar-h: 52px;
 }
 
 @supports not (overflow: clip) {
@@ -143,34 +148,6 @@ body:has(.jx-page) {
 
 .sc-body, .sc-lede { color: var(--ink-2); }
 
-/* ——— the signature move: the page runs its own suite ———
-   He designs testing frameworks — unit, integration, load — so the page is
-   built as one. Every section is an assertion. It sits at `· · ·` until you
-   reach it, then resolves to PASS, and the header keeps a running count of
-   how many have actually resolved. The count is real: it counts sections. */
-.jx-assert {
-  font-family: var(--sc-font-mono);
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid var(--rule);
-  padding: 4px 9px;
-  background: var(--card);
-}
-.jx-assert::before {
-  content: "";
-  width: 6px; height: 6px;
-  background: var(--rule-2);
-  border-radius: 50%;
-  transition: background 420ms ease;
-}
-.jx-assert[data-state="pass"] { color: var(--accent-2); border-color: color-mix(in oklab, var(--accent-2) 34%, var(--rule)); }
-.jx-assert[data-state="pass"]::before { background: var(--accent-2); }
-
 /* ——— fixed chrome: a thin runner bar, not a nav ——— */
 .jx-bar {
   position: fixed;
@@ -191,7 +168,6 @@ body:has(.jx-page) {
 }
 .jx-bar__name { color: var(--ink); font-weight: 500; }
 .jx-bar__sep { color: var(--rule-2); }
-.jx-bar__count { margin-left: auto; color: var(--accent-2); font-variant-numeric: tabular-nums; }
 
 /* ——— the theme switch, in the bar because that is the only
        fixed chrome the page has ——— */
@@ -228,8 +204,27 @@ body:has(.jx-page) {
 
 /* ——— the work rail ———
    Centre the whole rail in its stage. Without this the cards sit at the top
-   of a 100vh pinned stage and leave a third of a screen of dead paper. */
-[data-sc-act="pan"] [data-sc-stage] { display: flex; align-items: center; }
+   of a 100vh pinned stage and leave a third of a screen of dead paper.
+   The room the bar takes off the top is the rule below. */
+[data-sc-act="pan"] [data-sc-stage] {
+  display: flex;
+  align-items: center;
+}
+
+/* A pinned stage is the whole viewport and the bar is fixed over its first
+   52px, so the usable frame is `100vh - bar` and every pinned act has to
+   centre in that instead. It cost the rail the top 12px of every address strip
+   — the number, the state dot and the domain, the one line the rail is built
+   around. Centring in what is left costs nothing there: the rail measured
+   748px in a 900px stage and the slack was already at the bottom.
+
+   Not the open: its mark is deliberately centred in the full frame with the
+   bar sitting over it as translucent chrome, and its copy is bottom-anchored,
+   so it owes the bar nothing. */
+.jx-page .jx-act.sc-act--pinned:not(.jx-open) [data-sc-stage] {
+  box-sizing: border-box;
+  padding-top: var(--jx-bar-h, 52px);
+}
 
 /* Tops aligned, bottoms ragged. Stretch plus a foot on `margin-top: auto` put
    every call on one baseline, which is the right instinct and the wrong result:
@@ -339,7 +334,6 @@ body:has(.jx-page) {
 
 /* square, like a ledger — scoped, or it flattens the console's rounded chrome */
 .jx-page * { border-radius: 0; }
-.jx-page .jx-assert::before { border-radius: 50%; }
 
 /* the hero copy clears the fixed runner bar */
 .sc-copy--lead { padding-top: 4.5rem; }
@@ -999,6 +993,16 @@ body:has(.jx-page) {
    — the density is attached to the copy itself, so it travels with the text
    and leaves the rosette legible around it. */
 @media (max-width: 860px) {
+  /* 0.82 is deliberate and the harness holds it there: `copy appears before
+     the lattice has played` asserts opacity <= 0.05 at 0.62 of the act and
+     <= 0.12 at 0.80. The reveal plays out, then the copy takes the last beat.
+
+     The cost, measured at 390x844 with `data-sc-span-mobile="32"`: the
+     eyebrow, "I love a good challenge." and both bio paragraphs sit at
+     opacity 0 for 22,146px — twenty-six phone screens — and are fully legible
+     for about three before the cut. Moving this window earlier means moving
+     those two assertions and the mobile span together; it is not a CSS
+     one-liner. */
   .jx-page .jx-open {
     --jx-mobile-copy: clamp(0, calc((var(--jx-open-p, 0) - 0.82) / 0.10), 1);
   }
@@ -1035,6 +1039,14 @@ body:has(.jx-page) {
   }
 }
 
+/* Keep the full reading beat below the fixed bar on short phone screens.
+   The default 12vh bottom margin pushed the practice label above the viewport
+   at 360×740 once it was visible in the mobile reading window. */
+@media (max-width: 860px) and (max-height: 760px) {
+  .jx-page .jx-open .sc-copy--lead { bottom: 20px; }
+  .jx-page .jx-open .jx-typed { line-height: 1.65; }
+}
+
 /* ════════════════════════════════════════════════════════════
    THE STAGE
 
@@ -1066,9 +1078,16 @@ body:has(.jx-page) {
    specificity (`.jx-page .jx-bloom` is 0,2,0 against 0,1,0) and 190 lines of
    later cascade, which pinned it to `relative` and collapsed it to a
    zero-height block in normal flow. The flash was still being computed every
-   frame; it just had nowhere to paint. */
-.jx-page > main,
-.jx-page .jx-bar {
+   frame; it just had nowhere to paint.
+
+   NOT `.jx-bar` either, for exactly the same reason, found the same way. The
+   bar is `position: fixed; z-index: 50` at line 176 and every comment in this
+   file calls it "the only fixed chrome on the page" — the live PASS count, the
+   CV button, the marks, the theme switch and the progress track all live in
+   it. Listing it here pinned it to `relative`, so it scrolled away after 52px
+   and was never seen again across 25,288px of desktop page. It does not need
+   the rule: `z-index: 50` on a fixed element already clears a canvas at 0. */
+.jx-page > main {
   position: relative;
   z-index: 1;
 }
@@ -1255,6 +1274,7 @@ html:has(.jx-page) {
 /* 1. The transform needs an origin at the card's own top-left, because
       rect-to-quad solves in the element's own coordinate space. The browser
       default (50% 50%) would offset every card by half its size. */
+.jx-rail { position: relative; }
 .jx-rail .jx-card {
   transform-origin: 0 0;   /* rect-to-quad solves in the element's own space */
   will-change: transform;
@@ -1402,10 +1422,6 @@ html:has(.jx-page) {
 .jx-cv:hover { background: var(--accent); transform: translateY(-1px); }
 .jx-cv:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
 
-/* The count keeps its place after the cluster; it is the page's signature and
-   must not be pushed off by the links. */
-.jx-bar__count { margin-left: 0 !important; }
-
 /* Narrow: the labels and the CV wording go first, the marks stay. A phone still
    gets every link, just without the words. */
 @media (max-width: 60rem) {
@@ -1418,10 +1434,18 @@ html:has(.jx-page) {
     padding-inline: 12px;
   }
   .jx-bar__sep,
-  .jx-bar > span:not(.jx-bar__name):not(.jx-bar__count) {
+  .jx-bar > span:not(.jx-bar__name) {
     display: none;
   }
   .jx-bar__rule { display: none; }
+
+  /* Keep the name, contact links, CV, and theme switch on one line. Project
+     shortcuts are available further down the page. */
+  .jx-marks { display: none; }
+  .jx-bar__name { white-space: nowrap; }
+
+  /* One line of 10.5px mono in 12px of padding — measured at 48px. */
+  .jx-page { --jx-bar-h: 48px; }
   .jx-theme {
     gap: 0;
     padding: 6px;
@@ -1441,35 +1465,33 @@ html:has(.jx-page) {
 }
 
 
-/* ════════════════════════════════════════════════════════════
-   Fixation reading — the about copy
-
-   The eye lands on a word, takes the first few characters and infers the
-   rest. Anchoring that opening fragment gives it a fixed target and lets the
-   tail recede, which is what turns four paragraphs of prose into something
-   the reader can skim without deciding to.
-
-   Weight does the anchoring and colour does the receding. Weight alone reads
-   as bold text everywhere; colour alone is too quiet at body size. Together
-   they make a rhythm rather than emphasis, which matters — this section
-   already has its emphasis, and it is the word "people".
-
-   Archivo carries 400–900, so 600 is a real cut and not a synthesised one.
-   To dial the whole thing back, drop `.jx-bi` to `font-weight: 500`; to turn
-   it off, remove the two properties and the markup stops mattering.
-   ════════════════════════════════════════════════════════════ */
-.jx-bi { font-weight: 600; color: var(--ink); }
-
-/* .sc-body is already soft, so it needs nothing. The lede is full ink, and
-   without stepping its tails back the anchors have no ground to sit against. */
-.jx-about__lede.jx-bionic { color: var(--ink-2); }
-/* The anchors are already ink at 600, so "people" needs 700 to stay the one
-   emphasised word in the section rather than blending into the rhythm. */
-.jx-about__lede.jx-bionic strong { color: var(--ink); font-weight: 700; }
-
-/* Links, emphasis and the index triggers keep their own colour. Inside them
-   the anchor contributes weight only — otherwise the underlined Supersolid
-   link would lose half of itself to the body ink. */
-.jx-bionic a .jx-bi,
-.jx-bionic strong .jx-bi,
-.jx-bionic [data-jx-index-trigger] .jx-bi { color: inherit; }
+/* Reduced motion still needs a readable introduction. MarkSync already puts
+   the composition in its final state, but the engine's character opacity
+   otherwise stays at zero until the reader scrubs a 32-screen empty act. */
+@media (prefers-reduced-motion: reduce) {
+  .jx-page .jx-open { height: auto !important; }
+  .jx-page .jx-open [data-sc-stage] {
+    position: relative;
+    height: auto;
+    min-height: 100svh;
+    padding: calc(var(--jx-bar-h) + 32px) var(--sc-gutter) 48px;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .jx-page .jx-open .sc-copy--lead {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    padding-top: 0;
+    opacity: 1;
+    translate: none;
+  }
+  .jx-page .jx-open [data-sc-cue],
+  .jx-page .jx-open .sc-split__i {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .jx-page .jx-open .sc-stage__poster { opacity: 0.18; }
+  .jx-page .jx-open video { display: none; }
+}

@@ -7,7 +7,7 @@ Two builds live side by side:
 | route | what |
 |---|---|
 | `/` | **The scroll page.** A dark filmic `scrub` open hard-cutting into a paper editorial gallery. Built on the scrollcraft engine. |
-| `/console` | **The previous INSTRUMENT build** — a fixed-viewport operations console, carrying the full 13-entry catalogue in depth. Kept reachable rather than deleted. Documented in [`docs/CONSOLE.md`](docs/CONSOLE.md). |
+| `/console` | **The previous INSTRUMENT build** — a fixed-viewport operations console, carrying the full 13-entry catalogue in depth. Protected by the existing authentication gate; unauthenticated requests return 401. Documented in [`docs/CONSOLE.md`](docs/CONSOLE.md). |
 
 ```bash
 npm run dev      # http://localhost:3000
@@ -41,11 +41,11 @@ installed** as a plugin here; it was driven from a clone. To install it:
 ### The one rule
 
 `public/scrollcraft/scrollcraft.js` and `app/scrollcraft.css` are the engine.
-Treat them as vendored code, but this build carries one local compatibility
-patch: `chars` splitting groups letters inside `.sc-split-word`, and
-`app/scrollcraft.css` keeps that wrapper from breaking words mid-reveal. All
-theming still lives in `app/theme.css`: the engine's six colour roles, two font
-families, and page-owned `jx-` classes.
+Treat them as vendored code with local extensions. The clip holds, dual
+playheads, mobile spans, whole-word typing, and teardown behavior are documented
+in [`docs/SCROLL.md`](docs/SCROLL.md). Re-vendoring must preserve those additions.
+Theming lives in `app/theme.css`; hobby and career layouts use
+`app/scroll/Experience.module.css`.
 
 ### Act structure
 
@@ -55,48 +55,42 @@ its own opaque ground.
 
 | # | act | device | content |
 |---|---|---|---|
-| 1 | `scrub` span 7, dwell 0.55 | scrub | The mark reveal, full-bleed on near-black; headline reveals slowly as scroll begins |
+| 1 | `scrub` span 12.2 desktop / 32 mobile, dwell 0.55 | scrub | The mark reveal, full-bleed on near-black; headline reveals slowly as scroll begins |
 | 2 | flow | `in` + stagger | Portrait, intro, index with dotted leaders |
-| 3 | `pan` span 8.2 | pan | Ten rail cards in two tiers, lateral — breadth reads sideways |
-| 4 | `pin` span 3.2 | reveal | The lab: four pieces, typographic |
-| 5 | flow | `in` + stagger | The record — eight years, hung year column |
+| 3 | `pan` span 8.2 | pan | Nine rail cards in two tiers |
+| 4 | flow | project features | Six hobby projects and their reasons |
+| 5 | flow | native disclosures | Nine detailed career entries |
 | 6 | `pin` span 2 | magnet | Close |
 
-Never the same device twice in a row. Six device families in play.
+The opening and work rail keep their motion; long-form project and career details use normal document flow.
 
-### The signature move
+### Header and content
 
-**The page runs its own test suite.** Every section carries an assertion that
-sits pending until the reader actually reaches it, then resolves to `PASS`;
-the fixed runner bar keeps a live count (`4/4 PASS`). Drawn from Julian's own
-bio — he builds the testing frameworks around what he ships. The count is
-real and cannot read higher than the number of assertions on the page.
+The fixed header carries contact links, the CV download, a theme switch, and a
+thin scroll-progress line. The former “4/4 PASS” section counter was removed.
 
-Implementation: `app/scroll/Suite.tsx`.
+Fifteen projects, in three groups:
 
-### Content
+- **Currently working on (01–05)** — Supersolid, DJINN, Poor Hedge Fund,
+  Keonda, and Luxy.
+- **Also shipped (06–09)** — Half Production, Speed Ibiza, Innovalport,
+  and Outflow. These follow the current work in the horizontal rail.
+- **Hobby projects (10–15)** — jtreks, Ascenso, Solana Sniper, IMHO,
+  Pushy, and Hermes Thrice. Each feature leads with Julian's “Why?”. jtreks and Ascenso get
+  larger features, with Hermes Thrice closing on music and visuals; the
+  illustrated meme chart links to all six projects. Its ascending order is
+  Pushy, IMHO, Solana Sniper, jtreks, Ascenso, Hermes Thrice. The story order
+  above stays independent of the graph.
 
-Fourteen pieces, in three tiers. The order in the rail is Julian's own — the
-studio first, then the agent, then the thing the studio exists for.
+`Experiments.tsx` and `Experience.module.css` own the hobby section. Product
+images are in `public/work/`, `public/fleet/`, and `public/experiments/`.
+Ascenso's cover is artwork from the project's own public asset collection.
+jtreks uses a full-bleed photograph of Fitz Roy, visually verified against the
+source. See [`public/experiments/README.md`](public/experiments/README.md) for provenance.
 
-- **Currently working on (01–06)** — Supersolid, DJINN, the trading platform,
-  jtreks, Keonda, Luxy. The act headline is *"Being built, or running, as you
-  read this"*, so this tier is a claim about **now** and only holds work that
-  is live or in active build.
-- **Also shipped (07–10)** — Half Production, Speed Ibiza, Innovalport,
-  Outflow. Finished client work, behind a hairline divider panel in the same
-  rail. The divider exists so the six in front are not diluted by things that
-  are simply done.
-- **The lab (11–14)** — Solana Sniper, IMHO, Pushy, Ascenso. Deliberately
-  **typographic, no screenshots**: three have no public URL and `pushy.ar` is
-  offline, so a gallery there would be faking it.
-
-Screenshots live in `public/work/`, captured live with `playwright-core` at
-1440x900 @2x. There are eight product screenshots. Every link opens the running
-product.
-
-The career rows come from `app/console/data.ts`, which is still the single
-source of truth for both routes.
+The nine expandable career entries come from `app/console/data.ts`, the shared
+source for the public page and console. `Career.tsx` uses native details/summary
+controls and refreshes scroll geometry when an entry opens or closes.
 
 ### The address strip, and the state dot
 
@@ -109,20 +103,16 @@ the real address — or the real reason there isn't one.
 | `private` | cobalt, still | in production, no public URL | `● PRIVATE · IN PRODUCTION` |
 | `build` | hollow ring | shipped to a device, not the web | `○ TESTFLIGHT · IOS` |
 
-**The pulsing dot is the only animated thing on the paper half of the page.**
-It is what earns the headline instead of decorating it, which means the `state`
-field is a truth claim on the same footing as a counter — it does not get set
-to `live` for something you cannot open. It respects
-`prefers-reduced-motion`.
+The dot respects `prefers-reduced-motion`. The `state` field is a factual
+claim: use `live` only for a publicly openable surface. The rail's pointer depth
+effect runs only on supported desktop inputs; touch and reduced-motion readers
+keep the regular rail.
 
 A card with nothing to photograph gets a **stated placeholder panel** in the
 frame where the screenshot would go — `NO PUBLIC SURFACE YET`,
 `IOS · TESTFLIGHT BUILD` — never a borrowed picture. Same box, same rhythm, and
 it says why it is empty.
 
-Card tails (tech line and call) share one baseline across the whole rail via
-`.jx-card__foot { margin-top: auto }`. Cards stretch to a common height either
-way; this only decides where the slack goes.
 
 ### Voice
 
@@ -149,7 +139,7 @@ was cut for it.
 | `public/reveal/supersolid-poster.jpg` | Older poster, still present. |
 | `public/julian.png` | 800x800 portrait, supplied by Julian |
 | `public/work/*.png` | the eight rail products with a screenshot |
-| `public/fleet/*.png` | jtreks + IMHO — **used by `/console` only** |
+| `public/fleet/*.png` | Console assets; IMHO also appears in the public hobby section |
 
 ### Re-encoding the reveal
 
@@ -173,18 +163,34 @@ bottom-up scrim measures 4.67:1.
 
 ## Verification
 
-The skill ships a headless-Chrome harness that walks the finished page and
-reports dead scroll, cues that never reach full opacity, per-line contrast on
-the composited page, and frozen scrub clips.
+Use a production build for browser verification. The four repo-owned checks
+exercise different failure modes; a build alone does not verify motion.
 
 ```bash
-node <skill>/scripts/shoot.mjs --url http://localhost:3000 --out lab/desktop --per-act 6
-node <skill>/scripts/shoot.mjs --url http://localhost:3000 --width 390 --height 844 --out lab/mobile --per-act 5
-node <skill>/scripts/shoot.mjs --url http://localhost:3000 --reduced-motion --out lab/reduced --per-act 4
+npm run build
+npm run start -- -p 4330
+# In another terminal:
+SCROLL_URL=http://127.0.0.1:4330 npm run test:scroll
+SCROLL_URL=http://127.0.0.1:4330 npm run test:motion
+SCROLL_URL=http://127.0.0.1:4330 npm run test:rail
+SCROLL_URL=http://127.0.0.1:4330 npm run test:hobbies
 ```
 
-Current state: **no dead scroll**, **clip keeps moving**, zero overflowing
-elements, rail travels at every width, `4/4 PASS`.
+- `test:scroll`: forward/reverse playback, hold, bloom, index, rail travel, remount.
+- `test:motion`: phone/desktop readability, fixed header, theme persistence,
+  reduced motion, PDF download, and private console protection.
+- `test:rail`: real wheel events down and back up, then every card in both
+  directions. This caught the transformed-bounds feedback bug that jump tests missed.
+- `test:hobbies`: separate chart/story orders, all six links, nine career
+  disclosures, keyboard toggling, downstream scroll geometry, and overflow.
+
+The browser scripts use `playwright-core` with local Chrome. Override
+`CHROME_EXECUTABLE` if Chrome is installed elsewhere. `SCROLL_URL` also accepts a
+hosted deployment. Screenshots and logs belong in ignored `lab/`.
+
+The complete September 9 repair and content record is in
+[`docs/PRODUCTION-FIX-2026-09-09.md`](docs/PRODUCTION-FIX-2026-09-09.md).
+The following notes describe limitations of the older upstream visual harness.
 
 ### The one harness report to ignore, and why
 
@@ -249,7 +255,7 @@ And one found on 2026-08-26: **`data-sc-span` does not scale itself.** The
 engine maps the rail's whole `scrollWidth` onto whatever span the act declares,
 so adding cards at a fixed span makes the pan travel further in the same scroll
 distance — it just gets faster. The rail currently uses `span 8.2` because it
-now carries ten cards plus a divider. Remeasure after any card is added or
+carries nine cards plus a divider. Remeasure after any card is added or
 removed.
 
 ---
@@ -257,11 +263,10 @@ removed.
 ## Design constraints
 
 - **Contrast on the paper ground was measured, not eyeballed.** `--ink-3` must
-  be `#63686f` (5.06:1) and the pass-green `#0a6b49` (5.89:1). The obvious
+  be `#63686f` (5.06:1) and the live-state green `#0a6b49` (5.89:1). The obvious
   lighter greys failed at 2.89:1 and 3.93:1.
-- **The lab act stops pinning under 52rem.** Stacked at 390px its grid measures
-  1209px inside an 844px stage — 477px simply unreachable, with no way to
-  scroll inside a clipped stage.
+- **Hobbies and career stay in document flow.** Long content must remain
+  reachable on short viewports and after disclosures expand.
 - **The portrait stays small** (224px desktop, 112px mobile). The scrub open is
   the page's only spectacle; a full-bleed face competes with it.
 - **Only real numbers.** A counter is a truth claim with motion attached.

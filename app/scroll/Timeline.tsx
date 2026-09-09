@@ -2,19 +2,19 @@
 
 import Image from "next/image";
 import ScrollcraftMount from "./ScrollcraftMount";
-import Suite, { Assert } from "./Suite";
+import Suite from "./Suite";
 import MarkSync from "./MarkSync";
 import BloomCut from "./BloomCut";
 import RailDepth from "./RailDepth";
 import IndexMentionSync from "./IndexMentionSync";
 import MailButton, { ADDRESS } from "./MailButton";
 import dynamic from "next/dynamic";
-import Bionic from "./Bionic";
 
 /* ssr:false — createStage reads window and a WebGL context on construction.
    Lazy so three.js lands in its own chunk instead of the entry bundle. */
 const Stage = dynamic(() => import("./Stage"), { ssr: false });
-import { CAREER } from "../console/data";
+import Career from "./Career";
+import Experiments from "./Experiments";
 import { CONSOLE_ENABLED } from "../console/visibility";
 
 /* ————————————————————————————————————————————————
@@ -29,8 +29,8 @@ import { CONSOLE_ENABLED } from "../console/visibility";
      1 scrub · scrub    the open (the Supersolid reveal, under the wheel)
      1b flow · stagger  the index
      2 pan  · pan       the current work, then the older client work
-     3 pin  · reveal    the lab
-     4 flow · stagger   the record
+     3 flow · explore   the hobby projects
+     4 flow · expand    the record
      5 pin  · magnet    the close
    ———————————————————————————————————————————————— */
 
@@ -82,17 +82,6 @@ const NOW: Card[] = [
   },
   {
     n: "04",
-    name: "jtreks",
-    slug: "jtreks",
-    href: "https://jtreks.co",
-    kicker: "trekking research",
-    state: "live",
-    status: "live · jtreks.co",
-    cta: "Walk the 3D maps",
-    line: "Trekking guides where every claim is traced back to a government portal, a park authority or a peer-reviewed paper — 32 ranges, 243 articles, 3,403 sources. 3D route maps drawn from the real satellite elevation data.",
-  },
-  {
-    n: "05",
     name: "Keonda",
     slug: null,
     href: "https://apps.apple.com/us/app/keonda/id6785094649",
@@ -105,7 +94,7 @@ const NOW: Card[] = [
     line: "A social marketplace for the sea: a live chart of boats, chat between guests, captains and providers, and a marketplace underneath it. Live in the App Store.",
   },
   {
-    n: "06",
+    n: "05",
     name: "Luxy",
     slug: "luxy",
     href: "https://www.ibizaluxy.online/",
@@ -118,11 +107,11 @@ const NOW: Card[] = [
 ];
 
 /* Client work that has been running for a while. Same rail, behind a
-   divider, so the six above are not diluted by things that are simply
+   divider, so the five above are not diluted by things that are simply
    done. */
 const ALSO: Card[] = [
   {
-    n: "07",
+    n: "06",
     name: "Half Production",
     slug: "half-productions",
     href: "https://half-productions.vercel.app",
@@ -133,7 +122,7 @@ const ALSO: Card[] = [
     line: "A multilingual event-production site for an Argentina-to-Ibiza crew, with the public brand, Dharma, Boiler Cook, crew pages, print-ready QR assets, and an internal booking desk that turns Ibiza calendars, artist fees and warm-path relationships into a shortlist for monthly guest slots.",
   },
   {
-    n: "08",
+    n: "07",
     name: "Speed Ibiza",
     slug: "speed",
     href: "https://speed-ibiza.vercel.app",
@@ -143,7 +132,7 @@ const ALSO: Card[] = [
     line: "CRM built for a rising logistics and beverage distribution firm in Ibiza: route planning, customer records, order intake, collections, stock and invoicing. A field app for a phone in a van, an admin desk for the office.",
   },
   {
-    n: "09",
+    n: "08",
     name: "Innovalport",
     slug: "innovalport",
     href: "https://www.innovalportb2b.com",
@@ -153,7 +142,7 @@ const ALSO: Card[] = [
     line: "An import platform for Argentine companies buying from international suppliers: catalogue, landed-cost simulator, wholesale orders and logistics, wired into MercadoLibre and Tiendanube.",
   },
   {
-    n: "10",
+    n: "09",
     name: "Outflow",
     slug: "outflow",
     href: "https://www.outflow.com.ar",
@@ -164,42 +153,6 @@ const ALSO: Card[] = [
   },
 ];
 
-const LAB = [
-  {
-    // No public URL and no interface to photograph, so this one argues in
-    // type rather than borrowing a picture of something else.
-    n: "11",
-    name: "Solana Sniper",
-    href: null,
-    meta: "Rust · Diesel · Raydium logs · <b>research</b>",
-    at: null,
-    line: "A Rust service that subscribes to Raydium logs, filters initialize2 events, pulls the mint out of the transaction and fetches its metadata before the token is listed anywhere useful. It also profiles holder distribution, which is the cheapest way to tell a launch from a rug. Features several integrations with data providers for deeper analysis. Open sourced.",
-  },
-  {
-    n: "12",
-    name: "IMHO",
-    href: "https://imho-real-estate.vercel.app",
-    meta: "Next.js · Supabase · scraper fleet · <b>live</b>",
-    at: null,
-    line: "AI real-estate search for Argentina. Scrapers behind rotating proxies feed a natural-language pipeline where a second judge model scores every extraction before it is allowed to count. Ongoing partnerships with real estate agencies in Mar del Plata, Argentina.",
-  },
-  {
-    n: "13",
-    name: "Pushy",
-    href: null,
-    meta: "Rust · Axum · Postgres · Redis · SQS · <b>offline</b>",
-    at: "0.10 0.44",
-    line: "An observability and notification platform built originally for crypto exchanges. Rust and Axum at the front, a background worker behind it, Postgres and Redis underneath, SQS for the queue and Contentful for the templates, so marketing ships copy without waiting on a deploy. Highly composable and scalable in design.",
-  },
-  {
-    n: "14",
-    name: "Ascenso",
-    href: null,
-    meta: "Unreal Engine 5 · C++ · SRTM elevation · <b>in build</b>",
-    at: "0.24 0.58",
-    line: "A playable climb of Volcán Lanín, 3,776m, in Unreal Engine 5. Real terrain from satellite elevation data, the real Tromen route from OpenStreetMap, and hazards taken from having actually summited it. The same elevation file feeds three things: this game, the map on jtreks.co, and a 3D-printed keyring. Complementary to jtreks, more mountains being designed now.",
-  },
-];
 
 type Card = {
   n: string;
@@ -349,7 +302,9 @@ export default function Timeline() {
               {/* The sticky bar already carries "Julian Irigoyen · Buenos Aires"
                   on every screen, so repeating it here said nothing twice. The
                   eyebrow now spends its line on the practice instead. */}
-              <span className="jx-lbl" data-sc-cue="0 0.74 0">
+              {/* Keep the practice label in the same reading window as the
+                  headline. Mobile reveals the copy after progress 0.82. */}
+              <span className="jx-lbl" data-sc-cue="0 0.96 0 0">
                 Backend <b>·</b> Full-stack <b>·</b> DevOps <b>·</b> Agentic AI
               </span>
               {/* The first frame belongs to the mark alone. The headline enters
@@ -357,6 +312,7 @@ export default function Timeline() {
                   the bloom is allowed to fire. */}
               <h1
                 className="sc-display sc-display--xl jx-code-title jx-type"
+                aria-label="I love a good challenge."
                 data-sc-cue="0.12 0.96 0.32 0"
                 data-sc-kinetic="type"
                 style={{ marginTop: "0.9rem" }}
@@ -451,16 +407,13 @@ export default function Timeline() {
                     works was cut. The conviction still leads at display weight,
                     because that placement was a good call; the sentences under
                     it are his again, punctuation and all. Do not smooth these. */}
-                <p className="jx-about__lede jx-bionic">
-                  <Bionic>
+                <p className="jx-about__lede">
                   The world has changed. The complexity in engineering has
                   shifted, and what actually makes a difference now are the{" "}
                   <strong>people</strong> behind ideas and business processes.
-                  </Bionic>
                 </p>
 
-                <p className="sc-body jx-bionic" style={{ marginTop: "1.1rem", maxWidth: "62ch" }}>
-                  <Bionic>
+                <p className="sc-body" style={{ marginTop: "1.1rem", maxWidth: "62ch" }}>
                   After an amazing, 2 year long experience working at TrueML, I
                   started the founder journey with{" "}
                   <a
@@ -475,38 +428,33 @@ export default function Timeline() {
                   my best friend Emiliano Migliorata. We&apos;re building in
                   fintech and quantitative trading, and we work with other
                   founders as a cofounding team on their ideas.
-                  </Bionic>
                 </p>
 
-                <p className="sc-body jx-bionic" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
-                  <Bionic>
+                <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
                   I tackle problems methodically, and I make a point of relying
                   on my team to move forward efficiently and effectively. I&apos;m
                   a big fan of failing fast, through automated TDD and CI/CD
                   pipelines, and of delivering small concrete iterations. I&apos;m
                   interested in simple and complex problems alike. A lot more so
                   in the person and the idea behind each problem.
-                  </Bionic>
                 </p>
 
-                <p className="sc-body jx-bionic" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
-                  <Bionic>
+                <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
                   My goal as an engineer is to bridge the gap between the idea
                   and its implementation as swiftly, elegantly and robustly as
                   possible, to bring amazing products and services, and thus the
                   future, to life. That is why this page moves through{" "}
                   <span data-jx-index-trigger="now">what I&apos;m building now</span>,{" "}
                   <span data-jx-index-trigger="shipped">the client work already shipped</span>,{" "}
-                  <span data-jx-index-trigger="lab">the lab pieces</span>, and{" "}
+                  <span data-jx-index-trigger="lab">my hobby projects</span>, and{" "}
                   <span data-jx-index-trigger="path">the eight-year path behind it</span>.
-                  </Bionic>
                 </p>
 
                 <div className="jx-index">
                   {[
-                    { key: "now", n: "01—06", t: "Now", st: "live · in build" },
-                    { key: "shipped", n: "07—10", t: "Also shipped", st: "client work" },
-                    { key: "lab", n: "11—14", t: "The lab", st: "fintech · web3" },
+                    { key: "now", n: "01—05", t: "Now", st: "live · in build" },
+                    { key: "shipped", n: "06—09", t: "Also shipped", st: "client work" },
+                    { key: "lab", n: "10—15", t: "Hobby projects", st: "six reasons why" },
                     { key: "path", n: "—", t: "My path", st: "eight years" },
                   ].map(({ key, n, t, st }) => (
                     <div className="jx-index__row" data-jx-index-row={key} key={key}>
@@ -516,10 +464,6 @@ export default function Timeline() {
                       <span className="jx-index__s">{st}</span>
                     </div>
                   ))}
-                </div>
-
-                <div style={{ marginTop: "1.6rem" }}>
-                  <Assert name="intro" />
                 </div>
               </div>
             </div>
@@ -536,7 +480,7 @@ export default function Timeline() {
             <div className="jx-rail" data-sc-pan="0.05">
               <div className="jx-rail__lead">
                 <span className="jx-lbl">
-                  Now <b>·</b> 01—06
+                  Now <b>·</b> 01—05
                 </span>
                 <h2 className="sc-display sc-display--md" style={{ marginTop: "0.8rem" }}>
                   Being built or running as you read this.
@@ -556,10 +500,6 @@ export default function Timeline() {
                     <i className="jx-dot jx-dot--build" aria-hidden /> in build
                   </span>
                 </div>
-
-                <div style={{ marginTop: "1.2rem" }}>
-                  <Assert name="live work" />
-                </div>
               </div>
 
               {NOW.map((w) => (
@@ -568,7 +508,7 @@ export default function Timeline() {
 
               <div className="jx-rail__div">
                 <span className="jx-lbl">
-                  Also shipped <b>·</b> 07—10
+                  Also shipped <b>·</b> 06—09
                 </span>
                 <p>
                   Client work. Finished, handed over, up and running.
@@ -582,86 +522,8 @@ export default function Timeline() {
           </div>
         </section>
 
-        {/* ——— 03 · the lab. Three of the four have no URL, so this tier
-              argues in type rather than pictures. ——— */}
-        <section className="jx-act jx-lab-act" data-sc-act="pin" data-sc-span="3.2">
-          <div data-sc-stage>
-            <div className="sc-wrap" style={{ width: "100%", maxWidth: "76rem" }}>
-              <div data-sc-cue="0 0.30 0">
-                <span className="jx-lbl">
-                  The lab <b>·</b> 11—14
-                </span>
-                <h2 className="sc-display sc-display--md" style={{ marginTop: "0.7rem" }}>
-                  The more you f around... the more you find out.
-                </h2>
-              </div>
-
-              <div className="jx-lab" style={{ marginTop: "clamp(18px, 2.6vw, 32px)" }}>
-                {LAB.map((l) => (
-                  <div
-                    className="jx-lab__cell"
-                    key={l.name}
-                    {...(l.at
-                      ? { "data-sc-reveal": "up", "data-sc-reveal-at": l.at }
-                      : {})}
-                  >
-                    <span className="jx-lbl">{l.n}</span>
-                    <h3 className="jx-lab__name">{l.name}</h3>
-                    <p className="jx-lab__line">{l.line}</p>
-                    <span
-                      className="jx-meta"
-                      dangerouslySetInnerHTML={{ __html: l.meta }}
-                    />
-                    {l.href && (
-                      <a
-                        className="jx-go"
-                        href={l.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ marginTop: "10px" }}
-                      >
-                        Open →
-                      </a>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ——— 04 · the record ——— */}
-        <section
-          className="jx-act"
-          style={{ background: "var(--paper-2)", padding: "clamp(3.5rem, 7vw, 7rem) 0" }}
-        >
-          <div
-            className="sc-wrap"
-            data-sc-in
-            data-sc-stagger="50"
-            style={{ maxWidth: "72rem" }}
-          >
-            <span className="jx-lbl">The path that brought me here</span>
-            <h2 className="sc-display sc-display--md" style={{ marginTop: "0.7rem" }}>
-              Consulting firms, software factories, startups, product companies from Argentina, US and Europe.
-            </h2>
-            <div style={{ marginTop: "2rem" }}>
-              {CAREER.map((c) => (
-                <div className="jx-row" key={`${c.company}-${c.years}`}>
-                  <div className="jx-row__top">
-                    <span className="jx-row__yr">{c.years}</span>
-                    <span className="jx-row__co">{c.company}</span>
-                    <span className="jx-row__rl">{c.role}</span>
-                  </div>
-                  <p className="jx-row__nt">{c.note}</p>
-                </div>
-              ))}
-            </div>
-            <div style={{ marginTop: "1.6rem" }}>
-              <Assert name="the record" />
-            </div>
-          </div>
-        </section>
+        <Experiments />
+        <Career />
 
         {/* ——— 05 · the close. Last act: its cue greets and holds. ——— */}
         <section className="jx-act" data-sc-act="pin" data-sc-span="2">
@@ -706,10 +568,6 @@ export default function Timeline() {
                 >
                   LinkedIn
                 </a>
-              </div>
-
-              <div style={{ marginTop: "2rem", display: "flex", justifyContent: "center" }}>
-                <Assert name="close" />
               </div>
 
               {/* The address in plain sight. The button above is the fast path;

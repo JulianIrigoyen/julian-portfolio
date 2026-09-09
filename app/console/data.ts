@@ -131,56 +131,142 @@ export const SYSTEMS = {
   },
 };
 
+// Career details come from the existing resume and CV; kept with the console data.
 export const CAREER = [
   {
-    years: "2026 —",
-    company: "Supersolid",
-    role: "Founder & Principal Engineer",
-    note: "Autonomous agent infrastructure, a Rust trading platform, and client product work.",
-    now: true,
+    "years": "2026 — Present",
+    "company": "Supersolid",
+    "role": "Founder & Principal Engineer",
+    "note": "Cofounded with Dmitry Sabanin and Emiliano Migliorata. Own products in fintech and quantitative trading; cofounding engineering for other founders.",
+    "now": true,
+    "dates": "Mar 2026 — Present",
+    "location": "Buenos Aires, Argentina — Remote",
+    "highlights": [
+      "Building a systematic trading operation on an Erlang platform powered by agents, using our own capital.",
+      "DJINN, an open-source agentic workflow platform — in continuous development since January 2026 and running unattended on a cloud VM since June, reachable through Slack, supervised by pm2 and trusted with real infrastructure: watchdogs, nightly digests, incident detection and a knowledge store it maintains itself.",
+      "Around fifty purpose-built ops scripts, each runnable dry, each reporting to Slack; per-repo deploy keys scope exactly what the agent is allowed to touch."
+    ],
+    "context": null
   },
   {
-    years: "2024 — 2026",
-    company: "TrueML",
-    role: "Senior Software Engineer II",
-    note: "Platform engineering across Java, TypeScript, Scala and Go. AuthZ platform on AWS Cognito; CI/CD with Kubernetes, Helm, ArgoCD; revenue-driving payment features.",
-    now: false,
+    "years": "2025 — 2026",
+    "company": "TrueML",
+    "role": "Senior Software Engineer II",
+    "note": "Agentic workflows team. Promoted from Senior Software Engineer; platform engineering across Java, TypeScript, Scala and Go.",
+    "now": false,
+    "dates": "Mar 2025 — Aug 2026",
+    "location": "United States (Remote)",
+    "highlights": [
+      "On the agentic workflows team throughout — automating collections workflows end to end.",
+      "Designed and shipped the authorization platform on AWS Cognito — adopted by the legacy estate and built into new applications and services across the company.",
+      "Led the workflow engine migration from Camunda to Netflix Conductor, saving $200k.",
+      "Built the bankruptcy monitoring system for collections compliance in the legacy Scala monolith. The failure mode there was regulatory exposure, not cost.",
+      "Designed the collector shim bridging the legacy estate to One True Platform, the next-generation system; handed off to the team.",
+      "Built the partial payments flow, which drove hundreds of thousands in revenue across tax season.",
+      "Built CI/CD pipelines on GitHub Actions, Kubernetes, Helm charts and ArgoCD."
+    ],
+    "context": "Agentic workflows team"
   },
   {
-    years: "2021 — 2024",
-    company: "Expero",
-    role: "Backend Developer — Rust & .NET",
-    note: "Portfolio management for IHS Markit: APIs and data pipelines for capital-intensive markets, event-driven architecture.",
-    now: false,
+    "years": "2024 — 2025",
+    "company": "TrueML",
+    "role": "Senior Software Engineer",
+    "note": "Agentic workflows team. Platform and infrastructure work across the estate, leading to promotion to Senior II.",
+    "now": false,
+    "dates": "Mar 2024 — Mar 2025",
+    "location": "United States (Remote)",
+    "highlights": [
+      "Maintained legacy code across Java, TypeScript, Scala and Go — designing, implementing, testing and deploying applications across all four.",
+      "Refactored and restored an aging support application (TypeScript/NestJS) for on-site agents, improving performance and agent satisfaction."
+    ],
+    "context": "Agentic workflows team"
   },
   {
-    years: "2022 — 2023",
-    company: "Fractal Technology",
-    role: "Lead Developer — Scala & Akka",
-    note: "String3, a Layer 1 blockchain on the actor model. Joined as support, left as lead.",
-    now: false,
+    "years": "2021 — 2024",
+    "company": "Expero",
+    "role": "Backend Developer — Rust & .NET",
+    "note": "Developed portfolio management application for IHS Markit.",
+    "now": false,
+    "dates": "Aug 2021 — Jan 2024",
+    "location": "Houston, United States (Remote)",
+    "highlights": [
+      "Built APIs and data processing workflows for capital-intensive industries and markets",
+      "Worked with C#, Python, SQL, Rust in an event-driven architecture"
+    ],
+    "context": null
   },
   {
-    years: "2021",
-    company: "Alma Fintech",
-    role: "Full-stack Developer",
-    note: "Daruma electronic wallet, end to end.",
-    now: false,
+    "years": "2022 — 2023",
+    "company": "Fractal Technology",
+    "role": "Lead Developer — Scala & Akka",
+    "note": "Built String3, a Layer 1 blockchain system implementing the Actor model with the Akka framework.",
+    "now": false,
+    "dates": "Jan 2022 — Jan 2023",
+    "location": "United Kingdom (Remote)",
+    "highlights": [
+      "Gained deep understanding of decentralized systems while building an End-to-End Encrypted Blockchain and Decentralized Peer-to-Peer Electronic Cash System",
+      "Joined as support developer, progressed to lead development role",
+      "Improved system performance and resolved critical bugs",
+      "Led onboarding and knowledge transfer to new development team, successfully handing off the project"
+    ],
+    "context": "Concurrent with Expero"
   },
   {
-    years: "2020 — 2021",
-    company: "Tiendanube",
-    role: "Backend Developer — Scala & Akka",
-    note: "Reactive microservices for Latin America's largest e-commerce platform. Akka Typed, Persistence, Streams, Cluster Sharding.",
-    now: false,
+    "years": "2021 — 2021",
+    "company": "Alma Fintech",
+    "role": "Full Stack Developer — React & Scala",
+    "note": "End-to-end development of Daruma, an electronic wallet system.",
+    "now": false,
+    "dates": "Jan 2021 — Sep 2021",
+    "location": "Buenos Aires, Argentina (Remote)",
+    "highlights": [
+      "Involved in the end-to-end development of core features, working with the client to define and code (Design + FE + BE + QA) new functionality",
+      "Maintained legacy systems and provided production support"
+    ],
+    "context": null
   },
   {
-    years: "2019 — 2020",
-    company: "Intive · Globant",
-    role: "Java & Scala Developer",
-    note: "Microservices for Disney; energy-sector services for Mosaic.",
-    now: false,
+    "years": "2020 — 2021",
+    "company": "Tiendanube",
+    "role": "Backend Developer — Scala & Akka",
+    "note": "Developed reactive microservices for Latin America's largest e-commerce platform.",
+    "now": false,
+    "dates": "Sep 2020 — Jan 2021",
+    "location": "Buenos Aires, Argentina (Remote)",
+    "highlights": [
+      "Implemented Actor model using Scala, Play Framework, and Lightbend's Akka libraries (Akka Typed, Akka Persistence, Akka Projection, Akka Streams, Akka Cluster Sharding)",
+      "Enforced Domain Driven Design, Test Driven Design, and CI/CD principles"
+    ],
+    "context": null
   },
+  {
+    "years": "2019 — 2020",
+    "company": "Intive",
+    "role": "Full Stack Developer (Scala, Play & Akka)",
+    "note": "Developed services for the Mosaic Energy account.",
+    "now": false,
+    "dates": "Oct 2019 — Sep 2020",
+    "location": "Buenos Aires, Argentina",
+    "highlights": [
+      "Worked with Scala and Java 8 on service development and quality assurance in an Agile (SCRUM) environment",
+      "Responsibilities included new feature definition and development, code maintenance, QA, production support, and tooling investigations"
+    ],
+    "context": null
+  },
+  {
+    "years": "2019 — 2019",
+    "company": "Globant",
+    "role": "Java Developer",
+    "note": "Microservice development for the Disney account.",
+    "now": false,
+    "dates": "Feb 2019 — Sep 2019",
+    "location": "Buenos Aires, Argentina",
+    "highlights": [
+      "Worked on microservice development with Java 8, Spring, Spring Boot, Spring Integration, Maven, MariaDB, Amazon DynamoDB",
+      "Gained experience with web automation tools such as Selenium"
+    ],
+    "context": null
+  }
 ];
 
 /* ——————————————————————————————————————————————

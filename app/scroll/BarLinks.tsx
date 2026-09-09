@@ -70,7 +70,7 @@ export default function BarLinks() {
 
       <i className="jx-bar__rule" aria-hidden />
 
-      <a className="jx-cv" href="/julian-irigoyen-cv.pdf" download>
+      <a className="jx-cv" href="/julian-irigoyen-cv.pdf" download aria-label="Download Julian Irigoyen’s CV">
         <span>Download CV</span>
         <svg viewBox="0 0 16 16" aria-hidden focusable="false">
           <path fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"

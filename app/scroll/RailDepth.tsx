@@ -64,7 +64,7 @@ function rectToQuad(w: number, h: number, tl: Pt, tr: Pt, bl: Pt, br: Pt) {
 
 export default function RailDepth() {
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(hover: none), (prefers-reduced-motion: reduce)").matches) return;
     const rail = document.querySelector<HTMLElement>(".jx-rail");
     if (!rail) return;
 
@@ -91,6 +91,17 @@ export default function RailDepth() {
     let last = 0;
     let live = false;
 
+    // Measure the layout box relative to the translated rail. Reading a card's
+    // transformed rectangle feeds yesterday's warp into today's warp: after
+    // scrolling away, it can grow off screen and never enter the cull window.
+    const layoutRect = (el: HTMLElement, railRect: DOMRect) => {
+      const left = railRect.left + el.offsetLeft;
+      const top = railRect.top + el.offsetTop;
+      const width = el.offsetWidth;
+      const height = el.offsetHeight;
+      return { left, top, width, height, right: left + width, bottom: top + height };
+    };
+
     const onMove = (e: PointerEvent) => {
       target.x = e.clientX;
       target.y = e.clientY;
@@ -110,29 +121,14 @@ export default function RailDepth() {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const reach2 = REACH * REACH;
+      const railRect = rail.getBoundingClientRect();
 
       for (let i = 0; i < cards.length; i++) {
         const el = cards[i];
-        const r = el.getBoundingClientRect();
+        const r = layoutRect(el, railRect);
 
-        /* Cull, with hysteresis, and without resetting the warp.
-        
-           Two bugs lived here, and they fed each other.
-        
-           `r` is measured on the ALREADY-WARPED element. Clearing the
-           transform on park moved the card's own rectangle — the pincushion
-           alone displaces a card near the edge by tens of pixels — so a card
-           sitting on the boundary parked, snapped back inside the threshold,
-           unparked, warped back out, and parked again. Once per frame. That is
-           the flicker: the cull decision was reading a rectangle the cull
-           decision had just changed.
-        
-           So parking now means STOP WRITING, not reset. The last transform
-           stays where it is, off screen where nobody can see it, and the
-           rectangle stops moving underneath the test. The two thresholds then
-           make it monotonic: a card must travel 200px further out to park than
-           it needs to come back in, which is wider than any displacement the
-           warp can produce (BOW at the edge plus BULGE is under ~70px). */
+        // Culling uses the original layout too, so parked cards always return
+        // when the rail brings them back into view, in either scroll direction.
         const PARK_OUT = 420;
         const PARK_IN = 220;
         const margin = el.dataset.parked === "1" ? PARK_IN : PARK_OUT;
@@ -189,10 +185,11 @@ export default function RailDepth() {
        long rail is the usual reason a thing like this stutters. */
     const onDim = () => {
       const vw = window.innerWidth;
+      const railRect = rail.getBoundingClientRect();
       for (let i = 0; i < cards.length; i++) {
         const el = cards[i];
         if (el.dataset.parked === "1") continue;
-        const r = el.getBoundingClientRect();
+        const r = layoutRect(el, railRect);
         const d = Math.hypot(r.left + r.width / 2 - target.x, r.top + r.height / 2 - target.y);
         const t = Math.max(0, Math.min(1, (d - REACH * 0.5) / (vw * 0.55)));
         el.style.setProperty("--dim", (DIM * (t * t * (3 - 2 * t))).toFixed(3));

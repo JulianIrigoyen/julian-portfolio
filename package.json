@@ -7,6 +7,9 @@
     "build": "next build",
     "start": "next start",
     "test:scroll": "node scripts/check-scroll-page.mjs",
+    "test:hobbies": "node scripts/check-hobbies-page.mjs",
+    "test:rail": "node scripts/check-rail-return.mjs",
+    "test:motion": "node scripts/check-motion-production.mjs",
     "lint": "eslint"
   },
   "dependencies": {
