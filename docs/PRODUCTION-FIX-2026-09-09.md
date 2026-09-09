@@ -104,6 +104,9 @@ uses a full-bleed, visually verified photograph of Fitz Roy instead of an inset
 website screenshot. Its source and public-domain release are recorded in
 `public/experiments/README.md`.
 
+The graph-order correction is deployed in production at
+`https://julianmirigoyen.online` from commit `7fd92e9`.
+
 Career details use native disclosures and the shared resume data. Both TrueML
 roles remain separate, as do Intive and Globant. Expanding a role tells the
 scroll engine to recompute the closing section's position. Hobby reasons come
