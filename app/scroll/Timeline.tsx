@@ -77,8 +77,8 @@ const NOW: Card[] = [
     state: "live",
     status: "live · poorhedgefund.com",
     cta: "Read the thesis",
-    meta: "Rust · React · live orderbooks · <b>engine private</b>",
-    line: "A hedge fund, minus the funds. A Rust engine runs systematic strategies against live orderbooks — our own capital, our own risk, across instruments, markets and venues. Records and small positions, nobody else\u2019s. That is the poor part.",
+    meta: "Erlang/OTP · React · SwiftUI · live orderbooks · <b>engine private</b>",
+    line: "A self-funded systematic fund. An Erlang engine runs strategies against live orderbooks, every market and instrument its own actor, with a web console and a native Mac and iPhone app built to view and manage platform processes. Our own capital, our own risk.",
   },
   {
     n: "04",
