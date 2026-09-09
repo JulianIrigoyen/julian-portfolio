@@ -221,7 +221,7 @@ The hobby section is ordinary document flow, so every project remains reachable
 at every viewport height. `Experiments.tsx` presents jtreks, Ascenso, Solana
 Sniper, IMHO, Pushy, and Hermes Thrice in that order, each with Julian's own
 reason for building it. The graph ascends through Pushy, IMHO, Solana Sniper,
-jtreks, Ascenso, and Hermes Thrice. Its HTML links have 44px hit targets over
+Hermes Thrice, jtreks, and Ascenso. Its HTML links have 44px hit targets over
 the SVG illustration. Its axes carry no
 invented metrics. The work rail now contains nine projects, numbered 01–09.
 

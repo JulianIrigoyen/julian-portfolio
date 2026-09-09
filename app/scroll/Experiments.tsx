@@ -5,9 +5,9 @@ const projects = [
   { id: "pushy", name: "Pushy", x: 86, y: 237 },
   { id: "imho", name: "IMHO", x: 157, y: 200 },
   { id: "sniper", name: "Solana Sniper", x: 228, y: 163 },
-  { id: "jtreks", name: "jtreks", x: 299, y: 125 },
-  { id: "ascenso", name: "Ascenso", x: 370, y: 89 },
-  { id: "hermes", name: "Hermes Thrice", x: 441, y: 53 },
+  { id: "hermes", name: "Hermes Thrice", x: 299, y: 125 },
+  { id: "jtreks", name: "jtreks", x: 370, y: 89 },
+  { id: "ascenso", name: "Ascenso", x: 441, y: 53 },
 ];
 
 function CuriosityChart() {

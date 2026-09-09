@@ -24,7 +24,7 @@ try {
     assert.equal((await page.locator("#lab").innerText()).match(/Why\?/g)?.length, 6);
 
     const navigation = page.getByRole("navigation", { name: "Explore hobby projects" });
-    assert.deepEqual(await navigation.locator("a").allTextContents(), ["Pushy", "IMHO", "Solana Sniper", "jtreks", "Ascenso", "Hermes Thrice"]);
+    assert.deepEqual(await navigation.locator("a").allTextContents(), ["Pushy", "IMHO", "Solana Sniper", "Hermes Thrice", "jtreks", "Ascenso"]);
     for (const id of ["jtreks", "ascenso", "sniper", "imho", "pushy", "hermes"]) {
       await navigation.evaluate(element => scrollTo({ top: scrollY + element.getBoundingClientRect().top - 120, behavior: "instant" }));
       await navigation.locator(`a[href="#experiment-${id}"]`).click();

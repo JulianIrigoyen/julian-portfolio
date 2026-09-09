@@ -78,8 +78,8 @@ Fifteen projects, in three groups:
 - **Hobby projects (10–15)** — jtreks, Ascenso, Solana Sniper, IMHO,
   Pushy, and Hermes Thrice. Each feature leads with Julian's “Why?”. jtreks and Ascenso get
   larger features, with Hermes Thrice closing on music and visuals; the
-  illustrated meme chart links to all six projects. Its ascending order is
-  Pushy, IMHO, Solana Sniper, jtreks, Ascenso, Hermes Thrice. The story order
+  illustrated meme chart links to all six projects. Its bottom-to-top order is
+  Pushy, IMHO, Solana Sniper, Hermes Thrice, jtreks, Ascenso. The story order
   above stays independent of the graph.
 
 `Experiments.tsx` and `Experience.module.css` own the hobby section. Product

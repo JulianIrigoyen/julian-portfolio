@@ -97,9 +97,9 @@ sans-serif text. The fixed header contains contact/CV links, theme switching,
 and scroll progress; no section counters masquerade as test results.
 
 The six hobby stories remain ordered jtreks, Ascenso, Solana Sniper, IMHO,
-Pushy, Hermes Thrice. The user's final graph order is independent: Pushy at the
-bottom, then IMHO, Solana Sniper, jtreks, Ascenso; Hermes retains its existing
-last position. HTML anchors give every graph point a 44px hit target. jtreks now
+Pushy, Hermes Thrice. The graph order is independent: Pushy at the bottom, then
+IMHO, Solana Sniper, Hermes Thrice, jtreks, Ascenso. HTML anchors give every
+graph point a 44px hit target. jtreks now
 uses a full-bleed, visually verified photograph of Fitz Roy instead of an inset
 website screenshot. Its source and public-domain release are recorded in
 `public/experiments/README.md`.
