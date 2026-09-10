@@ -5,6 +5,18 @@ session belong in [`README.md`](README.md); this file is the log.
 
 ---
 
+## [2026-09-09] Poor Hedge Fund card rewritten
+
+Commit `389f781` on `redesign/scroll-and-console`. The card's line is now the
+sentence the fund uses everywhere: "A self-funded systematic fund. An Erlang
+engine runs strategies against live orderbooks, every market and instrument its
+own actor, with a web console and a native Mac and iPhone app built to view and
+manage platform processes. Our own capital, our own risk." The meta line went
+from "Rust · React" to "Erlang/OTP · React · SwiftUI", matching the rebuilt
+platform. "Minus the funds", "that is the poor part" and "nobody else's" are
+gone at Julian's request; the same wording shipped to supersolid.co and
+poorhedgefund.com the same day.
+
 ## [2026-08-27] Custom domain launch and open retiming
 
 The portfolio was deployed to Vercel production and attached to Julian's DonWeb
