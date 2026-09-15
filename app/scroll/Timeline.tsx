@@ -399,23 +399,15 @@ export default function Timeline() {
               <div className="jx-about__body">
                 <span className="jx-openrule jx-about__rule" />
 
-                {/* Julian's own words, restored from 83862ea^. The commit that
-                    replaced them was called "a shorter bio" and it did shorten
-                    them — into someone else's register. "an amazing, 2 year
-                    long experience" became "after two years", "the founder
-                    journey" went, and the whole paragraph on how he actually
-                    works was cut. The conviction still leads at display weight,
-                    because that placement was a good call; the sentences under
-                    it are his again, punctuation and all. Do not smooth these. */}
+                {/* About copy approved by Julian on September 15, 2026. */}
                 <p className="jx-about__lede">
-                  The world has changed. The complexity in engineering has
-                  shifted, and what actually makes a difference now are the{" "}
-                  <strong>people</strong> behind ideas and business processes.
+                  Building software is getting faster. Deciding what’s worth
+                  building—and understanding the <strong>people</strong> who need
+                  it—matters more than ever.
                 </p>
 
                 <p className="sc-body" style={{ marginTop: "1.1rem", maxWidth: "62ch" }}>
-                  After an amazing, 2 year long experience working at TrueML, I
-                  started the founder journey with{" "}
+                  After two years at TrueML, I cofounded{" "}
                   <a
                     href="https://supersolid.co"
                     target="_blank"
@@ -423,31 +415,28 @@ export default function Timeline() {
                     className="jx-link"
                   >
                     Supersolid
-                  </a>
-                  , together with my former boss and mentor Dmitry Sabanin and
-                  my best friend Emiliano Migliorata. We&apos;re building in
-                  fintech and quantitative trading, and we work with other
-                  founders as a cofounding team on their ideas.
+                  </a>{" "}
+                  with my former boss and mentor, Dmitry Sabanin, and my best
+                  friend, Emiliano Migliorata. We’re building in fintech and
+                  quantitative trading, and partnering with other founders as
+                  their cofounding team.
                 </p>
 
                 <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
-                  I tackle problems methodically, and I make a point of relying
-                  on my team to move forward efficiently and effectively. I&apos;m
-                  a big fan of failing fast, through automated TDD and CI/CD
-                  pipelines, and of delivering small concrete iterations. I&apos;m
-                  interested in simple and complex problems alike. A lot more so
-                  in the person and the idea behind each problem.
+                  I work methodically, lean on my team, and ship small iterations
+                  that let us learn quickly. I’m drawn to difficult engineering
+                  problems, but what keeps me invested is the person and the idea
+                  behind them.
                 </p>
 
                 <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
-                  My goal as an engineer is to bridge the gap between the idea
-                  and its implementation as swiftly, elegantly and robustly as
-                  possible, to bring amazing products and services, and thus the
-                  future, to life. That is why this page moves through{" "}
-                  <span data-jx-index-trigger="now">what I&apos;m building now</span>,{" "}
-                  <span data-jx-index-trigger="shipped">the client work already shipped</span>,{" "}
-                  <span data-jx-index-trigger="lab">my hobby projects</span>, and{" "}
-                  <span data-jx-index-trigger="path">the eight-year path behind it</span>.
+                  My job is to close the distance between an idea and something
+                  people can use. Below is{" "}
+                  <span data-jx-index-trigger="now">what I’m building now</span>,{" "}
+                  <span data-jx-index-trigger="shipped">the client work I’ve shipped</span>,
+                  {" "}and the{" "}
+                  <span data-jx-index-trigger="lab">projects</span> that{" "}
+                  <span data-jx-index-trigger="path">shaped how I work</span>.
                 </p>
 
                 <div className="jx-index">
