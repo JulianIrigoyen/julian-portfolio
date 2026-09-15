@@ -399,15 +399,17 @@ export default function Timeline() {
               <div className="jx-about__body">
                 <span className="jx-openrule jx-about__rule" />
 
-                {/* About copy approved by Julian on September 15, 2026. */}
+                {/* About copy in Julian’s tone, approved September 15, 2026. */}
                 <p className="jx-about__lede">
-                  Building software is getting faster. Deciding what’s worth
-                  building—and understanding the <strong>people</strong> who need
-                  it—matters more than ever.
+                  The world has changed. Building software is getting faster, and
+                  what makes a difference more than ever are the <strong>people</strong>{" "}
+                  behind the ideas. Understanding what they want to do, why it
+                  matters to them, and helping make it happen.
                 </p>
 
                 <p className="sc-body" style={{ marginTop: "1.1rem", maxWidth: "62ch" }}>
-                  After two years at TrueML, I cofounded{" "}
+                  After an amazing two years at TrueML, I started the founder
+                  journey with{" "}
                   <a
                     href="https://supersolid.co"
                     target="_blank"
@@ -415,28 +417,30 @@ export default function Timeline() {
                     className="jx-link"
                   >
                     Supersolid
-                  </a>{" "}
-                  with my former boss and mentor, Dmitry Sabanin, and my best
-                  friend, Emiliano Migliorata. We’re building in fintech and
-                  quantitative trading, and partnering with other founders as
-                  their cofounding team.
+                  </a>
+                  , together with my former boss and mentor Dmitry Sabanin and
+                  my best friend Emiliano Migliorata. We’re building in fintech
+                  and quantitative trading, and we work with other founders as
+                  a cofounding team on their ideas.
                 </p>
 
                 <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
-                  I work methodically, lean on my team, and ship small iterations
-                  that let us learn quickly. I’m drawn to difficult engineering
-                  problems, but what keeps me invested is the person and the idea
-                  behind them.
+                  I tackle problems methodically, and I rely a lot on my team.
+                  I like failing fast, shipping small concrete iterations, and
+                  learning from what actually happens. I’m interested in simple
+                  and complex problems alike. A lot more so in the person and
+                  the idea behind each problem.
                 </p>
 
                 <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
-                  My job is to close the distance between an idea and something
-                  people can use. Below is{" "}
+                  My goal as an engineer is to bridge the gap between an idea and
+                  its implementation. Make it real, make it work, and keep
+                  improving it. Below is{" "}
                   <span data-jx-index-trigger="now">what I’m building now</span>,{" "}
-                  <span data-jx-index-trigger="shipped">the client work I’ve shipped</span>,
+                  <span data-jx-index-trigger="shipped">the client work already shipped</span>,
                   {" "}and the{" "}
-                  <span data-jx-index-trigger="lab">projects</span> that{" "}
-                  <span data-jx-index-trigger="path">shaped how I work</span>.
+                  <span data-jx-index-trigger="lab">hobby projects</span> and{" "}
+                  <span data-jx-index-trigger="path">experiences that brought me here</span>.
                 </p>
 
                 <div className="jx-index">
