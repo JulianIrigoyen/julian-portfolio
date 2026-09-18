@@ -399,23 +399,25 @@ export default function Timeline() {
               <div className="jx-about__body">
                 <span className="jx-openrule jx-about__rule" />
 
-                {/* About copy in Julian’s tone, approved September 15, 2026. */}
+                {/* Julian's own words, as they stood before the September 15
+                    rewrite (02ac0ff). Two paragraphs he cut himself on
+                    September 17 (TrueML/Supersolid, working style) stay out.
+                    Do not smooth these. */}
                 <p className="jx-about__lede">
-                  The world has changed. Building software is getting faster, and
-                  what makes a difference more than ever are the <strong>people</strong>{" "}
-                  behind the ideas. Understanding what they want to do, why it
-                  matters to them, and helping make it happen.
+                  The world has changed. The complexity in engineering has
+                  shifted, and what actually makes a difference now are the{" "}
+                  <strong>people</strong> behind ideas and business processes.
                 </p>
 
                 <p className="sc-body" style={{ marginTop: "1.1rem" }}>
-                  My goal as an engineer is to bridge the gap between an idea and
-                  its implementation. Make it real, make it work, and keep
-                  improving it. Below is{" "}
-                  <span data-jx-index-trigger="now">what I’m building now</span>,{" "}
-                  <span data-jx-index-trigger="shipped">the client work already shipped</span>,
-                  {" "}and the{" "}
-                  <span data-jx-index-trigger="lab">hobby projects</span> and{" "}
-                  <span data-jx-index-trigger="path">experiences that brought me here</span>.
+                  My goal as an engineer is to bridge the gap between the idea
+                  and its implementation as swiftly, elegantly and robustly as
+                  possible, to bring amazing products and services, and thus the
+                  future, to life. That is why this page moves through{" "}
+                  <span data-jx-index-trigger="now">what I&apos;m building now</span>,{" "}
+                  <span data-jx-index-trigger="shipped">the client work already shipped</span>,{" "}
+                  <span data-jx-index-trigger="lab">my hobby projects</span>, and{" "}
+                  <span data-jx-index-trigger="path">the eight-year path behind it</span>.
                 </p>
 
                 <div className="jx-index">

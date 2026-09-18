@@ -5,6 +5,36 @@ session belong in [`README.md`](README.md); this file is the log.
 
 ---
 
+## [2026-09-17/18] About and Ascenso: Julian's words back; About column aligned
+
+Commits on `redesign/scroll-and-console`, each deployed to production with
+`vercel deploy --prod --yes` and verified on `julianmirigoyen.online`.
+
+- **About, his words.** The September 15 commits (`d1fe566`, `8c076de`, `3a49a3f`)
+  replaced the bio with an "approved" rewrite that was not his. His text, as it stood
+  in `02ac0ff`, is back verbatim: the lede ("The world has changed. The complexity in
+  engineering has shifted…") and the goal paragraph ("…as swiftly, elegantly and
+  robustly as possible, to bring amazing products and services, and thus the future,
+  to life."). Two paragraphs he cut himself on September 17 (TrueML/Supersolid; working
+  style) stay out. The comment above the block says "do not smooth these"; mean it.
+- **Ascenso, his line.** A September 9 session (`511c53d`) trimmed his August 26
+  description to two sentences. The August 26 line is back in `Experiments.tsx`:
+  altitude, elevation and route sources, hazards from having summited it, and the one
+  elevation file feeding the game, the jtreks map and a 3D-printed keyring.
+- **About column aligned.** Lede, body and index shared three different widths; they
+  now share one 40rem measure (`--about-measure` in `theme.css`). The gold rule sits
+  0.6rem under "Hi" instead of 1.6rem plus the grid gap. With the shorter copy the
+  index mentions were already in the reveal band as the section arrived, so every row
+  showed at once; `IndexMentionSync` now reveals a row when its mention reaches the
+  top 30% of the viewport. All four page checks pass.
+- **Deploying from this folder is unsafe while a redesign is in progress.** A second
+  session left uncommitted work here (`app/portfolio/`, a modified `app/page.tsx` that
+  mounts it, `docs/REDESIGN-2026-09-17.md`). `vercel deploy` uploads the working tree,
+  not HEAD, so it would ship that redesign. The last two deploys were made from a
+  clean `git worktree` of the commit (`npm ci`, `npm run build`, then deploy); do the
+  same until that work is either committed on purpose or removed. Its Ascenso and
+  About copy were rewritten without review; nothing from it is live.
+
 ## [2026-09-09] Poor Hedge Fund card rewritten
 
 Commit `389f781` on `redesign/scroll-and-console`. The card's line is now the
