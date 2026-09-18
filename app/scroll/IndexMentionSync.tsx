@@ -39,7 +39,12 @@ export default function IndexMentionSync() {
           io.unobserve(entry.target);
         });
       },
-      { rootMargin: "0px 0px -38% 0px", threshold: 0.01 },
+      // A mention reveals its row once it is in the top 30% of the viewport,
+      // i.e. when the reader has reached it. The About copy got shorter in
+      // September 2026, so with the old 62% band the mentions were already
+      // inside it the moment the section scrolled in, and every row showed
+      // at once before the paragraph had been read.
+      { rootMargin: "0px 0px -70% 0px", threshold: 0.01 },
     );
 
     triggers.forEach((trigger) => io.observe(trigger));

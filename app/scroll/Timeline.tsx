@@ -407,7 +407,7 @@ export default function Timeline() {
                   matters to them, and helping make it happen.
                 </p>
 
-                <p className="sc-body" style={{ marginTop: "1.1rem", maxWidth: "62ch" }}>
+                <p className="sc-body" style={{ marginTop: "1.1rem" }}>
                   My goal as an engineer is to bridge the gap between an idea and
                   its implementation. Make it real, make it work, and keep
                   improving it. Below is{" "}

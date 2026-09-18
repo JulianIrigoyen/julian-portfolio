@@ -685,7 +685,14 @@ body:has(.jx-page) {
   text-wrap: pretty;
 }
 
-.jx-about__rule { margin-top: 1.6rem; }
+/* One measure for everything in the prose column — the lede, the body and
+   the index share a right edge instead of three ragged ones — and the rule
+   sits close under the title so "Hi" introduces the paragraph it belongs to. */
+.jx-about__body { --about-measure: 40rem; }
+.jx-about__lede { max-width: var(--about-measure); }
+.jx-about__body .sc-body { max-width: var(--about-measure); }
+.jx-about .jx-index { max-width: var(--about-measure); }
+.jx-about__rule { margin-top: 0.6rem; }
 
 
 /* ════════════════════════════════════════════════════════════
