@@ -408,31 +408,6 @@ export default function Timeline() {
                 </p>
 
                 <p className="sc-body" style={{ marginTop: "1.1rem", maxWidth: "62ch" }}>
-                  After an amazing two years at TrueML, I started the founder
-                  journey with{" "}
-                  <a
-                    href="https://supersolid.co"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="jx-link"
-                  >
-                    Supersolid
-                  </a>
-                  , together with my former boss and mentor Dmitry Sabanin and
-                  my best friend Emiliano Migliorata. We’re building in fintech
-                  and quantitative trading, and we work with other founders as
-                  a cofounding team on their ideas.
-                </p>
-
-                <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
-                  I tackle problems methodically, and I rely a lot on my team.
-                  I like failing fast, shipping small concrete iterations, and
-                  learning from what actually happens. I’m interested in simple
-                  and complex problems alike. A lot more so in the person and
-                  the idea behind each problem.
-                </p>
-
-                <p className="sc-body" style={{ marginTop: "0.9rem", maxWidth: "62ch" }}>
                   My goal as an engineer is to bridge the gap between an idea and
                   its implementation. Make it real, make it work, and keep
                   improving it. Below is{" "}
