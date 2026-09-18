@@ -78,7 +78,7 @@ export default function Experiments() {
             <div className={styles.projectMeta}><span>11 / Mountain simulation</span><span className={styles.live}>Website live</span></div>
             <h3>Ascenso</h3>
             <div className={styles.why}><span>Why?</span><p>Because it&apos;s fun. Game development exposes you to key engineering problems, but it&apos;s also an art: a way to tell a story and teach something valuable.</p></div>
-            <p>A playable climb of Volcán Lanín in Unreal Engine 5. Real satellite terrain, the Tromen route, and decisions about weather, stamina, and when to turn back.</p>
+            <p>A playable climb of Volcán Lanín, 3,776m, in Unreal Engine 5. Real terrain from satellite elevation data, the real Tromen route from OpenStreetMap, and hazards taken from having actually summited it. The same elevation file feeds three things: this game, the map on jtreks.co, and a 3D-printed keyring.</p>
             <div className={styles.projectFoot}><span>Unreal Engine 5 · C++ · SRTM</span><a href="https://ascenso.world" target="_blank" rel="noopener noreferrer">Explore Ascenso ↗</a></div>
           </div>
         </article>
