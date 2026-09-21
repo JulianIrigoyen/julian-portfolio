@@ -60,6 +60,7 @@ export const PROJECTS: Project[] = [
     id: "project-smith-magenis", name: "Smith-Magenis", category: "Awareness & family resources",
     description: "A multilingual resource site about Smith-Magenis syndrome, bringing together information, support organizations and resources for families.",
     href: "https://sms-awareness.vercel.app",
+    image: { src: "/work/smith-magenis.png", alt: "Séquence 17’s Smith-Magenis website", caption: "Séquence 17 / Association website" },
   },
   {
     id: "project-half", name: "Half Production", category: "Events · Ibiza",
