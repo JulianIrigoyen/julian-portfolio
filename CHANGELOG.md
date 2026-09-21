@@ -5,6 +5,21 @@ session belong in [`README.md`](README.md); this file is the log.
 
 ---
 
+## [2026-09-21] Phone landing: the portrait no longer straddles the fold
+
+On a phone the redesign's full-width 5:4 portrait began at about 535px, and
+Safari's first screen ends near 660px, so the fold cut the face in half on
+arrival. Below 600px the portrait now leads the hero as a 116px square beside
+the CV link (`order: -1` on `.portraitBlock`), with the headline and intro under
+it. Reproduced and verified at 390×664 and 390×844 with `lab/shot-mobile.mjs`,
+before and after, and again on the production domain after deploy.
+
+The redesign itself (`app/portfolio/`, `app/page.tsx` mounting it,
+`docs/REDESIGN-2026-09-17.md`, the console email fixes, the corrected CV) had
+been live since September 18 without ever being committed; it is committed in
+the same commit as this fix, `ff8613d`, exactly as deployed, so the repository
+matches production again.
+
 ## [2026-09-17/18] About and Ascenso: Julian's words back; About column aligned
 
 Commits on `redesign/scroll-and-console`, each deployed to production with
