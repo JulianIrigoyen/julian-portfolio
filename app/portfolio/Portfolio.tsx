@@ -77,7 +77,9 @@ export default function Portfolio() {
           <div className={s.heroMain}>
             <p className={s.eyebrow}>Software engineer · Supersolid cofounder</p>
             <h1 id="intro-title">I’m Julian.<span>I build software.</span></h1>
-            <p className={s.intro}>Eight years working on backend systems, full-stack products and infrastructure. Now building Supersolid, our own products, and software for other founders.</p>
+            {/* Julian's own words (02ac0ff). Do not smooth these. */}
+            <p className={s.intro}>The world has changed. The complexity in engineering has shifted, and what actually makes a difference now are the people behind ideas and business processes.</p>
+            <p className={s.intro}>My goal as an engineer is to bridge the gap between the idea and its implementation as swiftly, elegantly and robustly as possible, to bring amazing products and services, and thus the future, to life.</p>
             <a className={s.heroWorkLink} href="#work">View projects <span aria-hidden="true">↓</span></a>
           </div>
           <aside className={s.portraitBlock}>

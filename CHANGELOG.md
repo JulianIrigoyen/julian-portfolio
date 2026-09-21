@@ -5,6 +5,15 @@ session belong in [`README.md`](README.md); this file is the log.
 
 ---
 
+## [2026-09-21] Julian's words in the live redesign
+
+The September 18 restores of his About and Ascenso text went into the scroll
+page, which the redesign no longer mounts, so the live site kept the redesign's
+rewrites. His two About paragraphs now replace the "Eight years…" intro in
+`Portfolio.tsx`, and his August 26 Ascenso line replaces the rewrite in
+`projects.ts`. The other project descriptions in `projects.ts` were also written
+by the redesign session and have not been reviewed by him.
+
 ## [2026-09-21] Socials in the header
 
 GitHub, LinkedIn, X, Instagram and WhatsApp now also sit in the header, after the

@@ -40,6 +40,7 @@
 .hero h1 { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; font-size: clamp(68px, 7.5vw, 104px); line-height: 1.08; letter-spacing: -.055em; }
 .hero h1 span { display: block; font-family: var(--font-archivo), sans-serif; color: var(--accent); font-size: .56em; line-height: 1.25; letter-spacing: -.04em; margin-top: .25em; }
 .intro { max-width: 465px; margin: 28px 0 28px; color: var(--muted); font-size: 17px; line-height: 1.75; }
+.intro + .intro { margin-top: -12px; }
 .heroWorkLink { display: inline-flex; align-items: center; gap: 32px; border-bottom: 1px solid var(--ink); color: var(--ink); padding: 10px 0; font-size: 14px; }
 .heroWorkLink:hover { color: var(--accent); border-color: var(--accent); }
 .portraitBlock { width: 100%; border: 1px solid var(--line); }
