@@ -41,8 +41,8 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "experiment-ascenso", name: "Ascenso", category: "Mountain simulation · Unreal Engine 5",
-    // Julian's text, September 21 (typos fixed only). Do not rewrite.
-    description: "Ascenso is a complementary product to my other trekking / mountain related project: jtreks. The latter one offers real, useful, properly sourced data that is supposed to help you plan trekking trips fast and easily. Ascenso introduces fantasy, history, culture in beautiful worlds designed using real data like elevation data, myths and legends and even real mountaineering skills. Through it, you’ll get an exciting glimpse into what it feels like to actually reach a summit, while learning how to do it and about the places where you’d do it on the way. Currently in development, soon to release for early access.",
+    // Julian's text, September 21, reordered and tightened at his request. Do not rewrite.
+    description: "Ascenso introduces fantasy, history and culture in beautiful worlds designed using real elevation data, myths and legends, and even real mountaineering skills. Through it, you’ll get an exciting glimpse into what it feels like to actually reach a summit, while learning how to do it and about the places where you’d do it on the way. It’s a complementary product to my other trekking / mountain related project, jtreks, which helps you plan trekking trips fast and easily with real, useful, properly sourced data. Currently in development, soon to release for early access.",
     href: "https://ascenso.world",
     image: { src: "/experiments/ascenso-lanin.webp", alt: "Ascenso cover artwork of Volcán Lanín", caption: "Volcán Lanín / Cover artwork", cover: true },
   },
