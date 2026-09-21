@@ -4,6 +4,14 @@ import { CopyEmail, ThemeToggle } from "./Controls";
 import { CONTACT_EMAIL, EXPERIMENTS, PROJECTS, type Project } from "./projects";
 import s from "./Portfolio.module.css";
 
+const SOCIALS = [
+  { label: "GitHub", href: "https://github.com/JulianIrigoyen" },
+  { label: "LinkedIn", href: "https://linkedin.com/in/julianirigoyen" },
+  { label: "X", href: "https://x.com/irigoyai" },
+  { label: "Instagram", href: "https://instagram.com/julianmirigoyen" },
+  { label: "WhatsApp", href: "https://wa.me/5491136639160" },
+];
+
 function External({ href, children, className }: {
   href: string;
   children: React.ReactNode;
@@ -54,9 +62,14 @@ export default function Portfolio() {
       <a className={s.skip} href="#main">Skip to content</a>
       <header className={s.header}>
         <a className={s.wordmark} href="#top">Julian Irigoyen<span className={s.location}>Buenos Aires, Argentina</span></a>
-        <nav aria-label="Main navigation">
-          <a href="#work">Work</a><a href="#about">Experience</a><a href="#contact">Contact</a><ThemeToggle />
-        </nav>
+        <div className={s.headerRight}>
+          <nav aria-label="Main navigation">
+            <a href="#work">Work</a><a href="#about">Experience</a><a href="#contact">Contact</a><ThemeToggle />
+          </nav>
+          <nav className={s.socials} aria-label="Elsewhere">
+            {SOCIALS.map((link) => <External key={link.label} href={link.href}>{link.label}</External>)}
+          </nav>
+        </div>
       </header>
 
       <main id="main">
@@ -134,11 +147,7 @@ export default function Portfolio() {
       <footer className={s.footer}>
         <a href="#top">Julian Irigoyen <span aria-hidden="true">↑</span></a>
         <nav aria-label="Elsewhere">
-          <External href="https://github.com/JulianIrigoyen">GitHub</External>
-          <External href="https://linkedin.com/in/julianirigoyen">LinkedIn</External>
-          <External href="https://wa.me/5491136639160">WhatsApp</External>
-          <External href="https://instagram.com/julianmirigoyen">Instagram</External>
-          <External href="https://x.com/irigoyai">X</External>
+          {SOCIALS.map((link) => <External key={link.label} href={link.href}>{link.label}</External>)}
         </nav>
       </footer>
     </div>

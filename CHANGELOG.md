@@ -5,6 +5,13 @@ session belong in [`README.md`](README.md); this file is the log.
 
 ---
 
+## [2026-09-21] Socials in the header
+
+GitHub, LinkedIn, X, Instagram and WhatsApp now also sit in the header, after the
+page nav behind a hairline divider on desktop and as a row under the nav on
+phones. One `SOCIALS` list feeds both the header and the footer so the two cannot
+drift. Phone landing re-measured: the portrait is still fully above the fold.
+
 ## [2026-09-21] Phone landing: the portrait no longer straddles the fold
 
 On a phone the redesign's full-width 5:4 portrait began at about 535px, and
