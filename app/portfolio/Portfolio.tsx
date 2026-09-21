@@ -76,7 +76,7 @@ export default function Portfolio() {
         <section className={s.hero} aria-labelledby="intro-title">
           <div className={s.heroMain}>
             <p className={s.eyebrow}>Software engineer · Supersolid cofounder</p>
-            <h1 id="intro-title">I’m Julian.<span>I build software.</span></h1>
+            <h1 id="intro-title">Hi, I’m Juli.<span>Do you want to develop an app?</span></h1>
             {/* Julian's own words (02ac0ff). Do not smooth these. */}
             <p className={s.intro}>The world has changed. The complexity in engineering has shifted, and what actually makes a difference now are the people behind ideas and business processes.</p>
             <p className={s.intro}>My goal as an engineer is to bridge the gap between the idea and its implementation as swiftly, elegantly and robustly as possible, to bring amazing products and services, and thus the future, to life.</p>
