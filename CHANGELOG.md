@@ -5,6 +5,28 @@ session belong in [`README.md`](README.md); this file is the log.
 
 ---
 
+## [2026-09-21] Every project description is Julian's again
+
+The redesign session had rewritten all sixteen project descriptions. They are now
+his lines from the scroll page, the August 26 cards or his later corrections on that
+page, applied to `app/portfolio/projects.ts`. Smith-Magenis has no line of his and
+keeps the redesign's. Source per project:
+
+- Supersolid: scroll page, his correction of the Aug 26 line
+- Poor Hedge Fund: scroll page, 389f781, the fund's own sentence
+- DJINN: scroll page, his updated line
+- jtreks: Aug 26, 53fe1e4
+- Keonda: scroll page, his update (App Store)
+- Luxy: scroll page, his update (webapp live)
+- Half Production: scroll page (Boiler Cook)
+- Innovalport: Aug 26, 53fe1e4
+- Speed Ibiza: scroll page, his update (CRM)
+- Outflow: Aug 26, 53fe1e4
+- Solana Sniper: Aug 26, 53fe1e4
+- IMHO: Aug 26, 53fe1e4
+- Pushy: Aug 26, 53fe1e4
+- Hermes Thrice: scroll page (no Aug 26 card)
+
 ## [2026-09-21] Julian's words in the live redesign
 
 The September 18 restores of his About and Ascenso text went into the scroll
