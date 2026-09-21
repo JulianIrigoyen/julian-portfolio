@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export const ADDRESS = "dev@supersolid.co";
+export const ADDRESS = "julian@supersolid.co";
 
 /* ————————————————————————————————————————————————
    The one call on the page, and it was a dead end.

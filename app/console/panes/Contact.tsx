@@ -22,7 +22,7 @@ export default function Contact() {
 
       <div className="mt-9 grid gap-px overflow-hidden rounded-sm border border-rule bg-rule sm:grid-cols-3">
         {[
-          { k: "email", v: "martinirigoyenj17@gmail.com", href: "mailto:martinirigoyenj17@gmail.com" },
+          { k: "email", v: "julian@supersolid.co", href: "mailto:julian@supersolid.co" },
           { k: "github", v: "JulianIrigoyen", href: "https://github.com/JulianIrigoyen" },
           { k: "linkedin", v: "julianirigoyen", href: "https://linkedin.com/in/julianirigoyen" },
         ].map((c) => (

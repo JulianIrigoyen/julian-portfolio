@@ -166,7 +166,7 @@ export function Rail({
           { l: "← main view", h: "/" },
           { l: "github", h: "https://github.com/JulianIrigoyen" },
           { l: "linkedin", h: "https://linkedin.com/in/julianirigoyen" },
-          { l: "email", h: "mailto:martinirigoyenj17@gmail.com" },
+          { l: "email", h: "mailto:julian@supersolid.co" },
         ].map((x) => (
           <a
             key={x.l}

@@ -2,11 +2,14 @@
 
 Julian Irigoyen's portfolio. Next.js 16 (Turbopack) + Tailwind v4 + TypeScript.
 
-Two builds live side by side:
+The September 17 redesign is local only; it has not been pushed or deployed.
+See [the redesign record](docs/REDESIGN-2026-09-17.md) for the implementation and validation.
+
+Two routes live side by side:
 
 | route | what |
 |---|---|
-| `/` | **The scroll page.** A dark filmic `scrub` open hard-cutting into a paper editorial gallery. Built on the scrollcraft engine. |
+| `/` | **The editorial portfolio.** Immediate introduction, five featured projects followed by seven compact project rows in Julian’s order, personal tools, career and contact. Normal document scrolling; `app/portfolio/` owns this version. |
 | `/console` | **The previous INSTRUMENT build** — a fixed-viewport operations console, carrying the full 13-entry catalogue in depth. Protected by the existing authentication gate; unauthenticated requests return 401. Documented in [`docs/CONSOLE.md`](docs/CONSOLE.md). |
 
 ```bash
@@ -27,7 +30,11 @@ Deployment, DNS, analytics, and verification details are documented in
 
 ---
 
-## The scroll page
+## Previous scroll page (retained source)
+
+The notes below describe the previous homepage in `app/scroll/Timeline.tsx`.
+Its source and assets are retained, but it is no longer mounted by `/` locally.
+The scroll-specific checks below apply to that previous implementation, not the redesign.
 
 Built with **[scrollcraft](https://github.com/nateherkai/scroll-craft)** (Nate
 Herk, MIT) — a Claude Code skill, not an npm package. The skill is **not

@@ -96,7 +96,7 @@ edu = "".join(row(when(w), f'<h3>{s}</h3><p class="loc">{d}</p>', "job") for w, 
 langs = ", ".join(f'{E(l.get("language",""))} ({E(l.get("fluency",""))})'
                   for l in src.get("languages", []))
 
-CONTACT = ["dev@supersolid.co", "+54 9 11 3663 9160", "julianmirigoyen.online",
+CONTACT = ["julian@supersolid.co", "+54 9 11 3663 9160", "julianmirigoyen.online",
            "github.com/JulianIrigoyen", "linkedin.com/in/julianirigoyen",
            "Buenos Aires · Remote US / EU"]
 contact = '<li class="sep">·</li>'.join(f"<li>{E(c)}</li>" for c in CONTACT)
