@@ -41,8 +41,8 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "experiment-ascenso", name: "Ascenso", category: "Mountain simulation · Unreal Engine 5",
-    // Julian's line, August 26 (53fe1e4). Do not rewrite.
-    description: "A playable climb of Volcán Lanín, 3,776m, in Unreal Engine 5. Real terrain from satellite elevation data, the real Tromen route from OpenStreetMap, and hazards taken from having actually summited it. The same elevation file feeds three things: this game, the map on jtreks.co, and a 3D-printed keyring.",
+    // Julian's text, September 21 (typos fixed only). Do not rewrite.
+    description: "Ascenso is a complementary product to my other trekking / mountain related project: jtreks. The latter one offers real, useful, properly sourced data that is supposed to help you plan trekking trips fast and easily. Ascenso introduces fantasy, history, culture in beautiful worlds designed using real data like elevation data, myths and legends and even real mountaineering skills. Through it, you’ll get an exciting glimpse into what it feels like to actually reach a summit, while learning how to do it and about the places where you’d do it on the way. Currently in development, soon to release for early access.",
     href: "https://ascenso.world",
     image: { src: "/experiments/ascenso-lanin.webp", alt: "Ascenso cover artwork of Volcán Lanín", caption: "Volcán Lanín / Cover artwork", cover: true },
   },
